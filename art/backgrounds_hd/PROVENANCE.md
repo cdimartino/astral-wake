@@ -6,4 +6,4 @@ Shared prompt: Redraw this original cosmic environment as a pristine high-resolu
 
 Regions: warm Cradle of Embers; blue-green haunted cathedral-like wreck field; violet crystalline observatory beyond reality.
 
-Sources under /Users/chris/.codex/generated_images/01a16ed0-a9c1-7af1-bbdf-9ec98bc0631e/: exec-96b9d5c9-a8ea-4065-802a-7c2cc35385b3.png, exec-8159b995-abcb-420a-962e-113fe999b878.png, exec-7a8ed9e9-d1f7-4f1b-8c55-4f99b27e779f.png.
+Generated image session 01a16ed0-a9c1-7af1-bbdf-9ec98bc0631e: exec-96b9d5c9-a8ea-4065-802a-7c2cc35385b3.png, exec-8159b995-abcb-420a-962e-113fe999b878.png, exec-7a8ed9e9-d1f7-4f1b-8c55-4f99b27e779f.png.
