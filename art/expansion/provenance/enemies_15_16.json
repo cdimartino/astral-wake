@@ -1,0 +1,19 @@
+{
+  "id": "enemies_15_16",
+  "kind": "enemies",
+  "items": [
+    {
+      "id": "spark_knight",
+      "name": "Spark Knight",
+      "motif": "a compact angular living diamond-armored vessel, obsidian and gold crest plates, two slim violet lightning-blade fins and bright white-cyan electric core, no humanoid limbs"
+    },
+    {
+      "id": "corona_wisp",
+      "name": "Corona Wisp",
+      "motif": "a graceful white-violet plasma wisp held by three delicate golden conductive arcs, flowing luminous comet tendrils and a small bright cyan corona"
+    }
+  ],
+  "path": "art/expansion/enemies/enemies_15_16.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD living enemy spacecraft sprites for Astral Wake. Create exact2:1 landscape canvas, preferably2048x1024 or largest available. Exactly two equally sized square cells side by side. LEFT HALF: Spark Knight, a compact angular living diamond-armored vessel, obsidian and gold crest plates, two slim violet lightning-blade fins and bright white-cyan electric core, no humanoid limbs. RIGHT HALF: Corona Wisp, a graceful white-violet plasma wisp held by three delicate golden conductive arcs, flowing luminous comet tendrils and a small bright cyan corona. These names describe the subjects; no words or labels should appear.\nOne complete subject in each half, centered at25%/75% of canvas width, each fills75% of its cell. Generous transparent padding around all parts, all wings/branches/antennae fully inside their own half. Clear full-height transparent separator through canvascenter; no overlap or cropping. Genuine alpha transparency outside silhouettes and inside structural gaps. No other subjects, no background scene, stars, text, numbers, UI, borders, logos or watermark.\nPremium polished2D cosmic science-fiction concept illustration, highly detailed at native resolution, exceptionally clean contours, smooth sophisticated surfaces and coherent material shading, controlled bioluminescence. The same strange living-spacecraft world as elegant teal/gold manta ships, but each new subject has its own memorable silhouette. Rich restrained colors as described. No grain, noisy texture, pixelation, blur, rainbow fringes, humans, humanoid figures, literal human anatomy or existing game references. Main body opaque, natural glass/mist details partly transparent. Crisp enough for large-screen gameplay.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-e8cded43-4d17-411c-9343-956ba3cee5b9.png"
+}

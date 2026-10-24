@@ -1,0 +1,19 @@
+{
+  "id": "palimpsest_09_10",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "borrowed_dawn",
+      "name": "Borrowed Dawn",
+      "motif": "a small captured golden sunrise reflected between nested silver memory mirrors and ivory leaf plates"
+    },
+    {
+      "id": "ink_well",
+      "name": "Ink Well",
+      "motif": "a levitating dark indigo ink orb over a graceful silver basin, luminous cyan droplets orbiting like stored thoughts"
+    }
+  ],
+  "path": "art/expansion/cards/palimpsest_09_10.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Borrowed Dawn, interpreted as a small captured golden sunrise reflected between nested silver memory mirrors and ivory leaf plates; RIGHT illustration Ink Well, interpreted as a levitating dark indigo ink orb over a graceful silver basin, luminous cyan droplets orbiting like stored thoughts. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: layered ivory and silver archival materials, translucent memory leaves, warm amber/gold strokes and fine cyan circuitry on midnight indigo. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-7d7e12c1-124f-42db-842b-06398756c6a1.png"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "palimpsest_05_06",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "ghost_line",
+      "name": "Ghost Line",
+      "motif": "a single spectral cyan path with trailing erased ivory ribbon afterimages, a fine golden anchor point"
+    },
+    {
+      "id": "revision_spike",
+      "name": "Revision Spike",
+      "motif": "a bright ivory spike piercing several translucent archival layers, precise amber energy cracks"
+    }
+  ],
+  "path": "art/expansion/cards/palimpsest_05_06.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Ghost Line, interpreted as a single spectral cyan path with trailing erased ivory ribbon afterimages, a fine golden anchor point; RIGHT illustration Revision Spike, interpreted as a bright ivory spike piercing several translucent archival layers, precise amber energy cracks. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: layered ivory and silver archival materials, translucent memory leaves, warm amber/gold strokes and fine cyan circuitry on midnight indigo. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-48f2d986-1cf8-4d5f-a912-3d3bcf46989f.png"
+}

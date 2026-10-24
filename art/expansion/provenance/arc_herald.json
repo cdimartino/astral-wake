@@ -1,0 +1,15 @@
+{
+  "id": "arc_herald",
+  "items": [
+    {
+      "id": "arc_herald",
+      "name": "Arc Herald",
+      "motif": "a slender tuning-fork-like living storm vessel, two tall curved gold antennae, violet crystal resonance chambers and coordinated white lightning bridges"
+    }
+  ],
+  "kind": "enemies",
+  "path": "art/expansion/enemies/arc_herald.png",
+  "reference": "res://art/expansion/enemies/enemies_17_18.png",
+  "prompt": "Use case: identity-preserve / precise-object-edit. Reference shows two enemy spacecraft. Extract and REDRAW ONLY the tall tuning-fork RIGHT ship, Arc Herald as ONE standalone high-resolution transparent sprite. Do not include any part of the other ship.\nCharacter: Arc Herald, a slender tuning-fork-like living storm vessel, two tall curved gold antennae, violet crystal resonance chambers and coordinated white lightning bridges. Preserve this exact new design, silhouette, materials, violet/gold/cyan palette and polished illustration style, with crisp clean native-resolution detail.\nSquare2048x2048 or largest available, minimum1024x1024. Center the complete single vessel on the square canvas, filling78% of its width/height as appropriate with at least10% transparent padding around every point, wing and antenna. Absolutely no clipping. All tips fully visible. High quality smooth surfaces, coherent lighting, restrained glow. Genuine alpha transparency outside vessel and inside gaps, main body opaque. No other objects, no background, no text, labels, borders, frames, humans, noise, grain, blur or rainbowfringe.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-074d9d7d-fdc7-41dd-81b7-63da1d5e1adf.png"
+}

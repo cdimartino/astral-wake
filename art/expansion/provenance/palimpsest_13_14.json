@@ -1,0 +1,19 @@
+{
+  "id": "palimpsest_13_14",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "lost_paragraph",
+      "name": "Lost Paragraph",
+      "motif": "several empty translucent ivory memory leaves descending into a calm dark void, fine cyan traces fading away, no printed text"
+    },
+    {
+      "id": "double_exposure",
+      "name": "Double Exposure",
+      "motif": "two offset faceted silver memory crystals superimposed with cyan and amber ghost layers, lucid geometric depth"
+    }
+  ],
+  "path": "art/expansion/cards/palimpsest_13_14.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Lost Paragraph, interpreted as several empty translucent ivory memory leaves descending into a calm dark void, fine cyan traces fading away, no printed text; RIGHT illustration Double Exposure, interpreted as two offset faceted silver memory crystals superimposed with cyan and amber ghost layers, lucid geometric depth. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: layered ivory and silver archival materials, translucent memory leaves, warm amber/gold strokes and fine cyan circuitry on midnight indigo. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-44459208-3169-4842-b518-9d8d4a7f45a9.png"
+}

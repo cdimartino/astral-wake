@@ -1,0 +1,7 @@
+{
+  "id": "verdant_engine",
+  "path": "art/expansion/regions/verdant_engine.png",
+  "kind": "regions",
+  "prompt": "Use case: stylized-concept. Asset type: original full-screen2D space-game region environment. Widescreen16:9 landscape, preferably2560x1440 or largest available, at least1672x941. Premium cinematic hand-painted science fiction illustration with clean detailed forms, beautiful coherent atmospheric lighting, layered spatial depth, no grain or noisy texture. This is a combat and map backdrop: central/lower-middle regions dark enough for ship silhouettes and cream UI, restrained bright details mostly along upper horizon and edges. Original mysterious cosmic frontier, no humans, characters, foreground ships, text, numbers, UI, logos or watermark.\nTHE VERDANT ENGINE: a vast biomechanical garden suspended in deep space. Emerald and jade living roots grow around immense copper seed engines, organic turbine-pods and luminous golden pollen chambers. Graceful root arches frame a quiet dark clearing, distant green nebulae reveal enormous plant-machines slowly unfurling. Refined emerald, deep navy, aged copper, small amber lights. Architectural living machinery, not an Earth forest. Dark open center and lower half, rich details around sides and distant upper layers.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-480ae1f0-9d1c-4424-b0b0-f46c7e91c58e.png"
+}

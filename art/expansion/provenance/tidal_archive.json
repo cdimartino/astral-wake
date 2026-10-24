@@ -1,0 +1,7 @@
+{
+  "id": "tidal_archive",
+  "path": "art/expansion/regions/tidal_archive.png",
+  "kind": "regions",
+  "prompt": "Use case: stylized-concept. Asset type: original full-screen2D space-game region environment. Widescreen16:9 landscape, preferably2560x1440 or largest available, at least1672x941. Premium cinematic hand-painted science fiction illustration with clean detailed forms, beautiful coherent atmospheric lighting, layered spatial depth, no grain or noisy texture. This is a combat and map backdrop: central/lower-middle regions dark enough for ship silhouettes and cream UI, restrained bright details mostly along upper horizon and edges. Original mysterious cosmic frontier, no humans, characters, foreground ships, text, numbers, UI, logos or watermark.\nTHE TIDAL ARCHIVE: an immense abyssal gravity library floating in an indigo cosmic ocean. Vast curved shelves and suspended memory tablets form descending terraces around a bottomless dark gravitational well. Teal tide rings and delicate cyan streams bend around the archive, giant silver archival ribs vanish into distant midnight-blue haze. Evoke the calm pressure of deep water without literal sea creatures. Beautiful dark indigo, teal, silver and subtle bioluminescent cyan. Dark open center and lower middle for gameplay; distant upper and side architecture supplies scale.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-94c1114b-39c9-4b46-819f-0aca408fc0d2.png"
+}

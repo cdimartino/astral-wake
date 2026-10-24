@@ -1,0 +1,511 @@
+{
+  "characters": {
+    "palimpsest": {
+      "path": "res://art/expansion/characters/palimpsest.png"
+    },
+    "hollow_choir": {
+      "path": "res://art/expansion/characters/hollow_choir.png"
+    }
+  },
+  "regions": {
+    "crown_of_storms": {
+      "path": "res://art/expansion/regions/crown_of_storms.png"
+    },
+    "tidal_archive": {
+      "path": "res://art/expansion/regions/tidal_archive.png"
+    },
+    "verdant_engine": {
+      "path": "res://art/expansion/regions/verdant_engine.png"
+    }
+  },
+  "cards": {
+    "choral_bolt": {
+      "path": "res://art/expansion/cards/hollow_choir_01_02.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "warm_refrain": {
+      "path": "res://art/expansion/cards/hollow_choir_01_02.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "silent_measure": {
+      "path": "res://art/expansion/cards/hollow_choir_03_04.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "call_and_response": {
+      "path": "res://art/expansion/cards/hollow_choir_03_04.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "tuning_fork": {
+      "path": "res://art/expansion/cards/hollow_choir_05_06.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "bright_canon": {
+      "path": "res://art/expansion/cards/hollow_choir_05_06.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "breath_between": {
+      "path": "res://art/expansion/cards/hollow_choir_07_08.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "dissonant_edge": {
+      "path": "res://art/expansion/cards/hollow_choir_07_08.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "shared_pulse": {
+      "path": "res://art/expansion/cards/hollow_choir_09_10.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "counterpoint": {
+      "path": "res://art/expansion/cards/hollow_choir_09_10.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "crescendo": {
+      "path": "res://art/expansion/cards/hollow_choir_11_12.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "hushed_chord": {
+      "path": "res://art/expansion/cards/hollow_choir_11_12.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "orbital_round": {
+      "path": "res://art/expansion/cards/hollow_choir_13_14.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "harmonic_bridge": {
+      "path": "res://art/expansion/cards/hollow_choir_13_14.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "grand_concert": {
+      "path": "res://art/expansion/cards/hollow_choir_15_16.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "resonant_shell": {
+      "path": "res://art/expansion/cards/hollow_choir_15_16.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "rest_note": {
+      "path": "res://art/expansion/cards/hollow_choir_17_18.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "unison": {
+      "path": "res://art/expansion/cards/hollow_choir_17_18.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "margin_knife": {
+      "path": "res://art/expansion/cards/palimpsest_01_02.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "pale_patch": {
+      "path": "res://art/expansion/cards/palimpsest_01_02.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "carbon_breath": {
+      "path": "res://art/expansion/cards/palimpsest_03_04.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "first_draft": {
+      "path": "res://art/expansion/cards/palimpsest_03_04.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "ghost_line": {
+      "path": "res://art/expansion/cards/palimpsest_05_06.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "revision_spike": {
+      "path": "res://art/expansion/cards/palimpsest_05_06.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "vellum_shield": {
+      "path": "res://art/expansion/cards/palimpsest_07_08.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "cut_sentence": {
+      "path": "res://art/expansion/cards/palimpsest_07_08.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "borrowed_dawn": {
+      "path": "res://art/expansion/cards/palimpsest_09_10.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "ink_well": {
+      "path": "res://art/expansion/cards/palimpsest_09_10.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "overwrite": {
+      "path": "res://art/expansion/cards/palimpsest_11_12.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "scar_note": {
+      "path": "res://art/expansion/cards/palimpsest_11_12.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "lost_paragraph": {
+      "path": "res://art/expansion/cards/palimpsest_13_14.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "double_exposure": {
+      "path": "res://art/expansion/cards/palimpsest_13_14.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "final_revision": {
+      "path": "res://art/expansion/cards/palimpsest_15_16.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "memory_lattice": {
+      "path": "res://art/expansion/cards/palimpsest_15_16.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "blank_page": {
+      "path": "res://art/expansion/cards/palimpsest_17_18.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "second_history": {
+      "path": "res://art/expansion/cards/palimpsest_17_18.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    }
+  },
+  "enemies": {
+    "arc_herald": {
+      "path": "res://art/expansion/enemies/arc_herald.png",
+      "rect": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    },
+    "root_of_all_suns": {
+      "path": "res://art/expansion/enemies/enemies_01_02.png",
+      "rect": [
+        0,
+        0,
+        883,
+        887
+      ]
+    },
+    "drowned_catalogue": {
+      "path": "res://art/expansion/enemies/enemies_01_02.png",
+      "rect": [
+        883,
+        0,
+        891,
+        887
+      ]
+    },
+    "crown_unbound": {
+      "path": "res://art/expansion/enemies/enemies_03_04.png",
+      "rect": [
+        0,
+        0,
+        883,
+        887
+      ]
+    },
+    "orchard_titan": {
+      "path": "res://art/expansion/enemies/enemies_03_04.png",
+      "rect": [
+        883,
+        0,
+        891,
+        887
+      ]
+    },
+    "pollen_drone": {
+      "path": "res://art/expansion/enemies/enemies_05_06.png",
+      "rect": [
+        0,
+        0,
+        877,
+        887
+      ]
+    },
+    "graft_stalker": {
+      "path": "res://art/expansion/enemies/enemies_05_06.png",
+      "rect": [
+        877,
+        0,
+        897,
+        887
+      ]
+    },
+    "sap_collector": {
+      "path": "res://art/expansion/enemies/enemies_07_08.png",
+      "rect": [
+        0,
+        0,
+        876,
+        887
+      ]
+    },
+    "thorn_canticle": {
+      "path": "res://art/expansion/enemies/enemies_07_08.png",
+      "rect": [
+        876,
+        0,
+        898,
+        887
+      ]
+    },
+    "index_ray": {
+      "path": "res://art/expansion/enemies/enemies_09_10_v2.png",
+      "rect": [
+        0,
+        0,
+        950,
+        887
+      ]
+    },
+    "undertow_scribe": {
+      "path": "res://art/expansion/enemies/enemies_09_10_v2.png",
+      "rect": [
+        950,
+        0,
+        824,
+        887
+      ]
+    },
+    "folio_leviathan": {
+      "path": "res://art/expansion/enemies/enemies_11_12.png",
+      "rect": [
+        0,
+        0,
+        880,
+        887
+      ]
+    },
+    "gravity_moth": {
+      "path": "res://art/expansion/enemies/enemies_11_12.png",
+      "rect": [
+        880,
+        0,
+        894,
+        887
+      ]
+    },
+    "keeper_of_depths": {
+      "path": "res://art/expansion/enemies/enemies_13_14.png",
+      "rect": [
+        0,
+        0,
+        888,
+        887
+      ]
+    },
+    "thunder_regent": {
+      "path": "res://art/expansion/enemies/enemies_13_14.png",
+      "rect": [
+        888,
+        0,
+        886,
+        887
+      ]
+    },
+    "spark_knight": {
+      "path": "res://art/expansion/enemies/enemies_15_16.png",
+      "rect": [
+        0,
+        0,
+        894,
+        887
+      ]
+    },
+    "corona_wisp": {
+      "path": "res://art/expansion/enemies/enemies_15_16.png",
+      "rect": [
+        894,
+        0,
+        880,
+        887
+      ]
+    },
+    "storm_kite": {
+      "path": "res://art/expansion/enemies/storm_kite.png",
+      "rect": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    }
+  }
+}

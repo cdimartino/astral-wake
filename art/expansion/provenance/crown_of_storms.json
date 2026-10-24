@@ -1,0 +1,7 @@
+{
+  "id": "crown_of_storms",
+  "path": "art/expansion/regions/crown_of_storms.png",
+  "kind": "regions",
+  "prompt": "Use case: stylized-concept. Asset type: original full-screen2D space-game region environment. Widescreen16:9 landscape, preferably2560x1440 or largest available, at least1672x941. Premium cinematic hand-painted science fiction illustration with clean detailed forms, beautiful coherent atmospheric lighting, layered spatial depth, no grain or noisy texture. This is a combat and map backdrop: central/lower-middle regions dark enough for ship silhouettes and cream UI, restrained bright details mostly along upper horizon and edges. Original mysterious cosmic frontier, no humans, characters, foreground ships, text, numbers, UI, logos or watermark.\nTHE CROWN OF STORMS: an immense electrical nebular crown encircling black space. Elegant gold conductive spires and curved lightning rods form a vast broken celestial coronet above a dark combat clearing. White-violet lightning threads between the distant spires, pale electric-blue nebular veils spiral around monumental dark metal arcs. Bright strikes restrained to upper horizon and edges, not overexposed. Refined violet, ink navy, cool white and burnished gold. Dark open center and lower half with rich cinematic depth.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-7619cdcb-90c8-45d3-83e8-479e20be67b5.png"
+}

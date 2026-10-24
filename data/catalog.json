@@ -1,0 +1,3038 @@
+{
+  "organs": [
+    {
+      "id": "lens",
+      "name": "The Lens",
+      "verb": "Focus",
+      "description": "Add 3 damage if this command already deals damage.",
+      "color": "#f5c874"
+    },
+    {
+      "id": "fork",
+      "name": "The Fork",
+      "verb": "Divide",
+      "description": "The command also deals half its damage to every other enemy.",
+      "color": "#f18e79"
+    },
+    {
+      "id": "echo",
+      "name": "The Echo",
+      "verb": "Resound",
+      "description": "Multiply damage and healing by 1.5, rounded down.",
+      "color": "#b8a3ef"
+    },
+    {
+      "id": "mend",
+      "name": "The Suture",
+      "verb": "Repair",
+      "description": "Add 1 healing to the command.",
+      "color": "#81cfac"
+    },
+    {
+      "id": "hush",
+      "name": "The Hush",
+      "verb": "Silence",
+      "description": "Add 2 disruption for this enemy phase. Combined disruption and redirection can prevent at most half of each attack.",
+      "color": "#7ac6d8"
+    },
+    {
+      "id": "prism",
+      "name": "The Prism",
+      "verb": "Refract",
+      "description": "Redirect up to 3 damage from the chosen enemy’s next attack to another living enemy this phase. Does not stack or work against a lone enemy. Combined defense caps at half an attack.",
+      "color": "#d6ace1"
+    }
+  ],
+  "cards": [
+    {
+      "id": "needle",
+      "name": "Needle of Dawn",
+      "kind": "attack",
+      "damage": 9,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 0,
+      "description": "Deal 9 damage.",
+      "cost": 1
+    },
+    {
+      "id": "hull_stitch",
+      "name": "Hull Stitch",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 7,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "description": "Restore 7 hull.",
+      "cost": 1
+    },
+    {
+      "id": "cold_breath",
+      "name": "Cold Breath",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "description": "Cool every organ by 1 before routing. Draw 1 card.",
+      "cost": 1
+    },
+    {
+      "id": "quiet_pulse",
+      "name": "Quiet Pulse",
+      "kind": "attack",
+      "damage": 7,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 1,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 2,
+      "description": "Deal 7 damage. Apply 1 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "graft_wire",
+      "name": "Graft Wire",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "description": "Draw 1 card. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 1
+    },
+    {
+      "id": "sun_splinter",
+      "name": "Sun Splinter",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 6,
+      "description": "Deal 12 damage.",
+      "cost": 1
+    },
+    {
+      "id": "mercy_circuit",
+      "name": "Mercy Circuit",
+      "kind": "attack",
+      "damage": 7,
+      "heal": 3,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 0,
+      "description": "Deal 7 damage. Restore 3 hull.",
+      "cost": 1
+    },
+    {
+      "id": "black_suture",
+      "name": "Black Suture",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 10,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "description": "Restore 10 hull.",
+      "cost": 1
+    },
+    {
+      "id": "spare_heartbeat",
+      "name": "Spare Heartbeat",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 5,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 0,
+      "description": "Restore 5 hull. Draw 1 card.",
+      "cost": 1
+    },
+    {
+      "id": "frost_seam",
+      "name": "Frost Seam",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 5,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "description": "Restore 5 hull. Cool every organ by 1 before routing.",
+      "cost": 1
+    },
+    {
+      "id": "red_interval",
+      "name": "Red Interval",
+      "kind": "attack",
+      "damage": 10,
+      "heal": 0,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 3,
+      "description": "Deal 10 damage. Cool every organ by 1 before routing.",
+      "cost": 1
+    },
+    {
+      "id": "wake_lance",
+      "name": "Wake Lance",
+      "kind": "attack",
+      "damage": 14,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 0,
+      "description": "Deal 14 damage.",
+      "cost": 1
+    },
+    {
+      "id": "glass_murmur",
+      "name": "Glass Murmur",
+      "kind": "attack",
+      "damage": 8,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 4,
+      "description": "Deal 8 damage. Draw 1 card.",
+      "cost": 1
+    },
+    {
+      "id": "thread_cannon",
+      "name": "Thread Cannon",
+      "kind": "attack",
+      "damage": 8,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "description": "Deal 8 damage. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 1
+    },
+    {
+      "id": "mute_bell",
+      "name": "Mute Bell",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 3,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 5,
+      "description": "Draw 1 card. Apply 3 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "cold_psalm",
+      "name": "Cold Psalm",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 2,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "description": "Cool every organ by 2 before routing.",
+      "cost": 1
+    },
+    {
+      "id": "salvage_hymn",
+      "name": "Salvage Hymn",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 8,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 1,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 12,
+      "description": "Restore 8 hull. Apply 1 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "votive_shard",
+      "name": "Votive Shard",
+      "kind": "attack",
+      "damage": 11,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 1,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 8,
+      "description": "Deal 11 damage. Apply 1 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "mirror_cut",
+      "name": "Mirror Cut",
+      "kind": "attack",
+      "damage": 10,
+      "heal": 2,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 17,
+      "description": "Deal 10 damage. Restore 2 hull.",
+      "cost": 1
+    },
+    {
+      "id": "open_channel",
+      "name": "Open Channel",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 2,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "description": "Draw 2 cards.",
+      "cost": 1
+    },
+    {
+      "id": "scar_bridge",
+      "name": "Scar Bridge",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 6,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 0,
+      "description": "Restore 6 hull. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 1
+    },
+    {
+      "id": "winter_needle",
+      "name": "Winter Needle",
+      "kind": "attack",
+      "damage": 7,
+      "heal": 0,
+      "vent": 2,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 1,
+      "description": "Deal 7 damage. Cool every organ by 2 before routing.",
+      "cost": 1
+    },
+    {
+      "id": "hollow_chorus",
+      "name": "Hollow Chorus",
+      "kind": "attack",
+      "damage": 9,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 2,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 10,
+      "description": "Deal 9 damage. Apply 2 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "seam_of_light",
+      "name": "Seam of Light",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 12,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "description": "Restore 12 hull. Cool every organ by 1 before routing.",
+      "cost": 2
+    },
+    {
+      "id": "pilgrim_signal",
+      "name": "Pilgrim Signal",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 1,
+      "disrupt": 1,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 0,
+      "description": "Cool every organ by 1 before routing. Draw 1 card. Apply 1 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "long_hem",
+      "name": "Long Hem",
+      "kind": "attack",
+      "damage": 13,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 12,
+      "description": "Deal 13 damage. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 1
+    },
+    {
+      "id": "blue_refrain",
+      "name": "Blue Refrain",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 4,
+      "vent": 2,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "description": "Restore 4 hull. Cool every organ by 2 before routing. Draw 1 card.",
+      "cost": 2
+    },
+    {
+      "id": "last_match",
+      "name": "Last Match",
+      "kind": "attack",
+      "damage": 14,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 1,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 6,
+      "description": "Deal 14 damage. Apply 1 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "white_noise",
+      "name": "White Noise",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 4,
+      "link": false,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 18,
+      "description": "Cool every organ by 1 before routing. Apply 4 disruption to the chosen enemy.",
+      "cost": 1
+    },
+    {
+      "id": "star_chart",
+      "name": "Star Chart",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 2,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 0,
+      "description": "Draw 2 cards. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 1
+    },
+    {
+      "id": "ember_abacus",
+      "name": "Ember Abacus",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 0,
+      "vent": 1,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 1,
+      "art": 6,
+      "description": "Deal 12 damage. Cool every organ by 1 before routing. Draw 1 card.",
+      "cost": 2
+    },
+    {
+      "id": "kindly_static",
+      "name": "Kindly Static",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 9,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 2,
+      "link": false,
+      "rarity": 2,
+      "unlock": 1,
+      "art": 19,
+      "description": "Restore 9 hull. Apply 2 disruption to the chosen enemy.",
+      "cost": 2
+    },
+    {
+      "id": "afterimage",
+      "name": "Afterimage",
+      "kind": "attack",
+      "damage": 11,
+      "heal": 0,
+      "vent": 0,
+      "draw": 2,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 2,
+      "art": 16,
+      "description": "Deal 11 damage. Draw 2 cards.",
+      "cost": 2
+    },
+    {
+      "id": "deep_winter",
+      "name": "Deep Winter",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 3,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "rarity": 2,
+      "unlock": 2,
+      "art": 19,
+      "description": "Cool every organ by 3 before routing. Draw 1 card.",
+      "cost": 2
+    },
+    {
+      "id": "whole_horizon",
+      "name": "Whole Horizon",
+      "kind": "attack",
+      "damage": 14,
+      "heal": 4,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 2,
+      "unlock": 3,
+      "art": 0,
+      "description": "Deal 14 damage. Restore 4 hull. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 2
+    },
+    {
+      "id": "unbroken_song",
+      "name": "Unbroken Song",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 12,
+      "vent": 2,
+      "draw": 1,
+      "disrupt": 0,
+      "link": true,
+      "rarity": 2,
+      "unlock": 3,
+      "art": 19,
+      "description": "Restore 12 hull. Cool every organ by 2 before routing. Draw 1 card. Restore all severed links; connect the first and last routed organs for this combat.",
+      "cost": 2
+    },
+    {
+      "id": "margin_knife",
+      "name": "Margin Knife",
+      "kind": "attack",
+      "damage": 8,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Deal 8 damage. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "pale_patch",
+      "name": "Pale Patch",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 6,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Restore 6 hull. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "carbon_breath",
+      "name": "Carbon Breath",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Cool every organ by 1 before routing. Draw 1 card. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "first_draft",
+      "name": "First Draft",
+      "kind": "attack",
+      "damage": 6,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 2,
+      "description": "Deal 6 damage. Gain 2 Trace, up to 6."
+    },
+    {
+      "id": "ghost_line",
+      "name": "Ghost Line",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 2,
+      "disrupt": 0,
+      "link": true,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Draw 2 cards. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "revision_spike",
+      "name": "Revision Spike",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "description": "Deal 12 damage."
+    },
+    {
+      "id": "vellum_shield",
+      "name": "Vellum Shield",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 4,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 1,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Restore 4 hull. Apply 1 disruption this enemy phase. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "cut_sentence",
+      "name": "Cut Sentence",
+      "kind": "attack",
+      "damage": 7,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 2,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "description": "Deal 7 damage. Apply 2 disruption this enemy phase."
+    },
+    {
+      "id": "borrowed_dawn",
+      "name": "Borrowed Dawn",
+      "kind": "attack",
+      "damage": 8,
+      "heal": 3,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "rewrite": true,
+      "description": "Deal 8 damage. Restore 3 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down."
+    },
+    {
+      "id": "ink_well",
+      "name": "Ink Well",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 2,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 2,
+      "description": "Cool every organ by 2 before routing. Gain 2 Trace, up to 6."
+    },
+    {
+      "id": "overwrite",
+      "name": "Overwrite",
+      "kind": "attack",
+      "damage": 6,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "rewrite": true,
+      "description": "Deal 6 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down."
+    },
+    {
+      "id": "scar_note",
+      "name": "Scar Note",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 8,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Restore 8 hull. Cool every organ by 1 before routing. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "lost_paragraph",
+      "name": "Lost Paragraph",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 3,
+      "link": false,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 1,
+      "description": "Draw 1 card. Apply 3 disruption this enemy phase. Gain 1 Trace, up to 6."
+    },
+    {
+      "id": "double_exposure",
+      "name": "Double Exposure",
+      "kind": "attack",
+      "damage": 9,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "rewrite": true,
+      "description": "Deal 9 damage. Draw 1 card. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down."
+    },
+    {
+      "id": "final_revision",
+      "name": "Final Revision",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "rewrite": true,
+      "description": "Deal 12 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down."
+    },
+    {
+      "id": "memory_lattice",
+      "name": "Memory Lattice",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 6,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 2,
+      "description": "Restore 6 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Trace, up to 6."
+    },
+    {
+      "id": "blank_page",
+      "name": "Blank Page",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 2,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "trace": 2,
+      "description": "Cool every organ by 2 before routing. Draw 1 card. Gain 2 Trace, up to 6."
+    },
+    {
+      "id": "second_history",
+      "name": "Second History",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 9,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "palimpsest",
+      "rewrite": true,
+      "description": "Restore 9 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down."
+    },
+    {
+      "id": "choral_bolt",
+      "name": "Choral Bolt",
+      "kind": "attack",
+      "damage": 8,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "description": "Deal 8 damage."
+    },
+    {
+      "id": "warm_refrain",
+      "name": "Warm Refrain",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 6,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Restore 6 hull. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "silent_measure",
+      "name": "Silent Measure",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Cool every organ by 1 before routing. Draw 1 card. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "call_and_response",
+      "name": "Call and Response",
+      "kind": "attack",
+      "damage": 6,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Deal 6 damage. Draw 1 card. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "tuning_fork",
+      "name": "Tuning Fork",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 2,
+      "link": false,
+      "cost": 1,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Apply 2 disruption this enemy phase. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "bright_canon",
+      "name": "Bright Canon",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 0,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "concert": true,
+      "description": "Deal 12 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent."
+    },
+    {
+      "id": "breath_between",
+      "name": "Breath Between",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 4,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Restore 4 hull. Cool every organ by 1 before routing. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "dissonant_edge",
+      "name": "Dissonant Edge",
+      "kind": "attack",
+      "damage": 7,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 2,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "description": "Deal 7 damage. Apply 2 disruption this enemy phase."
+    },
+    {
+      "id": "shared_pulse",
+      "name": "Shared Pulse",
+      "kind": "attack",
+      "damage": 6,
+      "heal": 3,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Deal 6 damage. Restore 3 hull. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "counterpoint",
+      "name": "Counterpoint",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 0,
+      "draw": 2,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Draw 2 cards. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "crescendo",
+      "name": "Crescendo",
+      "kind": "attack",
+      "damage": 10,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "concert": true,
+      "description": "Deal 10 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent."
+    },
+    {
+      "id": "hushed_chord",
+      "name": "Hushed Chord",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 1,
+      "draw": 0,
+      "disrupt": 3,
+      "link": false,
+      "cost": 1,
+      "rarity": 1,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Cool every organ by 1 before routing. Apply 3 disruption this enemy phase. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "orbital_round",
+      "name": "Orbital Round",
+      "kind": "attack",
+      "damage": 9,
+      "heal": 0,
+      "vent": 0,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "description": "Deal 9 damage. Draw 1 card."
+    },
+    {
+      "id": "harmonic_bridge",
+      "name": "Harmonic Bridge",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 5,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Restore 5 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "grand_concert",
+      "name": "Grand Concert",
+      "kind": "attack",
+      "damage": 12,
+      "heal": 4,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "concert": true,
+      "description": "Deal 12 damage. Restore 4 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent."
+    },
+    {
+      "id": "resonant_shell",
+      "name": "Resonant Shell",
+      "kind": "repair",
+      "damage": 0,
+      "heal": 7,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": false,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 2,
+      "description": "Restore 7 hull. Gain 2 Resonance, up to 3."
+    },
+    {
+      "id": "rest_note",
+      "name": "Rest Note",
+      "kind": "utility",
+      "damage": 0,
+      "heal": 0,
+      "vent": 2,
+      "draw": 1,
+      "disrupt": 0,
+      "link": false,
+      "cost": 1,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "resonance": 1,
+      "description": "Cool every organ by 2 before routing. Draw 1 card. Gain 1 Resonance, up to 3."
+    },
+    {
+      "id": "unison",
+      "name": "Unison",
+      "kind": "attack",
+      "damage": 10,
+      "heal": 0,
+      "vent": 0,
+      "draw": 0,
+      "disrupt": 0,
+      "link": true,
+      "cost": 2,
+      "rarity": 2,
+      "unlock": 0,
+      "art": 19,
+      "character": "hollow_choir",
+      "concert": true,
+      "description": "Deal 10 damage. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent."
+    }
+  ],
+  "powerups": [
+    {
+      "id": "amber_sight",
+      "name": "Amber Sight",
+      "effect": "damage",
+      "value": 2,
+      "description": "Commands that deal damage gain 2 damage.",
+      "unlock": 0
+    },
+    {
+      "id": "soft_copper",
+      "name": "Soft Copper",
+      "effect": "heal",
+      "value": 2,
+      "description": "Commands that heal gain 2 healing.",
+      "unlock": 0
+    },
+    {
+      "id": "wide_lung",
+      "name": "Wide Lung",
+      "effect": "capacity",
+      "value": 1,
+      "description": "Increase every organ’s strain capacity by 1.",
+      "unlock": 0
+    },
+    {
+      "id": "winter_gland",
+      "name": "Winter Gland",
+      "effect": "cooling",
+      "value": 1,
+      "description": "Cool every organ by 1 additional strain at the end of each turn.",
+      "unlock": 0
+    },
+    {
+      "id": "second_eyelid",
+      "name": "Second Eyelid",
+      "effect": "draw",
+      "value": 1,
+      "description": "Draw 1 additional card in each combat’s opening hand.",
+      "unlock": 0
+    },
+    {
+      "id": "mourning_veil",
+      "name": "Mourning Veil",
+      "effect": "starting_ward",
+      "value": 8,
+      "description": "Begin each combat with 8 ward. Ward absorbs attack damage until the enemy phase ends.",
+      "unlock": 0
+    },
+    {
+      "id": "carrion_grace",
+      "name": "Carrion Grace",
+      "effect": "kill_heal",
+      "value": 2,
+      "description": "Restore 2 hull whenever an enemy dies.",
+      "unlock": 0
+    },
+    {
+      "id": "brass_tithe",
+      "name": "Brass Tithe",
+      "effect": "salvage",
+      "value": 6,
+      "description": "Gain 6 additional salvage after each combat.",
+      "unlock": 0
+    },
+    {
+      "id": "first_light",
+      "name": "First Light",
+      "effect": "first_damage",
+      "value": 5,
+      "description": "The first command of each turn gains 5 damage if it deals damage.",
+      "unlock": 0
+    },
+    {
+      "id": "hermit_knot",
+      "name": "Hermit Knot",
+      "effect": "short_route",
+      "value": 4,
+      "description": "Commands routed through exactly 1 organ gain 4 damage if they deal damage.",
+      "unlock": 0
+    },
+    {
+      "id": "pilgrim_spine",
+      "name": "Pilgrim Spine",
+      "effect": "long_route",
+      "value": 4,
+      "description": "Commands routed through 3 organs gain 4 damage if they deal damage.",
+      "unlock": 0
+    },
+    {
+      "id": "velvet_tongue",
+      "name": "Velvet Tongue",
+      "effect": "disrupt",
+      "value": 1,
+      "description": "Commands that apply disruption apply 1 additional disruption.",
+      "unlock": 0
+    },
+    {
+      "id": "echo_pearl",
+      "name": "Echo Pearl",
+      "effect": "echo",
+      "value": 1,
+      "description": "A damaging command routed through Echo, Recall or Crescendo gains 1 additional damage.",
+      "unlock": 0
+    },
+    {
+      "id": "forked_rib",
+      "name": "Forked Rib",
+      "effect": "fork",
+      "value": 1,
+      "description": "Split commands deal 1 additional damage to each secondary enemy.",
+      "unlock": 0
+    },
+    {
+      "id": "patient_heart",
+      "name": "Patient Heart",
+      "effect": "repair_after",
+      "value": 2,
+      "description": "Restore 2 hull after each combat.",
+      "unlock": 0
+    },
+    {
+      "id": "many_pockets",
+      "name": "Many Pockets",
+      "effect": "reward_choices",
+      "value": 1,
+      "description": "Combat rewards offer 1 additional card choice.",
+      "unlock": 1
+    },
+    {
+      "id": "old_favour",
+      "name": "Old Favour",
+      "effect": "shop_discount",
+      "value": 20,
+      "description": "Shop prices are reduced by 20 percent.",
+      "unlock": 2
+    },
+    {
+      "id": "buried_dawn",
+      "name": "Buried Dawn",
+      "effect": "emergency",
+      "value": 20,
+      "description": "Once per combat, survive lethal damage with 20 hull.",
+      "unlock": 3
+    }
+  ],
+  "enemies": [
+    {
+      "id": "cinder_mite",
+      "name": "Cinder Mite",
+      "region": 0,
+      "role": "regular",
+      "hp": 70,
+      "art": 1,
+      "description": "A coal with too many legs.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 5,
+          "label": "Bite · 5 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 2,
+          "label": "Soot · add 2 strain before cooling to 2 organs"
+        }
+      ]
+    },
+    {
+      "id": "lantern_eel",
+      "name": "Lantern Eel",
+      "region": 0,
+      "role": "regular",
+      "hp": 84,
+      "art": 2,
+      "description": "It mistakes the ship for a warmer star.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 7,
+          "label": "Arc · 7 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 5,
+          "label": "Afterglow · 5 damage"
+        }
+      ]
+    },
+    {
+      "id": "ash_cantor",
+      "name": "Ash Cantor",
+      "region": 0,
+      "role": "regular",
+      "hp": 96,
+      "art": 3,
+      "description": "A small voice in the dead sun’s throat.",
+      "pattern": [
+        {
+          "kind": "strain",
+          "amount": 3,
+          "label": "Dry hymn · add 2 strain before cooling to 3 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Cough · 9 damage"
+        }
+      ]
+    },
+    {
+      "id": "ribbon_leech",
+      "name": "Ribbon Leech",
+      "region": 0,
+      "role": "regular",
+      "hp": 80,
+      "art": 4,
+      "description": "It feeds where the ship joins itself.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Unstitch · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Drink · 8 damage"
+        }
+      ]
+    },
+    {
+      "id": "kiln_shepherd",
+      "name": "Kiln Shepherd",
+      "region": 0,
+      "role": "elite",
+      "hp": 220,
+      "art": 5,
+      "description": "It tends the heat that should have died.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Brand · 10 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Kiln breath · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Crook · 9 damage"
+        }
+      ]
+    },
+    {
+      "id": "unhatched_sun",
+      "name": "The Unhatched Sun",
+      "region": 0,
+      "role": "boss",
+      "hp": 300,
+      "art": 6,
+      "description": "A dawn still inside its shell. Its eggs hatch after two enemy phases.",
+      "pattern": [
+        {
+          "kind": "incubate",
+          "amount": 1,
+          "label": "Lay an egg · 14 hull; hatches in 2 phases"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Corona · 10 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 3,
+          "label": "Fever · add 2 strain before cooling to 3 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Shellfall · 9 damage"
+        }
+      ]
+    },
+    {
+      "id": "toll_scrap",
+      "name": "Toll Scrap",
+      "region": 1,
+      "role": "regular",
+      "hp": 96,
+      "art": 7,
+      "description": "A customs post that learned to drift.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Tariff · 8 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Fine · 11 damage"
+        }
+      ]
+    },
+    {
+      "id": "rivet_widow",
+      "name": "Rivet Widow",
+      "region": 1,
+      "role": "regular",
+      "hp": 106,
+      "art": 8,
+      "description": "She carries a nest of abandoned fasteners.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Unpin · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 12,
+          "label": "Rivet rain · 12 damage"
+        }
+      ]
+    },
+    {
+      "id": "choir_of_bolts",
+      "name": "Choir of Bolts",
+      "region": 1,
+      "role": "regular",
+      "hp": 116,
+      "art": 9,
+      "description": "Each bolt remembers a different ship.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Dissonance · 10 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 3,
+          "label": "Resonance · add 2 strain before cooling to 3 organs"
+        }
+      ]
+    },
+    {
+      "id": "debt_skiff",
+      "name": "Debt Skiff",
+      "region": 1,
+      "role": "regular",
+      "hp": 110,
+      "art": 10,
+      "description": "Its ledger names the living as salvage.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 13,
+          "label": "Collection · 13 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Interest · 8 damage"
+        }
+      ]
+    },
+    {
+      "id": "magistrate_hulk",
+      "name": "Magistrate Hulk",
+      "region": 1,
+      "role": "elite",
+      "hp": 300,
+      "art": 11,
+      "description": "An old verdict wrapped in newer wreckage.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 13,
+          "label": "Gavel · 13 damage"
+        },
+        {
+          "kind": "rebuild",
+          "amount": 12,
+          "label": "Refit · heal every allied enemy by 12"
+        },
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Adjourn · sever 1 link for the round"
+        }
+      ]
+    },
+    {
+      "id": "salvage_parliament",
+      "name": "The Salvage Parliament",
+      "region": 1,
+      "role": "boss",
+      "hp": 440,
+      "art": 12,
+      "description": "Attendants keep its endless session. The assembly rebuilds its members.",
+      "pattern": [
+        {
+          "kind": "rebuild",
+          "amount": 18,
+          "label": "Ratify repairs · heal every allied enemy by 18"
+        },
+        {
+          "kind": "attack",
+          "amount": 13,
+          "label": "Censure · 13 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Roll call · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 12,
+          "label": "Division · 12 damage"
+        }
+      ]
+    },
+    {
+      "id": "glass_auditor",
+      "name": "Glass Auditor",
+      "region": 2,
+      "role": "regular",
+      "hp": 120,
+      "art": 13,
+      "description": "It checks the ship against an impossible original.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 5,
+          "label": "Annotate · repeating the last route costs 5 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Correction · 11 damage"
+        }
+      ]
+    },
+    {
+      "id": "absence_kite",
+      "name": "Absence Kite",
+      "region": 2,
+      "role": "regular",
+      "hp": 114,
+      "art": 14,
+      "description": "A hole held open by a graceful frame.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Erase · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 14,
+          "label": "Vacuum · 14 damage"
+        }
+      ]
+    },
+    {
+      "id": "mirror_orphan",
+      "name": "Mirror Orphan",
+      "region": 2,
+      "role": "regular",
+      "hp": 130,
+      "art": 15,
+      "description": "It wants the face the ship left behind.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 16,
+          "label": "Recognition · 16 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Denial · 11 damage"
+        }
+      ]
+    },
+    {
+      "id": "pale_index",
+      "name": "Pale Index",
+      "region": 2,
+      "role": "regular",
+      "hp": 140,
+      "art": 16,
+      "description": "Every lost voyage has a page in it.",
+      "pattern": [
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Catalogue · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 13,
+          "label": "Redaction · 13 damage"
+        }
+      ]
+    },
+    {
+      "id": "null_archivist",
+      "name": "Null Archivist",
+      "region": 2,
+      "role": "elite",
+      "hp": 380,
+      "art": 17,
+      "description": "The last librarian burns the paths between shelves.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 7,
+          "label": "Record · repeating the last route costs 7 hull"
+        },
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Seal · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 16,
+          "label": "Close the book · 16 damage"
+        }
+      ]
+    },
+    {
+      "id": "witness_array",
+      "name": "The Witness Array",
+      "region": 2,
+      "role": "boss",
+      "hp": 560,
+      "art": 18,
+      "description": "It remembers each route, then cuts the links that made it possible.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 8,
+          "label": "Witness · repeating the last route costs 8 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 16,
+          "label": "Testimony · 16 damage"
+        },
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Sever · disable 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 14,
+          "label": "Rebuttal · 14 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 5,
+          "label": "Cross-examine · add 2 strain before cooling to 5 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 16,
+          "label": "Final testimony · 16 damage"
+        }
+      ]
+    },
+    {
+      "id": "pollen_drone",
+      "name": "Pollen Drone",
+      "region": 3,
+      "role": "regular",
+      "hp": 74,
+      "art": 19,
+      "description": "A small engine carrying too much spring.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 7,
+          "label": "Pollen lance · 7 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 2,
+          "label": "Seed dust · add 2 strain before cooling to 2 organs"
+        }
+      ]
+    },
+    {
+      "id": "graft_stalker",
+      "name": "Graft Stalker",
+      "region": 3,
+      "role": "regular",
+      "hp": 82,
+      "art": 19,
+      "description": "Roots search for the seams in your hull.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Take root · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Graft · 9 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 6,
+          "label": "Tendril · 6 damage"
+        }
+      ]
+    },
+    {
+      "id": "sap_collector",
+      "name": "Sap Collector",
+      "region": 3,
+      "role": "regular",
+      "hp": 88,
+      "art": 19,
+      "description": "It counts every drop that escapes.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Tap · 8 damage"
+        },
+        {
+          "kind": "rebuild",
+          "amount": 6,
+          "label": "Sap wash · heal every allied enemy by 6"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Press · 8 damage"
+        }
+      ]
+    },
+    {
+      "id": "thorn_canticle",
+      "name": "Thorn Canticle",
+      "region": 3,
+      "role": "regular",
+      "hp": 92,
+      "art": 19,
+      "description": "A flower that learned the shape of a weapon.",
+      "pattern": [
+        {
+          "kind": "strain",
+          "amount": 3,
+          "label": "Bloom · add 2 strain before cooling to 3 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Thornfall · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "orchard_titan",
+      "name": "Orchard Titan",
+      "region": 3,
+      "role": "elite",
+      "hp": 220,
+      "art": 19,
+      "description": "A wandering orchard of scarred metal.",
+      "pattern": [
+        {
+          "kind": "rebuild",
+          "amount": 12,
+          "label": "Regrow · heal every allied enemy by 12"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Bough · 11 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Root pressure · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Harvest · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "root_of_all_suns",
+      "name": "The Root of All Suns",
+      "region": 3,
+      "role": "boss",
+      "hp": 300,
+      "art": 19,
+      "description": "Its roots repair what its captive sun burns.",
+      "pattern": [
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Entangle · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Solar sap · 11 damage"
+        },
+        {
+          "kind": "rebuild",
+          "amount": 16,
+          "label": "Germinate · heal every allied enemy by 16"
+        },
+        {
+          "kind": "attack",
+          "amount": 12,
+          "label": "Root flare · 12 damage"
+        }
+      ]
+    },
+    {
+      "id": "index_ray",
+      "name": "Index Ray",
+      "region": 4,
+      "role": "regular",
+      "hp": 72,
+      "art": 19,
+      "description": "Its fins turn like unnumbered pages.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 3,
+          "label": "Index · repeating the last route costs 3 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Page edge · 8 damage"
+        }
+      ]
+    },
+    {
+      "id": "undertow_scribe",
+      "name": "Undertow Scribe",
+      "region": 4,
+      "role": "regular",
+      "hp": 84,
+      "art": 19,
+      "description": "It writes with the pull of a dark tide.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 7,
+          "label": "Drag · 7 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 3,
+          "label": "Gravity ink · add 2 strain before cooling to 3 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Undertow · 9 damage"
+        }
+      ]
+    },
+    {
+      "id": "folio_leviathan",
+      "name": "Folio Leviathan",
+      "region": 4,
+      "role": "regular",
+      "hp": 96,
+      "art": 19,
+      "description": "A library bound in one enormous spine.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Binding · 10 damage"
+        },
+        {
+          "kind": "rebuild",
+          "amount": 5,
+          "label": "Rebind · heal every allied enemy by 5"
+        }
+      ]
+    },
+    {
+      "id": "gravity_moth",
+      "name": "Gravity Moth",
+      "region": 4,
+      "role": "regular",
+      "hp": 78,
+      "art": 19,
+      "description": "Its wings fold the shortest paths shut.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 2,
+          "label": "Fold · sever 2 links for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Weight · 8 damage"
+        }
+      ]
+    },
+    {
+      "id": "keeper_of_depths",
+      "name": "Keeper of the Depths",
+      "region": 4,
+      "role": "elite",
+      "hp": 220,
+      "art": 19,
+      "description": "Every lost course returns to its shelves.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 5,
+          "label": "Record · repeating the last route costs 5 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Pressure · 11 damage"
+        },
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Seal shelf · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Deep water · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "drowned_catalogue",
+      "name": "The Drowned Catalogue",
+      "region": 4,
+      "role": "boss",
+      "hp": 300,
+      "art": 19,
+      "description": "The archive repeats your routes in a voice deeper than sound.",
+      "pattern": [
+        {
+          "kind": "mark",
+          "amount": 6,
+          "label": "Remember · repeating the last route costs 6 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Black tide · 11 damage"
+        },
+        {
+          "kind": "rebuild",
+          "amount": 14,
+          "label": "Restore record · heal every allied enemy by 14"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Closing volume · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "spark_knight",
+      "name": "Spark Knight",
+      "region": 5,
+      "role": "regular",
+      "hp": 80,
+      "art": 19,
+      "description": "A bright oath in a hollow suit of armor.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Challenge · 9 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 7,
+          "label": "Riposte · 7 damage"
+        }
+      ]
+    },
+    {
+      "id": "corona_wisp",
+      "name": "Corona Wisp",
+      "region": 5,
+      "role": "regular",
+      "hp": 70,
+      "art": 19,
+      "description": "It dances wherever a current breaks.",
+      "pattern": [
+        {
+          "kind": "strain",
+          "amount": 2,
+          "label": "Static · add 2 strain before cooling to 2 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Arc · 8 damage"
+        },
+        {
+          "kind": "attack",
+          "amount": 7,
+          "label": "Return stroke · 7 damage"
+        }
+      ]
+    },
+    {
+      "id": "storm_kite",
+      "name": "Storm Kite",
+      "region": 5,
+      "role": "regular",
+      "hp": 86,
+      "art": 19,
+      "description": "Thin wings catch the lightning between ships.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 1,
+          "label": "Snip · sever 1 link for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Thunderline · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "arc_herald",
+      "name": "Arc Herald",
+      "region": 5,
+      "role": "regular",
+      "hp": 90,
+      "art": 19,
+      "description": "Every announcement arrives as a strike.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 8,
+          "label": "Proclamation · 8 damage"
+        },
+        {
+          "kind": "mark",
+          "amount": 3,
+          "label": "Oath · repeating the last route costs 3 hull"
+        },
+        {
+          "kind": "attack",
+          "amount": 9,
+          "label": "Echoing oath · 9 damage"
+        }
+      ]
+    },
+    {
+      "id": "thunder_regent",
+      "name": "Thunder Regent",
+      "region": 5,
+      "role": "elite",
+      "hp": 220,
+      "art": 19,
+      "description": "The crown’s last servant refuses to kneel.",
+      "pattern": [
+        {
+          "kind": "attack",
+          "amount": 12,
+          "label": "Scepter · 12 damage"
+        },
+        {
+          "kind": "sever",
+          "amount": 2,
+          "label": "Divide · sever 2 links for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 10,
+          "label": "Judgment · 10 damage"
+        }
+      ]
+    },
+    {
+      "id": "crown_unbound",
+      "name": "The Crown Unbound",
+      "region": 5,
+      "role": "boss",
+      "hp": 300,
+      "art": 19,
+      "description": "No circuit can hold its storm for long.",
+      "pattern": [
+        {
+          "kind": "sever",
+          "amount": 2,
+          "label": "Shatter crown · sever 2 links for the round"
+        },
+        {
+          "kind": "attack",
+          "amount": 12,
+          "label": "Royal thunder · 12 damage"
+        },
+        {
+          "kind": "strain",
+          "amount": 4,
+          "label": "Coronation · add 2 strain before cooling to 4 organs"
+        },
+        {
+          "kind": "attack",
+          "amount": 11,
+          "label": "Unbound arc · 11 damage"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "warm_wreck",
+      "name": "A Warm Wreck",
+      "region": -1,
+      "text": "Something inside the wreck still beats. It has enough warmth for one more traveller.",
+      "choices": [
+        {
+          "label": "Rest against the hull",
+          "detail": "Restore 18 hull.",
+          "effect": "heal",
+          "value": 18
+        },
+        {
+          "label": "Strip the warm metal",
+          "detail": "Gain 22 salvage.",
+          "effect": "salvage",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "id": "thorn_orchard",
+      "name": "The Thorn Orchard",
+      "region": -1,
+      "text": "A garden of antennae catches your wake. Bright salvage hangs between the thorns.",
+      "choices": [
+        {
+          "label": "Reach between the thorns",
+          "detail": "Lose 10 hull; gain 35 salvage.",
+          "effect": "hurt_salvage",
+          "value": 35
+        },
+        {
+          "label": "Gather fallen fruit",
+          "detail": "Gain 12 salvage.",
+          "effect": "salvage",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "id": "drifting_chapel",
+      "name": "Drifting Chapel",
+      "region": -1,
+      "text": "The chapel’s little machines still answer visitors. Each blessing has a shape.",
+      "choices": [
+        {
+          "label": "Take a small blessing",
+          "detail": "Receive 1 powerup.",
+          "effect": "powerup",
+          "value": 1
+        },
+        {
+          "label": "Copy the liturgy",
+          "detail": "Receive 1 card.",
+          "effect": "card",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "unwritten_chart",
+      "name": "The Unwritten Chart",
+      "region": -1,
+      "text": "The chart has no stars, only the outline of your ship. A line is waiting for your hand.",
+      "choices": [
+        {
+          "label": "Sharpen a known course",
+          "detail": "Choose 1 deck card to upgrade.",
+          "effect": "upgrade",
+          "value": 1
+        },
+        {
+          "label": "Erase an old course",
+          "detail": "Choose 1 deck card to remove.",
+          "effect": "remove",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "bone_dock",
+      "name": "The Bone Dock",
+      "region": -1,
+      "text": "A patient dock unfolds its tools. The price list is etched into a rib.",
+      "choices": [
+        {
+          "label": "Pay for repairs",
+          "detail": "Pay 25 salvage; restore 35 hull.",
+          "effect": "repair_trade",
+          "value": 25
+        },
+        {
+          "label": "Sell a piece of the hull",
+          "detail": "Reduce maximum hull by 8; receive 1 powerup.",
+          "effect": "capacity_trade",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "id": "small_beacon",
+      "name": "The Small Beacon",
+      "region": -1,
+      "text": "A beacon broadcasts the sound of a safe harbour. Its supply compartment is still sealed.",
+      "choices": [
+        {
+          "label": "Open the supply compartment",
+          "detail": "Gain 20 salvage.",
+          "effect": "salvage",
+          "value": 20
+        },
+        {
+          "label": "Stay for the broadcast",
+          "detail": "Restore 14 hull.",
+          "effect": "heal",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "id": "shell_choir",
+      "name": "The Shell Choir",
+      "region": 0,
+      "text": "Empty eggs sing when your engines pass. One note makes the old wounds close.",
+      "choices": [
+        {
+          "label": "Hold the note",
+          "detail": "Restore 22 hull.",
+          "effect": "heal",
+          "value": 22
+        },
+        {
+          "label": "Carry an echo onward",
+          "detail": "Receive 1 card.",
+          "effect": "card",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "coal_midwife",
+      "name": "The Coal Midwife",
+      "region": 0,
+      "text": "A figure of soot offers a seed cupped in both hands. Her other hand points to your hull.",
+      "choices": [
+        {
+          "label": "Accept the seed",
+          "detail": "Reduce maximum hull by 8; receive 1 powerup.",
+          "effect": "capacity_trade",
+          "value": 8
+        },
+        {
+          "label": "Take a cooling rest",
+          "detail": "Restore 16 hull.",
+          "effect": "heal",
+          "value": 16
+        }
+      ]
+    },
+    {
+      "id": "minority_report",
+      "name": "The Minority Report",
+      "region": 1,
+      "text": "A dissenting machine slips a page beneath your airlock. Its argument is brief and useful.",
+      "choices": [
+        {
+          "label": "Adopt the amendment",
+          "detail": "Choose 1 deck card to upgrade.",
+          "effect": "upgrade",
+          "value": 1
+        },
+        {
+          "label": "Sell the testimony",
+          "detail": "Gain 28 salvage.",
+          "effect": "salvage",
+          "value": 28
+        }
+      ]
+    },
+    {
+      "id": "orphan_foundry",
+      "name": "The Orphan Foundry",
+      "region": 1,
+      "text": "The workers are gone. A single press still stamps tools for ships it will never see.",
+      "choices": [
+        {
+          "label": "Catch a falling tool",
+          "detail": "Lose 10 hull; gain 40 salvage.",
+          "effect": "hurt_salvage",
+          "value": 40
+        },
+        {
+          "label": "Take the finished instrument",
+          "detail": "Receive 1 powerup.",
+          "effect": "powerup",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "blind_observatory",
+      "name": "The Blind Observatory",
+      "region": 2,
+      "text": "Every telescope points inward. In the dark glass, a familiar command looks unnecessary.",
+      "choices": [
+        {
+          "label": "Leave that command behind",
+          "detail": "Choose 1 deck card to remove.",
+          "effect": "remove",
+          "value": 1
+        },
+        {
+          "label": "Read the remaining stars",
+          "detail": "Receive 1 card.",
+          "effect": "card",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "last_address",
+      "name": "The Last Address",
+      "region": 2,
+      "text": "A letter waits at the edge of the array. It is addressed to the ship you might become.",
+      "choices": [
+        {
+          "label": "Read it slowly",
+          "detail": "Restore 25 hull.",
+          "effect": "heal",
+          "value": 25
+        },
+        {
+          "label": "Trace the handwriting",
+          "detail": "Choose 1 deck card to upgrade.",
+          "effect": "upgrade",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "open_seed",
+      "name": "The Open Seed",
+      "region": 3,
+      "text": "A seed engine has rooted inside an empty repair cradle.",
+      "choices": [
+        {
+          "label": "Rest within the roots",
+          "detail": "Restore 20 hull.",
+          "effect": "heal",
+          "value": 20
+        },
+        {
+          "label": "Carry a seed onward",
+          "detail": "Receive 1 powerup.",
+          "effect": "powerup",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "copper_orchard",
+      "name": "The Copper Orchard",
+      "region": 3,
+      "text": "Ripe conductors hang from a forest of silent coils.",
+      "choices": [
+        {
+          "label": "Gather the conductors",
+          "detail": "Gain 24 salvage.",
+          "effect": "salvage",
+          "value": 24
+        },
+        {
+          "label": "Prune an old branch",
+          "detail": "Choose 1 deck card to remove.",
+          "effect": "remove",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "unclaimed_volume",
+      "name": "The Unclaimed Volume",
+      "region": 4,
+      "text": "A dry book floats in the deepest current. Its pages remember a command you have not learned.",
+      "choices": [
+        {
+          "label": "Read the unclaimed page",
+          "detail": "Receive 1 card.",
+          "effect": "card",
+          "value": 1
+        },
+        {
+          "label": "Study your own annotation",
+          "detail": "Choose 1 deck card to upgrade.",
+          "effect": "upgrade",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "quiet_shelf",
+      "name": "The Quiet Shelf",
+      "region": 4,
+      "text": "Between the moving shelves, the current leaves one little pocket of stillness.",
+      "choices": [
+        {
+          "label": "Let the hull settle",
+          "detail": "Restore 18 hull.",
+          "effect": "heal",
+          "value": 18
+        },
+        {
+          "label": "Take the library’s offering",
+          "detail": "Gain 22 salvage.",
+          "effect": "salvage",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "id": "fallen_diadam",
+      "name": "The Fallen Diadem",
+      "region": 5,
+      "text": "A broken conductor-ring still holds a little charge.",
+      "choices": [
+        {
+          "label": "Take the charged fragment",
+          "detail": "Receive 1 powerup.",
+          "effect": "powerup",
+          "value": 1
+        },
+        {
+          "label": "Trade away its weight",
+          "detail": "Gain 24 salvage.",
+          "effect": "salvage",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "id": "storm_shelter",
+      "name": "The Storm Shelter",
+      "region": 5,
+      "text": "An old beacon grounds the storm long enough for a small repair.",
+      "choices": [
+        {
+          "label": "Pay the beacon keeper",
+          "detail": "Pay 25 salvage; restore 35 hull.",
+          "effect": "repair_trade",
+          "value": 25
+        },
+        {
+          "label": "Learn the beacon’s rhythm",
+          "detail": "Choose 1 deck card to upgrade.",
+          "effect": "upgrade",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "id": "cinder_cradle",
+      "name": "Cradle of Embers",
+      "subtitle": "Where the dead stars nest",
+      "color": "#e6aa70",
+      "boss": "unhatched_sun",
+      "description": "Warm ash gathers around a sun that has not decided to be born. Small scavengers drink the light leaking through its shell."
+    },
+    {
+      "id": "brass_estuary",
+      "name": "The Choir of Wrecks",
+      "subtitle": "Every wreck has a vote",
+      "color": "#85c8b6",
+      "boss": "salvage_parliament",
+      "description": "Broken vessels drift into a slow river of metal. Their pieces convene beneath a parliament that refuses to adjourn."
+    },
+    {
+      "id": "pale_aperture",
+      "name": "The Glass Beyond",
+      "subtitle": "Nothing passes unwitnessed",
+      "color": "#b4a8e4",
+      "boss": "witness_array",
+      "description": "Cold instruments measure the distance between a ship and its reflection. The final witness remembers every path you take."
+    },
+    {
+      "id": "verdant_engine",
+      "name": "The Verdant Engine",
+      "subtitle": "Life grows around the machinery",
+      "color": "#8fce9b",
+      "boss": "root_of_all_suns",
+      "description": "Copper roots and luminous pollen thread through abandoned engines. At their center, a living root grips a captive sun."
+    },
+    {
+      "id": "tidal_archive",
+      "name": "The Tidal Archive",
+      "subtitle": "The deep remembers every voyage",
+      "color": "#8fb7d9",
+      "boss": "drowned_catalogue",
+      "description": "Gravity folds drowned shelves into an abyssal library. Its records drift on tides that pull every visitor toward a watching eye."
+    },
+    {
+      "id": "crown_of_storms",
+      "name": "The Crown of Storms",
+      "subtitle": "Every oath becomes lightning",
+      "color": "#c5a1e5",
+      "boss": "crown_unbound",
+      "description": "A broken ring of conductive spires draws lightning from the nebula. The storm chooses no ruler for long."
+    }
+  ],
+  "starting_deck": [
+    "needle",
+    "needle",
+    "needle",
+    "quiet_pulse",
+    "sun_splinter",
+    "hull_stitch",
+    "hull_stitch",
+    "cold_breath",
+    "cold_breath",
+    "graft_wire"
+  ],
+  "characters": [
+    {
+      "id": "cartographer",
+      "name": "The Cartographer",
+      "description": "A living circuit of six familiar organs. Order Lens, Fork and Echo to shape each command.",
+      "max_hull": 100,
+      "capacity": 3,
+      "cooling": 1,
+      "starting_deck": [
+        "needle",
+        "needle",
+        "needle",
+        "quiet_pulse",
+        "sun_splinter",
+        "hull_stitch",
+        "hull_stitch",
+        "cold_breath",
+        "cold_breath",
+        "graft_wire"
+      ],
+      "organs": [
+        {
+          "id": "lens",
+          "name": "The Lens",
+          "verb": "Focus",
+          "description": "Add 3 damage if this command already deals damage.",
+          "color": "#f5c874"
+        },
+        {
+          "id": "fork",
+          "name": "The Fork",
+          "verb": "Divide",
+          "description": "The command also deals half its damage to every other enemy.",
+          "color": "#f18e79"
+        },
+        {
+          "id": "echo",
+          "name": "The Echo",
+          "verb": "Resound",
+          "description": "Multiply damage and healing by 1.5, rounded down.",
+          "color": "#b8a3ef"
+        },
+        {
+          "id": "mend",
+          "name": "The Suture",
+          "verb": "Repair",
+          "description": "Add 1 healing to the command.",
+          "color": "#81cfac"
+        },
+        {
+          "id": "hush",
+          "name": "The Hush",
+          "verb": "Silence",
+          "description": "Add 2 disruption for this enemy phase. Combined disruption and redirection can prevent at most half of each attack.",
+          "color": "#7ac6d8"
+        },
+        {
+          "id": "prism",
+          "name": "The Prism",
+          "verb": "Refract",
+          "description": "Redirect up to 3 damage from the chosen enemy’s next attack to another living enemy this phase. Does not stack or work against a lone enemy. Combined defense caps at half an attack.",
+          "color": "#d6ace1"
+        }
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "id": "palimpsest",
+      "name": "The Palimpsest",
+      "description": "Build up to 6 Trace with inscription, then spend it to recall damage, repair, redact or rewrite half a previous base command. Trace lasts through combat.",
+      "max_hull": 96,
+      "capacity": 3,
+      "cooling": 1,
+      "starting_deck": [
+        "margin_knife",
+        "margin_knife",
+        "margin_knife",
+        "pale_patch",
+        "pale_patch",
+        "carbon_breath",
+        "first_draft",
+        "ghost_line",
+        "revision_spike",
+        "overwrite"
+      ],
+      "organs": [
+        {
+          "id": "scribe",
+          "name": "Scribe",
+          "verb": "Inscribe",
+          "description": "Gain 2 Trace, up to 6.",
+          "color": "#e7d9ba"
+        },
+        {
+          "id": "splice",
+          "name": "Splice",
+          "verb": "Splice",
+          "description": "At 2 or more Trace, split damage among other enemies at half strength. Otherwise add 2 damage to a damaging command.",
+          "color": "#9bd7da"
+        },
+        {
+          "id": "recall",
+          "name": "Recall",
+          "verb": "Recall",
+          "description": "For a damaging command, spend all Trace and add 2 damage per point spent.",
+          "color": "#d4bd83"
+        },
+        {
+          "id": "palimend",
+          "name": "Palimend",
+          "verb": "Restore",
+          "description": "Spend 1 Trace to add 2 healing. No effect without Trace.",
+          "color": "#b7d4b1"
+        },
+        {
+          "id": "redact",
+          "name": "Redact",
+          "verb": "Erase",
+          "description": "Spend 1 Trace to add 3 disruption this enemy phase; without Trace, add 1 disruption. Combined defense caps at half an attack.",
+          "color": "#a9bbc9"
+        },
+        {
+          "id": "rewrite",
+          "name": "Rewrite",
+          "verb": "Rewrite",
+          "description": "Spend 2 Trace to add half the previous command’s base damage, healing and disruption, rounded down. No effect below 2 Trace.",
+          "color": "#d7b9e1"
+        }
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "hollow_choir",
+      "name": "The Hollow Choir",
+      "description": "Alternate attack, repair and utility commands to gain Resonance, up to 3. Repeating a kind resets Resonance. Coordinate your organs, then spend Resonance on Crescendo, Cadence or Concert commands.",
+      "max_hull": 104,
+      "capacity": 3,
+      "cooling": 1,
+      "starting_deck": [
+        "choral_bolt",
+        "choral_bolt",
+        "choral_bolt",
+        "warm_refrain",
+        "warm_refrain",
+        "silent_measure",
+        "call_and_response",
+        "tuning_fork",
+        "bright_canon",
+        "hushed_chord"
+      ],
+      "organs": [
+        {
+          "id": "conductor",
+          "name": "Conductor",
+          "verb": "Conduct",
+          "description": "Gain 1 Resonance, up to 3, on the first command or when its kind differs from the previous command.",
+          "color": "#b7c4ef"
+        },
+        {
+          "id": "chorus",
+          "name": "Chorus",
+          "verb": "Gather",
+          "description": "At 2 or more Resonance, split damage among other enemies at half strength. Otherwise add 1 damage to a damaging command.",
+          "color": "#8cd5d7"
+        },
+        {
+          "id": "crescendo",
+          "name": "Crescendo",
+          "verb": "Rise",
+          "description": "Spend all Resonance. Add 2 damage per point to a damaging command, and 2 healing per point to a healing command.",
+          "color": "#e4b77b"
+        },
+        {
+          "id": "rest",
+          "name": "Rest",
+          "verb": "Breathe",
+          "description": "Repair and utility commands gain 1 healing and 1 Resonance, up to 3. Attack commands gain neither.",
+          "color": "#a3cdb9"
+        },
+        {
+          "id": "dissonance",
+          "name": "Dissonance",
+          "verb": "Unsettle",
+          "description": "Add 1 disruption plus your current Resonance this enemy phase. Combined defense caps at half an attack.",
+          "color": "#c8a5df"
+        },
+        {
+          "id": "cadence",
+          "name": "Cadence",
+          "verb": "Resolve",
+          "description": "Spend 2 Resonance to gain 3 ward. Cadence cannot raise ward above 3. No effect below 2 Resonance.",
+          "color": "#a3c5dc"
+        }
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          1
+        ]
+      ]
+    }
+  ]
+}

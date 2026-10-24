@@ -1,0 +1,175 @@
+{
+  "ships": {
+    "1": {
+      "path": "res://art/ships_hd/pair_01_02.png",
+      "rect": [
+        0,
+        0,
+        889,
+        887
+      ]
+    },
+    "2": {
+      "path": "res://art/ships_hd/pair_01_02.png",
+      "rect": [
+        889,
+        0,
+        885,
+        887
+      ]
+    },
+    "3": {
+      "path": "res://art/ships_hd/pair_03_04.png",
+      "rect": [
+        0,
+        0,
+        891,
+        887
+      ]
+    },
+    "4": {
+      "path": "res://art/ships_hd/pair_03_04.png",
+      "rect": [
+        891,
+        0,
+        883,
+        887
+      ]
+    },
+    "5": {
+      "path": "res://art/ships_hd/pair_05_06.png",
+      "rect": [
+        0,
+        0,
+        897,
+        887
+      ]
+    },
+    "6": {
+      "path": "res://art/ships_hd/pair_05_06.png",
+      "rect": [
+        897,
+        0,
+        877,
+        887
+      ]
+    },
+    "7": {
+      "path": "res://art/ships_hd/pair_07_08.png",
+      "rect": [
+        0,
+        0,
+        920,
+        887
+      ]
+    },
+    "8": {
+      "path": "res://art/ships_hd/pair_07_08.png",
+      "rect": [
+        920,
+        0,
+        854,
+        887
+      ]
+    },
+    "9": {
+      "path": "res://art/ships_hd/pair_09_10.png",
+      "rect": [
+        0,
+        0,
+        905,
+        887
+      ]
+    },
+    "10": {
+      "path": "res://art/ships_hd/pair_09_10.png",
+      "rect": [
+        905,
+        0,
+        869,
+        887
+      ]
+    },
+    "11": {
+      "path": "res://art/ships_hd/pair_11_12.png",
+      "rect": [
+        0,
+        0,
+        850,
+        887
+      ]
+    },
+    "12": {
+      "path": "res://art/ships_hd/pair_11_12.png",
+      "rect": [
+        850,
+        0,
+        924,
+        887
+      ]
+    },
+    "13": {
+      "path": "res://art/ships_hd/pair_13_14.png",
+      "rect": [
+        0,
+        0,
+        906,
+        887
+      ]
+    },
+    "14": {
+      "path": "res://art/ships_hd/pair_13_14.png",
+      "rect": [
+        906,
+        0,
+        868,
+        887
+      ]
+    },
+    "15": {
+      "path": "res://art/ships_hd/pair_15_16.png",
+      "rect": [
+        0,
+        0,
+        905,
+        887
+      ]
+    },
+    "16": {
+      "path": "res://art/ships_hd/pair_15_16.png",
+      "rect": [
+        905,
+        0,
+        869,
+        887
+      ]
+    },
+    "17": {
+      "path": "res://art/ships_hd/pair_17_18.png",
+      "rect": [
+        0,
+        0,
+        871,
+        887
+      ]
+    },
+    "18": {
+      "path": "res://art/ships_hd/pair_17_18.png",
+      "rect": [
+        871,
+        0,
+        903,
+        887
+      ]
+    },
+    "19": {
+      "path": "res://art/ships_hd/starseed.png",
+      "rect": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    }
+  }
+}

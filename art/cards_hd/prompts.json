@@ -1,0 +1,308 @@
+[
+  {
+    "sheet": 0,
+    "catalog_indices": [
+      0,
+      1
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Needle of Dawn: a long immaculate golden needle of light cuts diagonally above the sunrise of a dark planet.\nRIGHT SQUARE: Hull Stitch: close view of blue-black organic spaceship armor, torn plates being repaired by fine amber sutures and cyan energy in their cracks.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 1,
+    "catalog_indices": [
+      2,
+      3
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Cold Breath: a translucent blue frozen world wrapped in a fluid spiral of icy breath and delicate frost.\nRIGHT SQUARE: Quiet Pulse: a dark sphere suspended in a crimson nebula, a single thin cyan pulse crossing its equator.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 2,
+    "catalog_indices": [
+      4,
+      5
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Graft Wire: elegant amber and turquoise living wires braid between two broken crystalline ends.\nRIGHT SQUARE: Sun Splinter: a sharp upright amber crystal erupts from the cracked glowing edge of a tiny black sun.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 3,
+    "catalog_indices": [
+      6,
+      7
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Mercy Circuit: a radiant warm heart suspended inside delicate cyan and gold looping living circuitry.\nRIGHT SQUARE: Black Suture: a silver surgical needle pulls a purple luminous filament through cracked charcoal ship armor.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 4,
+    "catalog_indices": [
+      8,
+      9
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Spare Heartbeat: a jewel-like cyan mechanical heart glows inside an antique brass capsule, crisp internal valves and glass.\nRIGHT SQUARE: Frost Seam: a dark armored hull split by a branching icy blue crystalline fracture knitting itself closed.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 5,
+    "catalog_indices": [
+      10,
+      11
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Red Interval: a dark red planet encircled by a turbulent deep blue wake, crossed by one razor-thin red beam.\nRIGHT SQUARE: Wake Lance: a sleek long golden lance of light trailing graceful cyan wakes through deep navy space.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 6,
+    "catalog_indices": [
+      12,
+      13
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Glass Murmur: transparent violet shell-like membranes emit tiny overlapping circles of resonant light against a starfield.\nRIGHT SQUARE: Thread Cannon: an intricate brass and black organic cannon fires an intensely bright thin golden filament through space.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 7,
+    "catalog_indices": [
+      14,
+      15
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Mute Bell: a huge ancient cracked bronze bell floats silently in space, cyan inner rim and small broken debris.\nRIGHT SQUARE: Cold Psalm: a small ice-blue planet surrounded by six floating faceted ice crystals in a serene luminous orbit.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 8,
+    "catalog_indices": [
+      16,
+      17
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Salvage Hymn: shattered black and brass wreckage twists around a cyan stream of life-giving energy, a luminous current rebuilding fragments.\nRIGHT SQUARE: Votive Shard: a tall precisely faceted amber and rose crystal stands above a dark purple asteroid, glowing from within.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 9,
+    "catalog_indices": [
+      18,
+      19
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Mirror Cut: two elegant curved translucent violet blades cross around a bright white point in deep space.\nRIGHT SQUARE: Open Channel: two vertical cyan ring portals face one another across black space, a thin glittering stream joining their centers.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 10,
+    "catalog_indices": [
+      20,
+      21
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Scar Bridge: a graceful gold bridge grows between two broken dark rocky cliffs in space, a tiny sunrise at its center.\nRIGHT SQUARE: Winter Needle: a long crisp faceted icicle spear crosses diagonal dark space, surrounded by tiny sharp ice fragments.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 11,
+    "catalog_indices": [
+      22,
+      23
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Hollow Chorus: seven dark conical resonators form a ring around a hollow purple portal, their violet rims singing in a fine mist.\nRIGHT SQUARE: Seam of Light: a rugged black hull split by a very bright gold-white repaired seam, crisp veins of cyan at the edges.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 12,
+    "catalog_indices": [
+      24,
+      25
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Pilgrim Signal: a golden comet path curves around a dark planet toward three distinct beacon stars, one cyan, one gold, one white.\nRIGHT SQUARE: Long Hem: a flowing red and gold ribbon of solar matter threads through floating dark fragments like a living embroidered path.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 13,
+    "catalog_indices": [
+      26,
+      27
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Blue Refrain: a small intricate wire sphere at the center of several clean luminous blue orbital waves, musical rhythm expressed as light.\nRIGHT SQUARE: Last Match: a single small wooden-looking cosmic match flares into a dramatic gold-white starburst against black space.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 14,
+    "catalog_indices": [
+      28,
+      29
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: White Noise: a concentrated blue-white electrical bloom disrupts a thin red waveform stretching horizontally through deep navy space.\nRIGHT SQUARE: Star Chart: a delicate gold celestial sphere of fine connected constellation lines, with selected tiny cyan and white stars.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 15,
+    "catalog_indices": [
+      30,
+      31
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Ember Abacus: several curved fine golden rods carry tiny glowing orange sun beads like an elegant abacus, floating against black space.\nRIGHT SQUARE: Kindly Static: a copper and bronze organic heart gently wrapped in cyan electrical filaments, a soft amber core and crisp metal veins.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 16,
+    "catalog_indices": [
+      32,
+      33
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Afterimage: three trailing curved translucent purple blade shapes sweep across dark space with a sharp violet glint at their tips.\nRIGHT SQUARE: Deep Winter: a pale luminous blue planet enclosed inside a jagged tall ring of crystalline ice cliffs, detailed frosty facets.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  },
+  {
+    "sheet": 17,
+    "catalog_indices": [
+      34,
+      35
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: original high-resolution command illustrations for the offline space card game Astral Wake. Reference image is for the visual identity and palette only. Create TWO ENTIRELY FRESH DETAILED PAINTINGS side by side in one wide horizontal 2:1 image. The canvas consists of exactly TWO equal SQUARE PANELS: left half and right half, with the vertical boundary at exactly50 percent width. Request3072x1536 resolution, preserve as much native fine detail as supported. No margins, no gutters, no borders, no divider line, no captions, no text, no lettering, no watermark. Each square is a separate full-bleed illustration on deep navy/black cosmic space; the main subject is centered with8 percent breathing room and must never cross the central boundary. Match the reference's original premium mysterious biomechanical cosmic fantasy: sculptural painted realism, sharp intentional fine detail, clean luminous cyan/teal and amber/gold with occasional violet/crimson, strong readable silhouettes, refined high-contrast light, beautiful energy trajectories. Focal detail stays crisp when viewed large; smooth dark background, no grain, no film noise, no muddy smudges, no low-resolution texture. Do not reproduce the reference's whole grid; create only the TWO specified paintings.\nLEFT SQUARE: Whole Horizon: an intensely bright thin golden horizon bridges two grand broken black cliffs beneath a violet cosmic arch.\nRIGHT SQUARE: Unbroken Song: a small blue-white world held inside many beautiful sweeping continuous gold and cyan musical orbital loops.",
+    "reference": "res://art/cards.png",
+    "requested_size": [
+      3072,
+      1536
+    ],
+    "grid": [
+      2,
+      1
+    ]
+  }
+]

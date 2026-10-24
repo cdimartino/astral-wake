@@ -1,0 +1,19 @@
+{
+  "id": "enemies_11_12",
+  "kind": "enemies",
+  "items": [
+    {
+      "id": "folio_leviathan",
+      "name": "Folio Leviathan",
+      "motif": "a vast folded-indigo-folio leviathan spacecraft, layered silver-edged archival armor plates sweeping like fins, luminous teal seams and a deep blue central engine"
+    },
+    {
+      "id": "gravity_moth",
+      "name": "Gravity Moth",
+      "motif": "an elegant black-and-indigo crystalline moth vessel with broad curved silver wing frames, cyan gravitational lens patterns in the translucent wings and fine antennae"
+    }
+  ],
+  "path": "art/expansion/enemies/enemies_11_12.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD living enemy spacecraft sprites for Astral Wake. Create exact2:1 landscape canvas, preferably2048x1024 or largest available. Exactly two equally sized square cells side by side. LEFT HALF: Folio Leviathan, a vast folded-indigo-folio leviathan spacecraft, layered silver-edged archival armor plates sweeping like fins, luminous teal seams and a deep blue central engine. RIGHT HALF: Gravity Moth, an elegant black-and-indigo crystalline moth vessel with broad curved silver wing frames, cyan gravitational lens patterns in the translucent wings and fine antennae. These names describe the subjects; no words or labels should appear.\nOne complete subject in each half, centered at25%/75% of canvas width, each fills75% of its cell. Generous transparent padding around all parts, all wings/branches/antennae fully inside their own half. Clear full-height transparent separator through canvascenter; no overlap or cropping. Genuine alpha transparency outside silhouettes and inside structural gaps. No other subjects, no background scene, stars, text, numbers, UI, borders, logos or watermark.\nPremium polished2D cosmic science-fiction concept illustration, highly detailed at native resolution, exceptionally clean contours, smooth sophisticated surfaces and coherent material shading, controlled bioluminescence. The same strange living-spacecraft world as elegant teal/gold manta ships, but each new subject has its own memorable silhouette. Rich restrained colors as described. No grain, noisy texture, pixelation, blur, rainbow fringes, humans, humanoid figures, literal human anatomy or existing game references. Main body opaque, natural glass/mist details partly transparent. Crisp enough for large-screen gameplay.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-edc68d50-3249-493d-8acd-c979f845b78b.png"
+}

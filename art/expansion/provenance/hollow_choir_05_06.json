@@ -1,0 +1,19 @@
+{
+  "id": "hollow_choir_05_06",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "tuning_fork",
+      "name": "Tuning Fork",
+      "motif": "a graceful double-pronged silver crystalline tuning fork resonating with precise violet and teal vibration arcs"
+    },
+    {
+      "id": "bright_canon",
+      "name": "Bright Canon",
+      "motif": "three small dark silver resonance pods emitting layered coordinated gold and teal wave arcs into space"
+    }
+  ],
+  "path": "art/expansion/cards/hollow_choir_05_06.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Tuning Fork, interpreted as a graceful double-pronged silver crystalline tuning fork resonating with precise violet and teal vibration arcs; RIGHT illustration Bright Canon, interpreted as three small dark silver resonance pods emitting layered coordinated gold and teal wave arcs into space. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: polished obsidian and silver resonator materials, translucent violet crystals, coordinated luminous teal waveforms with restrained gold accents on midnight navy. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-dbf5e04e-085e-44bd-8cc7-825a33d5af32.png"
+}

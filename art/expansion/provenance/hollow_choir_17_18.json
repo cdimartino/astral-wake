@@ -1,0 +1,19 @@
+{
+  "id": "hollow_choir_17_18",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "rest_note",
+      "name": "Rest Note",
+      "motif": "one empty dark silver resonator holding a quiet violet sliver of light in deep space, restrained peaceful composition"
+    },
+    {
+      "id": "unison",
+      "name": "Unison",
+      "motif": "six slender silver-violet crystals converging into one brilliant teal star, all energy flowing coherently inward"
+    }
+  ],
+  "path": "art/expansion/cards/hollow_choir_17_18.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Rest Note, interpreted as one empty dark silver resonator holding a quiet violet sliver of light in deep space, restrained peaceful composition; RIGHT illustration Unison, interpreted as six slender silver-violet crystals converging into one brilliant teal star, all energy flowing coherently inward. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: polished obsidian and silver resonator materials, translucent violet crystals, coordinated luminous teal waveforms with restrained gold accents on midnight navy. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-d6e99bb4-e031-45e3-a98a-76fe677c81c6.png"
+}

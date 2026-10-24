@@ -1,0 +1,68 @@
+extends SceneTree
+
+var failures := 0
+
+func check(condition: bool, message: String) -> void:
+	if not condition:
+		failures += 1
+		push_error(message)
+
+func _initialize() -> void:
+	_run.call_deferred()
+
+func _run() -> void:
+	var bus := AudioServer.bus_count
+	AudioServer.add_bus()
+	AudioServer.set_bus_name(bus, "AudioSmoke")
+	var capture := AudioEffectCapture.new()
+	capture.buffer_length = 2.0
+	AudioServer.add_bus_effect(bus, capture)
+	var player := AudioStreamPlayer.new()
+	player.bus = "AudioSmoke"
+	root.add_child(player)
+	var mix_rate := AudioServer.get_mix_rate()
+	for region in range(6):
+		var stream: AudioStreamWAV = load("res://audio/region_%d.wav" % region)
+		check(stream != null, "Imported region %d exists" % region)
+		if stream == null:
+			continue
+		var length := stream.get_length()
+		check(stream.format == AudioStreamWAV.FORMAT_16_BITS, "Soundtrack imports retain uncompressed PCM")
+		check(absf(length - 48.0) < .01, "Decoded region %d is 48 seconds" % region)
+		stream.loop_begin = 0
+		# Godot interpolates the last valid frame; N would interpolate into padding.
+		stream.loop_end = roundi(length * stream.mix_rate) - 1
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		check(stream.loop_end == 1058399, "Loop endpoint counts decoded sample frames")
+		player.stream = stream
+		capture.clear_buffer()
+		# The capture contains the actual imported decoder crossing end -> beginning.
+		player.play(length - .6)
+		await create_timer(1.2).timeout
+		check(player.playing, "Region %d continues after wrapping" % region)
+		var frames := capture.get_buffer(capture.get_frames_available())
+		check(frames.size() > mix_rate * .9, "Audio mixer produced a full seam capture")
+		if frames.size() <= mix_rate * .9:
+			player.stop()
+			continue
+		var minimum_rms := 1.0
+		var maximum_step := 0.0
+		var maximum_index := 0
+		var window := roundi(mix_rate * .02)
+		# Ignore startup/stop latency; retained middle includes the seam at ~0.6 sec.
+		for start in range(roundi(mix_rate * .15), frames.size() - roundi(mix_rate * .1) - window, window):
+			var energy := Vector2.ZERO
+			for index in range(start, start + window):
+				energy += frames[index] * frames[index]
+				var step := maxf(absf(frames[index].x - frames[index - 1].x), absf(frames[index].y - frames[index - 1].y))
+				if step > maximum_step:
+					maximum_step = step
+					maximum_index = index
+			minimum_rms = minf(minimum_rms, minf(sqrt(energy.x / window), sqrt(energy.y / window)))
+		check(minimum_rms > .025, "Region %d has no quiet gap in any 20ms seam window" % region)
+		check(maximum_step < .06, "Region %d has no waveform click at wrap" % region)
+		print("REGION %d: format=%d length=%.4f loop=%d..%d captured=%d min20msRMS=%.5f maxStep=%.5f at=%.4f before=%s after=%s" % [region, stream.format, length, stream.loop_begin, stream.loop_end, frames.size(), minimum_rms, maximum_step, float(maximum_index) / mix_rate, frames[maximum_index - 1], frames[maximum_index]])
+		player.stop()
+		await create_timer(.1).timeout
+	print("AUDIO SMOKE: %d failures" % failures)
+	quit(1 if failures else 0)

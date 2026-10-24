@@ -1,0 +1,19 @@
+{
+  "id": "enemies_05_06",
+  "kind": "enemies",
+  "items": [
+    {
+      "id": "pollen_drone",
+      "name": "Pollen Drone",
+      "motif": "a compact emerald seed-pod drone with four translucent leaf wings, fine copper antennae and a small glowing amber pollen core"
+    },
+    {
+      "id": "graft_stalker",
+      "name": "Graft Stalker",
+      "motif": "a slender predatory living root-vessel with angular copper joints, long leaf-blade fins and emerald graft tendrils curling around a luminous seed engine"
+    }
+  ],
+  "path": "art/expansion/enemies/enemies_05_06.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD living enemy spacecraft sprites for Astral Wake. Create exact2:1 landscape canvas, preferably2048x1024 or largest available. Exactly two equally sized square cells side by side. LEFT HALF: Pollen Drone, a compact emerald seed-pod drone with four translucent leaf wings, fine copper antennae and a small glowing amber pollen core. RIGHT HALF: Graft Stalker, a slender predatory living root-vessel with angular copper joints, long leaf-blade fins and emerald graft tendrils curling around a luminous seed engine. These names describe the subjects; no words or labels should appear.\nOne complete subject in each half, centered at25%/75% of canvas width, each fills75% of its cell. Generous transparent padding around all parts, all wings/branches/antennae fully inside their own half. Clear full-height transparent separator through canvascenter; no overlap or cropping. Genuine alpha transparency outside silhouettes and inside structural gaps. No other subjects, no background scene, stars, text, numbers, UI, borders, logos or watermark.\nPremium polished2D cosmic science-fiction concept illustration, highly detailed at native resolution, exceptionally clean contours, smooth sophisticated surfaces and coherent material shading, controlled bioluminescence. The same strange living-spacecraft world as elegant teal/gold manta ships, but each new subject has its own memorable silhouette. Rich restrained colors as described. No grain, noisy texture, pixelation, blur, rainbow fringes, humans, humanoid figures, literal human anatomy or existing game references. Main body opaque, natural glass/mist details partly transparent. Crisp enough for large-screen gameplay.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-087b8386-0b6e-4a62-b30d-fdc1bc9c7eb5.png"
+}

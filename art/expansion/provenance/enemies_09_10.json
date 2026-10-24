@@ -1,0 +1,22 @@
+{
+  "id": "enemies_09_10",
+  "kind": "enemies",
+  "items": [
+    {
+      "id": "index_ray",
+      "name": "Index Ray",
+      "motif": "a wide graceful indigo ray-like archive vessel with silver layered folio wing plates, cyan index-tab lights and a thin curved tail, no writing"
+    },
+    {
+      "id": "undertow_scribe",
+      "name": "Undertow Scribe",
+      "motif": "a slender spiraling silver quill-like living vessel with indigo plated fins, graceful dark ink tendrils and luminous cyan gravity rings"
+    }
+  ],
+  "path": "art/expansion/enemies/enemies_09_10_v2.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD living enemy spacecraft sprites for Astral Wake. Create exact2:1 landscape canvas, preferably2048x1024 or largest available. Exactly two equally sized square cells side by side. LEFT HALF: Index Ray, a wide graceful indigo ray-like archive vessel with silver layered folio wing plates, cyan index-tab lights and a thin curved tail, no writing. RIGHT HALF: Undertow Scribe, a slender spiraling silver quill-like living vessel with indigo plated fins, graceful dark ink tendrils and luminous cyan gravity rings. These names describe the subjects; no words or labels should appear.\nOne complete subject in each half, centered at25%/75% of canvas width, each fills75% of its cell. Generous transparent padding around all parts, all wings/branches/antennae fully inside their own half. Clear full-height transparent separator through canvascenter; no overlap or cropping. Genuine alpha transparency outside silhouettes and inside structural gaps. No other subjects, no background scene, stars, text, numbers, UI, borders, logos or watermark.\nPremium polished2D cosmic science-fiction concept illustration, highly detailed at native resolution, exceptionally clean contours, smooth sophisticated surfaces and coherent material shading, controlled bioluminescence. The same strange living-spacecraft world as elegant teal/gold manta ships, but each new subject has its own memorable silhouette. Rich restrained colors as described. No grain, noisy texture, pixelation, blur, rainbow fringes, humans, humanoid figures, literal human anatomy or existing game references. Main body opaque, natural glass/mist details partly transparent. Crisp enough for large-screen gameplay.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-fcf1354c-06d8-4cb7-b679-90e30cb4c8c7.png",
+  "original_source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-d638f69f-49f7-4945-bc62-4a80823bbe4e.png",
+  "original_path": "art/expansion/enemies/enemies_09_10.png",
+  "correction_prompt": "Use case: precise-object-edit. Edit this two-subject transparent sprite sheet. Preserve the exact two original ship designs, materials, colors, crisp native details, and genuine alpha transparency. LEFT is Index Ray, the broad silver-indigo ray vessel. RIGHT is Undertow Scribe, the tall silver-indigo quill vessel with cyan rings.\nCRITICAL LAYOUT REPAIR: keep a2:1 landscape canvas,1774x887 or larger exact2:1. Place each entire subject strictly within its own square half, separated by a FULL-HEIGHT transparent vertical band at least80pixels wide around the center. LEFT subject including its long tail must fit inside x=40..830, y=40..847. RIGHT subject including every dangling tentacle must fit inside x=944..1734,y=40..847. No wing, tail, ring, glow or tendril may enter the central transparent separator x=847..927. Center LEFT at443,443 and RIGHT at1330,443. Reduce their footprint slightly to provide padding, but reconstruct detail crisply, no blur or grain. Entire silhouettes fully visible, no clipping. Do not add objects, text, labels, background or frames. The two crops must contain only their own complete vessel with no pixels from the other vessel. Genuine RGBA transparency, not painted black or checkerboard."
+}

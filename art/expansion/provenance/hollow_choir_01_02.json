@@ -1,0 +1,19 @@
+{
+  "id": "hollow_choir_01_02",
+  "kind": "cards",
+  "items": [
+    {
+      "id": "choral_bolt",
+      "name": "Choral Bolt",
+      "motif": "three violet crystal resonator orbs firing one coordinated luminous teal energy bolt, clean forceful diagonal composition"
+    },
+    {
+      "id": "warm_refrain",
+      "name": "Warm Refrain",
+      "motif": "a pearlescent violet bell wrapped in a warm golden restorative soundwave and gentle teal light"
+    }
+  ],
+  "path": "art/expansion/cards/hollow_choir_01_02.png",
+  "prompt": "Use case: stylized-concept. Asset type: TWO original HD command-card illustrations for Astral Wake, arranged as an exactly2:1 landscape atlas, preferably2048x1024 or largest available. Canvas has exactly TWO equally sized independent square paintings: LEFT illustration Choral Bolt, interpreted as three violet crystal resonator orbs firing one coordinated luminous teal energy bolt, clean forceful diagonal composition; RIGHT illustration Warm Refrain, interpreted as a pearlescent violet bell wrapped in a warm golden restorative soundwave and gentle teal light. Do not render the names or any writing.\nEach painting fills exactly its own half from top to bottom, clean vertical divide at50%, no gutters or frames. Subjects remain completely inside their respective halves, large readable focal motifs occupying75% of their square, backgrounds dark and atmospheric. These are distinct command concepts, not spacecraft portraits. Preserve both separate compositions, no elements crossing center.\nPalette/material identity: polished obsidian and silver resonator materials, translucent violet crystals, coordinated luminous teal waveforms with restrained gold accents on midnight navy. Premium polished hand-painted2D cosmic science-fiction fantasy illustration, exquisite clean native-resolution detail, smooth material shading, crisp silhouettes and controlled luminous highlights, strong readable forms even at card size. Diverse evocative compositions with real visual depth. No grain, noisy texture, blur, pixelation, humans, text, letters, numbers, UI, borders, logos, watermarks or existing game references. Brand-new illustrations, no reused ship art. Opaque dark illustrated backgrounds, not transparent.",
+  "source": "generated-image:01a16ee0-6497-7b23-aeb8-c1e93ebc9b29/exec-45d84cfc-a5fd-43cf-9461-3f7ec07ca886.png"
+}

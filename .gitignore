@@ -1,0 +1,9 @@
+.godot/
+.tools/
+dist/
+.oldhand/
+.DS_Store
+*.tmp
+recordings/
+__pycache__/
+*.pyc

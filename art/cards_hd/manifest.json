@@ -1,0 +1,328 @@
+{
+  "cards": {
+    "0": {
+      "path": "res://art/cards_hd/sheet_0.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "1": {
+      "path": "res://art/cards_hd/sheet_0.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "2": {
+      "path": "res://art/cards_hd/sheet_1.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "3": {
+      "path": "res://art/cards_hd/sheet_1.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "4": {
+      "path": "res://art/cards_hd/sheet_2.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "5": {
+      "path": "res://art/cards_hd/sheet_2.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "6": {
+      "path": "res://art/cards_hd/sheet_3.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "7": {
+      "path": "res://art/cards_hd/sheet_3.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "8": {
+      "path": "res://art/cards_hd/sheet_4.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "9": {
+      "path": "res://art/cards_hd/sheet_4.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "10": {
+      "path": "res://art/cards_hd/sheet_5.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "11": {
+      "path": "res://art/cards_hd/sheet_5.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "12": {
+      "path": "res://art/cards_hd/sheet_6.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "13": {
+      "path": "res://art/cards_hd/sheet_6.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "14": {
+      "path": "res://art/cards_hd/sheet_7.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "15": {
+      "path": "res://art/cards_hd/sheet_7.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "16": {
+      "path": "res://art/cards_hd/sheet_8.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "17": {
+      "path": "res://art/cards_hd/sheet_8.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "18": {
+      "path": "res://art/cards_hd/sheet_9.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "19": {
+      "path": "res://art/cards_hd/sheet_9.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "20": {
+      "path": "res://art/cards_hd/sheet_10.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "21": {
+      "path": "res://art/cards_hd/sheet_10.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "22": {
+      "path": "res://art/cards_hd/sheet_11.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "23": {
+      "path": "res://art/cards_hd/sheet_11.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "24": {
+      "path": "res://art/cards_hd/sheet_12.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "25": {
+      "path": "res://art/cards_hd/sheet_12.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "26": {
+      "path": "res://art/cards_hd/sheet_13.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "27": {
+      "path": "res://art/cards_hd/sheet_13.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "28": {
+      "path": "res://art/cards_hd/sheet_14.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "29": {
+      "path": "res://art/cards_hd/sheet_14.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "30": {
+      "path": "res://art/cards_hd/sheet_15.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "31": {
+      "path": "res://art/cards_hd/sheet_15.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "32": {
+      "path": "res://art/cards_hd/sheet_16.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "33": {
+      "path": "res://art/cards_hd/sheet_16.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    },
+    "34": {
+      "path": "res://art/cards_hd/sheet_17.png",
+      "rect": [
+        1,
+        1,
+        885,
+        885
+      ]
+    },
+    "35": {
+      "path": "res://art/cards_hd/sheet_17.png",
+      "rect": [
+        888,
+        1,
+        885,
+        885
+      ]
+    }
+  }
+}
