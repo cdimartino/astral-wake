@@ -2,6 +2,18 @@
 
 An offline deck-building roguelike about a sentient spacecraft finding its way through a strange cosmic frontier. Commands travel through a living circuit: their route changes their effects, and their strain shapes what you can do next.
 
+![The Cartographer routing Needle of Dawn through Lens, Fork, and Echo, previewing damage before committing](docs/screenshots/cartographer-combat.png)
+
+*Every command follows a route. Organ order changes its effects; strain and command points shape your next move.*
+
+| Choose your course | Choose your vessel |
+| --- | --- |
+| [![Branching destinations in the Crown of Storms overmap](docs/screenshots/overmap.png)](docs/gameplay.md) | [![The Cartographer, Palimpsest, and Hollow Choir on the ship selection screen](docs/screenshots/ship-selection.png)](docs/ships.md) |
+
+## Learn to play
+
+Start with the [gameplay guide](docs/gameplay.md), then explore the [ships and organs guide](docs/ships.md) for each vessel’s network, resource mechanics, starting deck, and example routes. The [documentation hub](docs/README.md) brings the guides together.
+
 ## Install on macOS
 
 Requires macOS 11 or later. The universal app includes Apple Silicon and Intel binaries and its runtime; Godot does not need to be installed to play.
@@ -102,6 +114,7 @@ The bootstrap downloads approximately 1.5GB of editor/export archives into ignor
 - `art/`: original backgrounds, vessel/enemy artwork, and 72 command illustrations; prompts and provenance live alongside the assets and in `art/PROMPTS.md`.
 - `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`.
 - `tests/`: headless rules/regression checks, native scene smoke and deterministic full-run policy.
+- `docs/`: gameplay guide, ship and organ reference, and reproducible native screenshots.
 
 ## Verification boundaries
 
