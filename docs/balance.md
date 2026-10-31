@@ -1,5 +1,23 @@
 # Difficulty tuning
 
+## Manual evidence tooling (issue #22, first slice)
+
+[The guarded JSON manual driver](manual-replay.md) records stable card-instance
+choices, ordered routes, explicit guarded enemy targets, before/after state and
+RNG, effective card definitions, revision/content identity, and separate errors.
+It supports deterministic replay and isolated save/resume, not a gameplay policy
+or a graphical UX test. Multi-ship/profile baselines, metric reports, authored
+expansion scenarios and graphical manual expeditions remain future issue #22 work.
+
+Historical manual seed **777**, Cartographer, lost at region 2 layer 2, turn 29,
+hull 0, salvage 91. This was a headless rules run, not graphical UX testing, and
+some shifting-index inputs played unintended cards. Preserve that loss; corrected
+inputs are a separately labelled counterfactual. Approximate area-1 hull values,
+subjective win percentages and the hypothesis that next-layer support was required
+are not measured balance evidence. The tactical 424242 win below demonstrates one
+feasible policy/seed, not a population win rate. No new balance results or difficulty
+recommendation are claimed by this tooling slice.
+
 ## Pressure and counterplay
 
 - Attacks deal 1.6 times their normalized authored damage, rounded up. Area strength is now 1.0 / 1.4 / 1.8 instead of 1.0 / 1.3 / 1.6. Legacy geographic scaling is removed before applying the expedition's area strength.
