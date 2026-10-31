@@ -5,6 +5,9 @@ const VERSION = 1
 var game
 var journal: Dictionary = {}
 
+func _create_game(directory: String):
+	return Game.new(directory)
+
 static func failure(message: String) -> Dictionary:
 	return {"ok":false, "error":message}
 
@@ -33,7 +36,7 @@ static func environment() -> Dictionary:
 	var output = []
 	var status = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"), "rev-parse", "HEAD"], output)
 	var sources = {}
-	for path in ["scripts/game.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
+	for path in ["scripts/game.gd", "scripts/known_selections.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
 		sources[path] = FileAccess.get_sha256("res://" + path)
 	return {"game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
 
@@ -44,7 +47,7 @@ func start(directory: String, seed_value, ship: String, unlocks: int) -> Diction
 	if unlocks < 0 or unlocks > 3: return failure("Unlocks must be 0 through 3.")
 	if not ((seed_value is String and Game.SeedEngine.valid(Game.SeedEngine.canonical(seed_value))) or (seed_value is int and seed_value > 0)):
 		return failure("Supply an explicit six-character practice code or positive legacy numeric seed.")
-	game = Game.new(directory)
+	game = _create_game(directory)
 	game.profile.unlocks = unlocks
 	var result = game.new_run(seed_value, ship)
 	if not result.ok: return result
@@ -62,7 +65,9 @@ func inspect() -> Dictionary:
 	var enemies = []
 	var foes = game.run.get("battle", {}).get("enemies", [])
 	for i in range(foes.size()): enemies.append({"slot":i, "id":foes[i].id, "hp":foes[i].hp})
-	return {"ok":true, "expect":guard(), "state":snapshot(game.run), "hand":hand, "targets":enemies}
+	var view={"ok":true, "expect":guard(), "state":snapshot(game.run), "hand":hand, "targets":enemies}
+	if game.selection_pending(): view.selection=game.selection_view()
+	return view
 
 func _integer(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and value == floor(value)
@@ -79,6 +84,8 @@ func _validate(command: Dictionary) -> String:
 	if not command.get("op") is String: return "Command requires an op."
 	var fields = {
 		"play":["uid", "route", "target"], "preview":["uid", "route", "target"],
+		"begin_selection":["uid", "route", "target"], "select_uid":["choice_uid"],
+		"confirm_selection":[], "cancel_selection":[], "selection_preview":[],
 		"modify":["uid"], "choose_node":["node"], "reward":["choice"],
 		"buy":["choice"], "event":["choice"], "recover":["choice"],
 		"end_turn":[], "continue_region":[], "cancel_modify":[], "leave":[], "abandon":[]}
@@ -89,10 +96,11 @@ func _validate(command: Dictionary) -> String:
 		if not command.has(key): return "Missing command field: " + key
 	if not command.get("expect") is Dictionary or command.expect != guard(): return "Stale or missing expected state; inspect before selecting again."
 	if command.has("uid") and (not _integer(command.uid) or command.uid <= 0): return "uid must be a positive integer."
+	if command.has("choice_uid") and command.choice_uid!=null and (not _integer(command.choice_uid) or command.choice_uid<=0): return "choice_uid must be a positive integer or authored optional null."
 	if command.has("node") and not command.node is String: return "node must be a destination ID."
 	if command.op in ["reward", "buy", "event"] and not _integer(command.choice): return "choice must be an integer."
 	if command.op == "recover" and not command.choice is String: return "Recovery choice must be repair or upgrade."
-	if command.op in ["play", "preview"]:
+	if command.op in ["play", "preview", "begin_selection"]:
 		if game.run.get("mode") != "combat": return "There is no active battle."
 		if not command.route is Array: return "route must be an ordered organ-index array."
 		for organ in command.route:
@@ -115,14 +123,19 @@ func apply(command: Dictionary) -> Dictionary:
 	if error.is_empty():
 		var uid = int(command.get("uid", -1))
 		match command.op:
-			"play", "preview":
+			"play", "preview", "begin_selection":
 				var index = _index(game.run.battle.hand, uid)
 				if index < 0: result = failure("Card UID is not uniquely present in the current hand.")
 				else:
 					effective = game.effective_card(game.run.battle.hand[index])
 					var route = game._restore_integers(command.route)
 					if command.op == "preview": result = game.preview_card(index, route, int(command.target.slot))
+					elif command.op == "begin_selection": result = game.begin_selection(uid,route,int(command.target.slot),game.run.battle.enemies[int(command.target.slot)].duplicate(true))
 					else: result = game.play_card(index, route, int(command.target.slot))
+			"select_uid": result = game.select_uid(command.choice_uid)
+			"confirm_selection": result = game.confirm_selection()
+			"cancel_selection": result = game.cancel_selection()
+			"selection_preview": result = game.preview_selection()
 			"modify":
 				var index = _index(game.run.deck, uid)
 				if index < 0: result = failure("Card UID is not uniquely present in the deck.")
@@ -140,7 +153,7 @@ func apply(command: Dictionary) -> Dictionary:
 			"leave": result = game.leave_location()
 			"abandon": result = game.abandon()
 	# Previews, including failed ones, are queries: no journal or RNG changes.
-	if command.get("op") == "preview": return {"ok":result.ok, "result":result, "view":inspect()}
+	if command.get("op") in ["preview","selection_preview"]: return {"ok":result.ok, "result":result, "view":inspect()}
 	var entry = {"sequence":guard().step, "command":command.duplicate(true), "before":before, "after":snapshot(game.run), "effective_card":effective, "result":result}
 	if result.ok: journal.entries.append(entry)
 	else: journal.errors.append(entry)
@@ -170,7 +183,7 @@ func read_journal(path: String) -> Dictionary:
 		for entry in parsed[collection]:
 			if not entry is Dictionary or not entry.get("sequence") is int or not entry.get("command") is Dictionary or not entry.get("before") is Dictionary or not entry.get("after") is Dictionary or not entry.get("effective_card") is Dictionary or not entry.get("result") is Dictionary:
 				return failure("Malformed journal attempt.")
-			if entry.result.get("ok") != (collection == "entries") or entry.command.get("op") == "preview": return failure("Misclassified journal attempt.")
+			if entry.result.get("ok") != (collection == "entries") or entry.command.get("op") in ["preview","selection_preview"]: return failure("Misclassified journal attempt.")
 	var attempts = ordered_attempts(parsed)
 	var previous = parsed.initial
 	for i in range(attempts.size()):
@@ -182,7 +195,7 @@ func read_journal(path: String) -> Dictionary:
 func resume(directory: String, path: String) -> Dictionary:
 	var result = read_journal(path)
 	if not result.ok: return result
-	game = Game.new(directory)
+	game = _create_game(directory)
 	if not game.save_error.is_empty(): return failure(game.save_error)
 	var expected = journal.initial
 	var attempts = ordered_attempts(journal)
@@ -204,7 +217,7 @@ func replay(path: String, directory: String) -> Dictionary:
 	var attempts = ordered_attempts(recorded)
 	for i in range(attempts.size()):
 		var entry = attempts[i]
-		if not entry is Dictionary or not entry.get("command") is Dictionary or entry.command.get("op") == "preview": return failure("Invalid committed entry at step %d." % i)
+		if not entry is Dictionary or not entry.get("command") is Dictionary or entry.command.get("op") in ["preview","selection_preview"]: return failure("Invalid committed entry at step %d." % i)
 		apply(entry.command)
 		var actual = journal.entries.back() if journal.errors.is_empty() or (not journal.entries.is_empty() and journal.entries.back().sequence > journal.errors.back().sequence) else journal.errors.back()
 		if actual != entry: return failure("Replay diverged at step %d." % i)

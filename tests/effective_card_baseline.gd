@@ -34,6 +34,8 @@ static func capture(game) -> Dictionary:
 					result.presentation = result.presentation.filter(func(event): return event.kind not in ["discard_card", "draw_card", "shuffle"])
 					# Explicitly additive dormant bookkeeping only; never omit RNG/gameplay.
 					result.next.erase("schema_revision")
+					assert(result.next.pending_selection.is_empty())
+					result.next.erase("pending_selection")
 					for field in ["exhausted", "installed", "installed_sources", "temporary_retain"]:
 						assert(result.next.battle[field].is_empty())
 						result.next.battle.erase(field)

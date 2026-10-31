@@ -3,9 +3,10 @@ extends RefCounted
 
 const SaveStore = preload("res://scripts/save_store.gd")
 const SeedEngine = preload("res://scripts/seed_engine.gd")
+const Selections = preload("res://scripts/known_selections.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
-const RUN_SCHEMA = 2
+const RUN_SCHEMA = 3
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -46,7 +47,8 @@ func region() -> Dictionary:
 	return catalog.regions[int(run.get("route_regions",[0,1,2])[int(run.get("region",0))])]
 func _ok() -> Dictionary: return {"ok":true,"error":""}
 func _fail(message: String) -> Dictionary: return {"ok":false,"error":message}
-func _mode(expected: String) -> bool: return run.get("mode","") == expected
+func selection_pending() -> bool: return not run.get("pending_selection",{}).is_empty()
+func _mode(expected: String) -> bool: return not selection_pending() and run.get("mode","") == expected
 
 func _pick(state: Dictionary, count: int, stream: String = "world") -> int:
 	if state.has("rng_version"): return SeedEngine.pick(state,count,stream)
@@ -108,7 +110,7 @@ func card_text(instance: Dictionary) -> String:
 	if effective.has("install"): text+="\nInstall: leaves circulation for this combat (passive activation deferred)."
 	return text
 
-# Explicit UID operation for future selection commands; never a random choice.
+# Direct fixture/helper operation; authored selection effects commit atomically below.
 func retain_card(uid: int) -> Dictionary:
 	if not _mode("combat"): return _fail("There is no active battle.")
 	for instance in run.battle.hand:
@@ -122,6 +124,7 @@ func retained(instance: Dictionary) -> bool:
 	return effective_card(instance).get("retain",false) or instance.get("uid",-1) in run.get("battle",{}).get("temporary_retain",[])
 
 func new_run(seed_value = "", character_id: String = "cartographer") -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
 	var vessel=character(character_id)
 	if vessel.is_empty(): return _fail("Choose an available vessel.")
 	var modern=seed_value is String or (seed_value is int and seed_value==0)
@@ -137,6 +140,7 @@ func new_run(seed_value = "", character_id: String = "cartographer") -> Dictiona
 	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
 	run.schema_revision=RUN_SCHEMA
+	run.pending_selection={}
 	if modern:
 		SeedEngine.initialize(run,seed_value)
 		run.seeded=seeded
@@ -330,6 +334,7 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 	if route.is_empty() or route.size()>3: return "Route through one to three organs."
 	var visited=[]
 	for i in range(route.size()):
+		if not _number(route[i]): return "Use integral organ indices."
 		var node=int(route[i])
 		if node<0 or node>=6 or node in visited: return "Each organ can appear only once in a route."
 		if int(state.battle.strain[node])>=int(state.battle.capacity): return organ(node).name+" is at strain capacity."
@@ -339,7 +344,7 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 		visited.append(node)
 	return ""
 
-func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int, preview_only: bool = false) -> Dictionary:
+func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int, preview_only: bool = false, choices: Array = []) -> Dictionary:
 	if state.get("mode","")!="combat": return _fail("There is no active battle.")
 	var battle=state.battle
 	if hand_index<0 or hand_index>=battle.hand.size(): return _fail("Choose a card from your hand.")
@@ -356,6 +361,15 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			if effective_card(installed).name==definition.name: return _fail("That named command is already installed.")
 	var cost=int(definition.cost)
 	if cost>int(battle.command_points): return _fail("Not enough command points: this command costs %d, with %d remaining."%[cost,int(battle.command_points)])
+	var ops=definition.get("selections",[])
+	if definition.has("selections") and not Selections.valid_definition(ops): return _fail("Invalid authored selection definition.")
+	var selection=Selections.plan(self,battle,int(instance.uid),ops,choices)
+	if not selection.ok: return selection
+	if not selection.complete:
+		selection.ok=false
+		selection.selection_required=true
+		selection.error="Choose known cards before committing this command."
+		return selection
 	var trace_before=int(battle.get("trace",0))
 	var resonance_before=int(battle.get("resonance",0))
 	var previous_kind=str(battle.get("last_command_kind",""))
@@ -543,6 +557,20 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		if route.size()>1 and not _edge_exists(battle.edges,int(route[0]),int(route[-1])): battle.edges.append([int(route[0]),int(route[-1])])
 		events.append("Connections restored; route endpoints linked for this battle.")
 	# Ordinary cards can self-redraw; dedicated zones must be populated before draw.
+	# Choices were validated together before any resource/CP mutation. Apply hand
+	# operations before source draw; retrieval is explicitly distinct from drawing.
+	for step in range(ops.size()):
+		var uid=choices[step]
+		if uid==null: continue
+		var op=ops[step]
+		var zone="discard" if op.kind=="return_discard" else "hand"
+		var chosen=battle[zone][Selections.index(battle[zone],uid)].duplicate(true)
+		var chosen_index=Selections.index(battle.hand,uid)
+		Selections.move(battle,op,uid)
+		if op.kind=="exhaust_hand": presentation.append({"kind":"zone_card","zone":"exhausted","card":chosen,"hand_index":chosen_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+		elif op.kind=="return_discard": presentation.append({"kind":"retrieve_card","card":chosen,"zone":"hand","hand_index":-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+		events.append("%s: %s (UID %d)."%[op.kind,effective_card(chosen).name,uid])
+	hand_index=Selections.index(battle.hand,instance.uid)
 	var destination="installed" if definition.has("install") else "exhausted" if definition.get("exhaust",false) else "discard"
 	battle[destination].append(battle.hand.pop_at(hand_index))
 	battle.temporary_retain.erase(int(instance.uid))
@@ -550,6 +578,8 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var movement={"kind":"discard_card" if destination=="discard" else "zone_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()}
 	if destination!="discard": movement.zone=destination
 	presentation.append(movement)
+	for cue in presentation:
+		if cue.kind=="retrieve_card": cue.hand_index=Selections.index(battle.hand,cue.card.uid)
 	_draw(state,int(definition.get("draw",0)),presentation)
 	if vessel_id=="palimpsest": battle.last_payload=plain_payload
 	if vessel_id=="hollow_choir": battle.last_command_kind=definition.kind
@@ -565,19 +595,124 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	_log(state,definition.name+": "+" ".join(events))
 	return {"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
 
-func preview_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
-	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true)
+func preview_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
+	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true,choices)
 	result.erase("next")
+	# Pending known-card choice is cancellable: never disclose newly simulated
+	# hidden draw identities. Preserve the historical no-choice preview contract.
+	if run.get("mode","")=="combat" and hand_index>=0 and hand_index<run.battle.hand.size() and effective_card(run.battle.hand[hand_index]).has("selections"):
+		for cue in result.get("presentation",[]):
+			if cue.kind=="draw_card":
+				cue.erase("card")
+				cue.hidden=true
 	return result
 
-func play_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
-	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index)
+func play_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
+	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,false,choices)
 	if not result.ok: return result
 	run=result.next
 	_check_battle_end()
 	save()
 	result.erase("next")
 	return result
+
+func begin_selection(source_uid, ordered_route: Array, target_index, target_guard: Dictionary) -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
+	if not _number(source_uid) or not _number(target_index): return _fail("Use integral source and target IDs.")
+	for node in ordered_route:
+		if not _number(node): return _fail("Use integral route indices.")
+	if run.get("mode","")!="combat": return _fail("There is no active battle.")
+	if target_index<0 or target_index>=run.battle.enemies.size() or target_guard!=run.battle.enemies[int(target_index)]: return _fail("The guarded target changed.")
+	var index=Selections.index(run.battle.hand,source_uid)
+	var result=_simulate_card(run.duplicate(true),index,ordered_route,int(target_index))
+	if not result.get("selection_required",false): return result if not result.ok else _fail("This command needs no card selection.")
+	var pending={"source_uid":source_uid,"route":ordered_route.duplicate(),"target_index":target_index,"target_guard":target_guard.duplicate(true),"definition":effective_card(run.battle.hand[index]),"guard":"","choices":[]}
+	pending.guard=Selections.guard(self,run,pending)
+	run.pending_selection=pending
+	save()
+	return selection_view()
+
+func _valid_pending(state: Dictionary) -> bool:
+	var p=state.get("pending_selection")
+	if not p is Dictionary: return false
+	if p.is_empty(): return true
+	if state.get("mode","")!="combat" or p.size()!=7: return false
+	for key in ["source_uid","target_index"]:
+		if not _number(p.get(key)): return false
+	if not p.get("route") is Array or not p.get("choices") is Array: return false
+	for node in p.route:
+		if not _number(node) or node<0 or node>5: return false
+	for uid in p.choices:
+		if uid!=null and not _number(uid): return false
+	if not p.get("definition") is Dictionary or not p.get("target_guard") is Dictionary or not p.get("guard") is String: return false
+	var b=state.battle
+	if p.target_index<0 or p.target_index>=b.enemies.size() or p.target_guard!=b.enemies[int(p.target_index)]: return false
+	var index=Selections.index(b.hand,p.source_uid)
+	if index<0 or not _same_authored(p.definition,effective_card(b.hand[index])): return false
+	if not Selections.valid_definition(p.definition.get("selections")): return false
+	if not _validate_route(state,p.route).is_empty() or int(p.definition.cost)>int(b.command_points) or b.enemies[int(p.target_index)].hp<=0: return false
+	return p.guard==Selections.guard(self,state,p) and Selections.plan(self,b,int(p.source_uid),p.definition.selections,p.choices).ok
+
+func _same_authored(raw, expected) -> bool:
+	# Validate the raw tree before numeric restoration: 1.5 must never become 1.
+	if expected is int: return _number(raw) and raw==expected
+	if expected is Dictionary:
+		if not raw is Dictionary or raw.size()!=expected.size(): return false
+		for key in expected:
+			if not raw.has(key) or not _same_authored(raw[key],expected[key]): return false
+		return true
+	if expected is Array:
+		if not raw is Array or raw.size()!=expected.size(): return false
+		for i in range(expected.size()):
+			if not _same_authored(raw[i],expected[i]): return false
+		return true
+	return typeof(raw)==typeof(expected) and raw==expected
+
+func selection_view() -> Dictionary:
+	if not selection_pending() or not _valid_pending(run): return _fail("The pending card selection is stale or invalid; cancel it.")
+	var p=run.pending_selection
+	var result=Selections.plan(self,run.battle,int(p.source_uid),p.definition.selections,p.choices)
+	result.context=p.duplicate(true)
+	return result
+
+func select_uid(uid) -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	if view.complete: return _fail("All card choices are already selected.")
+	if uid!=null and not _number(uid): return _fail("Choose an integral card UID.")
+	if not uid in view.eligible: return _fail("Choose an explicitly eligible card UID.")
+	run.pending_selection.choices.append(uid)
+	run.pending_selection.guard=Selections.guard(self,run,run.pending_selection)
+	save()
+	return selection_view()
+
+func preview_selection() -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	var p=run.pending_selection
+	return preview_card(Selections.index(run.battle.hand,p.source_uid),p.route,int(p.target_index),p.choices)
+
+func confirm_selection() -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	if not view.complete: return _fail("Finish choosing known cards first.")
+	var p=run.pending_selection
+	var state=run.duplicate(true)
+	state.pending_selection={}
+	var result=_simulate_card(state,Selections.index(state.battle.hand,p.source_uid),p.route,int(p.target_index),false,p.choices)
+	if not result.ok: return result
+	run=result.next
+	_check_battle_end()
+	save()
+	result.erase("next")
+	return result
+
+func cancel_selection() -> Dictionary:
+	if not selection_pending(): return _fail("There is no pending card selection.")
+	run.pending_selection={}
+	save()
+	return _ok()
 
 func _damage_enemy(state: Dictionary, index: int, amount: int, route_length: int = 0, split_hit: bool = false) -> int:
 	if amount<=0: return 0
@@ -994,6 +1129,7 @@ func _finish_run(won: bool) -> void:
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
 func abandon() -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
 	if run.is_empty() or run.get("finished",false): return _fail("There is no active expedition.")
 	_finish_run(false)
 	save()
@@ -1034,12 +1170,17 @@ func load_saved() -> bool:
 		if legacy_schema and not saved.run.is_empty():
 			# Additive fields without a revision indicate damaged new data, not legacy.
 			var old_battle=saved.run.get("battle",{})
-			if old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain"].any(func(key): return old_battle.has(key)):
+			if saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain"].any(func(key): return old_battle.has(key))):
 				store.error="A save contains incomplete game data. Your existing files have been preserved."
 				continue
 			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.pending_selection={}
 			if old_battle is Dictionary and not old_battle.is_empty():
 				for key in ["exhausted","installed","installed_sources","temporary_retain"]: old_battle[key]=[]
+		# Explicit zones-revision migration; never repair current-schema fields.
+		if saved.run.get("schema_revision")==2 and not saved.run.has("pending_selection"):
+			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.pending_selection={}
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
 		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
@@ -1240,4 +1381,4 @@ func _valid_run(value) -> bool:
 	if value.mode=="modify":
 		if not value.modify_return in ["shop","event","recovery"] or not value.modify_kind in ["upgrade","remove"]: return false
 		if value.modify_return=="shop" and (not _number(value.get("modify_shop_index")) or int(value.modify_shop_index)<0 or int(value.modify_shop_index)>=value.shop.items.size()): return false
-	return true
+	return _valid_pending(value)

@@ -51,7 +51,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install'} if group == 'cards' else set()
+            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -89,6 +89,15 @@ def validate(data):
             if flag in c: require(type(c[flag]) is bool, f'{ident}: invalid resource command flag')
         for flag in ('retain', 'exhaust'):
             if flag in c: require(type(c[flag]) is bool, f'{ident}: {flag} must be boolean')
+        if 'selections' in c:
+            ops = c['selections']
+            require(isinstance(ops, list) and 1 <= len(ops) <= 3, f'{ident}: expected 1–3 known-card selections')
+            for op in ops:
+                require(isinstance(op, dict) and {'kind'} <= set(op) <= {'kind', 'optional', 'kind_filter'}, f'{ident}: malformed selection')
+                require(op['kind'] in {'exhaust_hand', 'retain_hand', 'return_discard'}, f'{ident}: unsupported selection')
+                if 'optional' in op: require(type(op['optional']) is bool, f'{ident}: optional must be boolean')
+                if 'kind_filter' in op:
+                    require(op['kind'] == 'return_discard' and op['kind_filter'] in {'attack', 'repair'}, f'{ident}: invalid selection filter')
         if 'install' in c:
             identity = c['install']
             text(identity, f'{ident}.install')
@@ -101,7 +110,7 @@ def validate(data):
         integer(c['unlock'], 0, 3, f'{ident}.unlock')
         integer(c['art'], 0, 19, f'{ident}.art')
         require(type(c['link']) is bool, f'{ident}: link must be boolean')
-        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')), f'{ident}: empty card')
+        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or c.get('selections'), f'{ident}: empty card')
         require(c['kind'] != 'attack' or c['damage'] > 0, f'{ident}: attack must deal damage')
         require(c['kind'] != 'repair' or c['heal'] > 0, f'{ident}: repair must heal')
     require(Counter(c['unlock'] for c in cards.values()) == {0: 66, 1: 2, 2: 2, 3: 2},
@@ -227,6 +236,9 @@ def self_test(data):
     valid = copy.deepcopy(data)
     valid['cards'][0].update(retain=True, exhaust=True)
     valid['cards'][1].update(install='fixture_engine')
+    valid['cards'][4].update(damage=0, heal=0, vent=0, draw=0, disrupt=0, link=False,
+                            selections=[{'kind': 'exhaust_hand'}, {'kind': 'retain_hand'},
+                                        {'kind': 'return_discard', 'optional': True, 'kind_filter': 'repair'}])
     validate(valid)
     mutations = [
         lambda d: d['cards'].pop(),
@@ -244,6 +256,12 @@ def self_test(data):
         lambda d: d['cards'][0].__setitem__('install', ''),
         lambda d: d['cards'][0].__setitem__('install', 'not an identity'),
         lambda d: d['cards'][0].update(install='fixture_engine', exhaust=True),
+        lambda d: d['cards'][0].__setitem__('selections', []),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'draw_then_discard'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'retain_hand', 'optional': 1}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'retain_hand', 'kind_filter': 'attack'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'return_discard', 'kind_filter': 'utility'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'return_discard', 'count': 2}]),
         lambda d: d['powerups'][0].__setitem__('effect', 'teleport'),
         lambda d: d['enemies'][0]['pattern'][0].__setitem__('kind', 'poison'),
         lambda d: d['regions'][0].__setitem__('boss', 'missing_boss'),

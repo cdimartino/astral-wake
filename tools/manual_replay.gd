@@ -1,6 +1,8 @@
 extends SceneTree
 const Session = preload("res://tools/manual_session.gd")
 
+func _create_session(): return Session.new()
+
 func _initialize() -> void:
 	call_deferred("run_driver")
 
@@ -30,7 +32,7 @@ func run_driver() -> void:
 	if not directory.is_absolute_path(): directory = ProjectSettings.globalize_path("res://").path_join(directory)
 	var journal_path = directory.path_join("trace.json")
 	var save_directory = directory.path_join("saves")
-	var session = Session.new()
+	var session = _create_session()
 	var result: Dictionary
 	if options.has("start"):
 		if DirAccess.dir_exists_absolute(directory):
@@ -83,7 +85,7 @@ func run_driver() -> void:
 			fail("Expected a JSON object per command line; stopped before this line.")
 			return
 		result = session.apply(command)
-		if command.get("op") != "preview":
+		if command.get("op") not in ["preview","selection_preview"]:
 			var written = session.write(journal_path)
 			if not written.ok:
 				print(JSON.stringify(written))

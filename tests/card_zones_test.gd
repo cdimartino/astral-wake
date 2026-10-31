@@ -129,6 +129,7 @@ func check() -> void:
 		var current=game.run.duplicate(true)
 		var legacy=current.duplicate(true)
 		legacy.erase("schema_revision")
+		legacy.erase("pending_selection")
 		for key in ["exhausted","installed","installed_sources","temporary_retain"]: legacy.battle.erase(key)
 		write_save(game,legacy)
 		resumed=Game.new(directory)
