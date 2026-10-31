@@ -16,6 +16,8 @@ While routing, Trace and Resonance show **current → projected** values without
 
 The **Draw** and **Discard** piles flank your hand. Cards travel into and out of them when played or when a turn ends; reshuffles and pile counts follow the same sequence. Click a pile to inspect its composition (draw order stays hidden). Escape skips the presentation without changing the committed result. Reduced motion shows the same card and count changes without travel animations.
 
+The route preview's **Damage** is damage to the selected enemy. **Split** lists damage to other living enemies, separately; unequal values reflect each recipient's defenses and remaining hull. Hover the preview or Confirm for the full named-target breakdown.
+
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.
