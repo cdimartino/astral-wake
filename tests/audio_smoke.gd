@@ -87,6 +87,6 @@ func _run() -> void:
 		for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
 		check(peak > .02 and peak < .99, filename + " must decode audibly without clipping")
 		check(not player.playing, filename + " must end without looping")
-	check(combat_count == 21, "All 21 combat cues were mixed")
+	check(combat_count == 22, "All 22 combat cues were mixed")
 	print("AUDIO SMOKE: %d failures" % failures)
 	quit(1 if failures else 0)

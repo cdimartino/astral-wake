@@ -1,5 +1,5 @@
 extends RefCounted
-## Frozen a382575 outcome fingerprints; includes full state, RNG, piles and results.
+## Frozen a382575 outcome fingerprints; includes full state, RNG, piles and legacy results.
 const Session = preload("res://tools/manual_session.gd")
 
 static func capture(game) -> Dictionary:
@@ -29,6 +29,9 @@ static func capture(game) -> Dictionary:
 					state.battle.hand[0].level = level
 					var result = game._simulate_card(state, 0, route, 0)
 					assert(result.ok)
+					# PR28 adds only these presentation records. Keep the original hashes
+					# and every state/RNG field; card_piles_test checks the new records.
+					result.presentation = result.presentation.filter(func(event): return event.kind not in ["discard_card", "draw_card", "shuffle"])
 					results.append(result)
 		outcomes[ship] = {"cases":results.size(), "sha256":Session.digest(results)}
 	return outcomes

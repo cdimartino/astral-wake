@@ -43,8 +43,12 @@ seam also verifies that effective affordability cannot be filtered by raw cost.
 captured before production edits on `a382575`: every ship's catalog cards, levels
 0/1, and routes `[0]`, `[0,1]`, `[0,1,2]`. Each scenario has two neutral targets,
 powerups, prior copyable payload, resources, strain, and real piles/RNG. Canonical
-JSON SHA-256 fingerprints are pinned separately per ship in the test; only generated
-run identity and wall clocks are omitted. This is rules compatibility evidence,
+JSON SHA-256 fingerprints are pinned separately per ship in the test; generated
+run identity and wall clocks are omitted. After integration with PR28, only its
+three additive presentation event kinds (`discard_card`, `draw_card`, `shuffle`)
+are omitted from the legacy result fingerprint. The original hashes are unchanged;
+every gameplay state/RNG field and every pre-existing result/event remain compared.
+`tests/card_piles_test.gd` independently checks the new pile events. This is rules compatibility evidence,
 not a new full-expedition balance population or a human playtest.
 
 Run with `GODOT_BIN=/absolute/path/to/Godot bash tools/check.sh`, or run the two

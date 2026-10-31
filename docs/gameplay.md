@@ -14,6 +14,8 @@ Card faces show their effective upgraded numbers, including Vent, Draw, and vess
 
 While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
 
+The **Draw** and **Discard** piles flank your hand. Cards travel into and out of them when played or when a turn ends; reshuffles and pile counts follow the same sequence. Click a pile to inspect its composition (draw order stays hidden). Escape skips the presentation without changing the committed result. Reduced motion shows the same card and count changes without travel animations.
+
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.
