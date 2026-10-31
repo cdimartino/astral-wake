@@ -1,5 +1,9 @@
 # Effect foundations (#14 / #15)
 
+Current fourth slice: [bounded active Install primitives](bounded-install-engines.md).
+The dormant/selection contracts below describe their historical slices; typed
+engines now activate through the explicitly bounded schema, not generic scripts.
+
 The first slice consolidated existing behavior. The second adds dormant combat
 zones, Retain and Install identity storage, but no production cards, branches,
 passives, counters or triggers. The third adds only [atomic known-card selections](known-card-selections.md).

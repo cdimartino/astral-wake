@@ -51,7 +51,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections'} if group == 'cards' else set()
+            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -103,6 +103,11 @@ def validate(data):
             text(identity, f'{ident}.install')
             require(identity.replace('_', '').isalnum() and identity.islower(), f'{ident}: invalid Install identity')
             require(not c.get('exhaust', False), f'{ident}: Install and Exhaust are mutually exclusive')
+        if 'engine' in c:
+            spec = c['engine']
+            require('install' in c and isinstance(spec, dict) and set(spec) == {'type', 'cap'}, f'{ident}: malformed engine')
+            require(spec['type'] in {'novel_route', 'other_exhaust'}, f'{ident}: unsupported engine')
+            integer(spec['cap'], 1, 6 if spec['type'] == 'novel_route' else 5, f'{ident}.engine.cap')
         require(not any(k in c for k in ('trace', 'rewrite')) or c.get('character') == 'palimpsest', f'{ident}: Trace belongs to Palimpsest')
         require(not any(k in c for k in ('resonance', 'concert')) or c.get('character') == 'hollow_choir', f'{ident}: Resonance belongs to Choir')
         integer(c['cost'], 1, 2, f'{ident}.cost')
@@ -240,7 +245,19 @@ def self_test(data):
                             selections=[{'kind': 'exhaust_hand'}, {'kind': 'retain_hand'},
                                         {'kind': 'return_discard', 'optional': True, 'kind_filter': 'repair'}])
     validate(valid)
+    for kind, cap in [('novel_route', 6), ('other_exhaust', 5)]:
+        engine_valid = copy.deepcopy(data)
+        engine_valid['cards'][0].update(install='fixture_engine', engine={'type': kind, 'cap': cap})
+        validate(engine_valid)
     mutations = [
+        lambda d: d['cards'][0].update(engine={'type': 'novel_route', 'cap': 6}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'script', 'cap': 1}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 6.5}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': True}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'other_exhaust', 'cap': 6}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 0}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 6, 'ward': 3}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route'}),
         lambda d: d['cards'].pop(),
         lambda d: d['characters'][1]['starting_deck'].__setitem__(0, 'needle'),
         lambda d: d['characters'][1].__setitem__('edges', [[0, 1]]),

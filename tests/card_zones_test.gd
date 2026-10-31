@@ -130,7 +130,7 @@ func check() -> void:
 		var legacy=current.duplicate(true)
 		legacy.erase("schema_revision")
 		legacy.erase("pending_selection")
-		for key in ["exhausted","installed","installed_sources","temporary_retain"]: legacy.battle.erase(key)
+		for key in ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"]: legacy.battle.erase(key)
 		write_save(game,legacy)
 		resumed=Game.new(directory)
 		require(resumed.run==current,"Legacy migration preserves all state including legacy/modern RNG")

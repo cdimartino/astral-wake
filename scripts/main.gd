@@ -649,7 +649,7 @@ func _card_piles() -> void:
 	for pile in ["draw", "discard", "exhausted", "installed"]:
 		var button := _button("%s\n%d" % [pile.to_upper(), game.run.battle[pile].size()], func():
 			var body := _modal(pile.capitalize() + " pile")
-			if pile == "installed": body.add_child(_text("Dormant Install storage — no active passives or triggers in this slice."))
+			if pile == "installed": body.add_child(_text("Installed sources — active counters below; untyped installs remain dormant."))
 			if pile == "exhausted": body.add_child(_text("Out of circulation until the next combat. Still in your expedition deck."))
 			var cards: Array = game.run.battle[pile].duplicate(true)
 			# Inspect composition, never reveal the shuffled draw order.
@@ -1478,7 +1478,7 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 			box.add_child(_text(_retain_marker(instance), 17, GOLD))
 			box.add_child(_text(_retain_detail(instance), 17, GOLD))
 		if card.has("install") and game.run.get("battle", {}).get("installed", []).any(func(source): return source.uid == instance.get("uid", -1)):
-			box.add_child(_text("Dormant identity: %s · source UID %d" % [card.install, int(instance.uid)], 17, GOLD))
+			box.add_child(_text(Game.Engines.detail(game,instance), 17, GOLD))
 		box.add_child(_printed_stats(instance, true))
 		var description := _text(game.card_text(instance), 17)
 		description.tooltip_text = _card_tip(instance)

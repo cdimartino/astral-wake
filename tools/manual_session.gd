@@ -36,7 +36,7 @@ static func environment() -> Dictionary:
 	var output = []
 	var status = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"), "rev-parse", "HEAD"], output)
 	var sources = {}
-	for path in ["scripts/game.gd", "scripts/known_selections.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
+	for path in ["scripts/game.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
 		sources[path] = FileAccess.get_sha256("res://" + path)
 	return {"game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
 
