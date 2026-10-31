@@ -129,7 +129,7 @@ The bootstrap downloads approximately 1.5GB of editor/export archives into ignor
 - `scripts/main.gd`, `scripts/space_canvas.gd`, `scripts/intro_cinematic.gd`: native presentation, opening film, input and audio.
 - `data/catalog.json`: authored content, stable IDs, balance values.
 - `art/`: original backgrounds, vessel/enemy artwork, and 72 command illustrations; prompts and provenance live alongside the assets and in `art/PROMPTS.md`.
-- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 21 layered combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation.
+- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 22 combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation. Use `--cards-only` to rebuild the brief, dry paper draw/discard sounds.
 - `tests/`: headless rules/regression checks, native scene smoke and deterministic full-run policy.
 - `docs/`: gameplay guide, ship and organ reference, and reproducible native screenshots.
 

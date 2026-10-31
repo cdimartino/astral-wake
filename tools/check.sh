@@ -23,6 +23,7 @@ python3 tests/manual_replay_cli_test.py "$engine"
 "$engine" --headless --path . --script tests/deck_overlay_test.gd
 "$engine" --headless --path . --script tests/card_effects_test.gd
 "$engine" --headless --path . --script tests/route_resource_preview_test.gd
+"$engine" --headless --path . --script tests/card_piles_test.gd
 "$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd

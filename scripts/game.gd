@@ -282,7 +282,7 @@ func _start_battle(node: Dictionary) -> void:
 	_draw(run,5+_effect(run,"draw"))
 	_log(run,"Encounter: " + run.battle.enemies[0].name)
 
-func _draw(state: Dictionary, count: int) -> void:
+func _draw(state: Dictionary, count: int, presentation: Array = []) -> void:
 	var battle = state.battle
 	for unused in range(count):
 		if battle.hand.size()>=10: break
@@ -291,7 +291,10 @@ func _draw(state: Dictionary, count: int) -> void:
 			battle.draw=battle.discard.duplicate(true)
 			battle.discard.clear()
 			_shuffle(state,battle.draw,"cards")
-		battle.hand.append(battle.draw.pop_back())
+			presentation.append({"kind":"shuffle","draw_count":battle.draw.size(),"discard_count":0})
+		var instance=battle.draw.pop_back()
+		battle.hand.append(instance)
+		presentation.append({"kind":"draw_card","card":instance.duplicate(true),"hand_index":battle.hand.size()-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
 
 func _edge_exists(edges: Array, a: int, b: int) -> bool:
 	for edge in edges:
@@ -510,7 +513,8 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		if route.size()>1 and not _edge_exists(battle.edges,int(route[0]),int(route[-1])): battle.edges.append([int(route[0]),int(route[-1])])
 		events.append("Connections restored; route endpoints linked for this battle.")
 	battle.discard.append(battle.hand.pop_at(hand_index))
-	_draw(state,int(definition.get("draw",0)))
+	presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+	_draw(state,int(definition.get("draw",0)),presentation)
 	if vessel_id=="palimpsest": battle.last_payload=plain_payload
 	if vessel_id=="hollow_choir": battle.last_command_kind=definition.kind
 	battle.last_command={"card":instance.duplicate(true),"kind":definition.kind,"base":plain_payload.duplicate(),"resolved":{"damage":actual_damage,"heal":repaired,"disrupt":disrupt if int(target.hp)>0 else 0}}
@@ -626,11 +630,14 @@ func _incoming_damage(state: Dictionary) -> int:
 func end_turn() -> Dictionary:
 	if not _mode("combat"): return _fail("There is no active battle.")
 	var battle=run.battle
-	battle.discard.append_array(battle.hand)
+	var presentation=[]
+	for i in range(battle.hand.size()):
+		var instance=battle.hand[i]
+		battle.discard.append(instance)
+		presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":i,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
 	battle.hand.clear()
 	battle.severed.clear()
 	var count=battle.enemies.size()
-	var presentation=[]
 	for i in range(count):
 		var foe=battle.enemies[i]
 		if int(foe.hp)<=0: continue
@@ -728,7 +735,7 @@ func end_turn() -> Dictionary:
 	var before_finish=int(run.hull)
 	_check_battle_end()
 	if int(run.hull)>before_finish: presentation.append({"kind":"heal","amount":int(run.hull)-before_finish,"source":"repair_after"})
-	if _mode("combat"): _draw(run,5)
+	if _mode("combat"): _draw(run,5,presentation)
 	save()
 	return {"ok":true,"error":"","presentation":presentation,"strain":battle.strain.duplicate()}
 
