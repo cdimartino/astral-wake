@@ -6,8 +6,9 @@
 choices, ordered routes, explicit guarded enemy targets, before/after state and
 RNG, effective card definitions, revision/content identity, and separate errors.
 It supports deterministic replay and isolated save/resume, not a gameplay policy
-or a graphical UX test. Multi-ship/profile baselines, metric reports, authored
-expansion scenarios and graphical manual expeditions remain future issue #22 work.
+or a graphical UX test. The separately published multi-ship/profile baseline below
+is not a manual replay. Metric reports, authored expansion scenarios and graphical
+manual expeditions remain later issue #22 work.
 
 Historical manual seed **777**, Cartographer, lost at region 2 layer 2, turn 29,
 hull 0, salvage 91. This was a headless rules run, not graphical UX testing, and

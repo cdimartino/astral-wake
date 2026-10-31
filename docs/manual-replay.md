@@ -107,8 +107,9 @@ but only inside the isolated session. All three existing ship IDs are supported.
   signed and are not a substitute for code review.
 - Full snapshots are intentionally verbose; Godot may also print engine startup
   diagnostics to stdout. Command files are newline-delimited JSON, not a JSON array.
-- This slice does **not** produce turn/encounter metric reports, run 30-seed
-  population baselines, add new mechanics, or claim any human difficulty target.
+- This slice does **not** produce turn/encounter metric reports, run population
+  baselines (see the separately published baseline in `docs/balance.md`), add new
+  mechanics, or claim any human difficulty target.
   It preserves the original seed-777 loss; any corrected manual sequence must be
   labelled a separate counterfactual. Issue #22 stays open for later evidence.
 
