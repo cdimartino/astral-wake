@@ -115,7 +115,8 @@ func plan_combat_action() -> Dictionary:
 	var battle=game.run.battle
 	if int(battle.command_points)<=0: return {"end_turn":true}
 	for card_index in range(battle.hand.size()):
-		if int(game.card(battle.hand[card_index].id).cost)>int(battle.command_points): continue
+		var definition=game.effective_card(battle.hand[card_index])
+		if int(definition.cost)>int(battle.command_points): continue
 		for route in route_options:
 			if not game._validate_route(game.run,route).is_empty(): continue
 			for target in range(battle.enemies.size()):
@@ -131,7 +132,6 @@ func plan_combat_action() -> Dictionary:
 					if effect.kind=="trace": score+=int(effect.amount)*0.6
 					if effect.kind=="resonance": score+=int(effect.amount)*0.8
 					if effect.kind=="ward": score+=int(effect.amount)*1.1
-				var definition=game.card(battle.hand[card_index].id)
 				score+=int(definition.get("draw",0))*2
 				var net=0
 				for i in range(6):
@@ -171,7 +171,7 @@ func choose_reward() -> Dictionary:
 		var score=0.0
 		if choice.kind=="powerup": score=25.0
 		else:
-			var definition=game.card(choice.id)
+			var definition=game.effective_card({"id":choice.id})
 			score=float(definition.get("damage",0))+float(definition.get("heal",0))*0.8+float(definition.get("vent",0))*5+float(definition.get("draw",0))*3+float(definition.get("disrupt",0))
 			score-=game.owned_card_count(choice.id)*5
 			if game.run.deck.size()>18: score-=10
@@ -186,7 +186,9 @@ func modify() -> Dictionary:
 	var score=-10000.0
 	for i in range(game.run.deck.size()):
 		var instance=game.run.deck[i]
-		var definition=game.card(instance.id)
+		# Freeze the existing policy's intrinsic (unevolved) removal/upgrade ranking.
+		# Actual plays and affordability use the owned instance above.
+		var definition=game.effective_card({"id":instance.id})
 		if game.run.modify_kind=="upgrade" and int(instance.level)>0: continue
 		var current=float(definition.get("damage",0))+float(definition.get("vent",0))*5+float(definition.get("heal",0))
 		if game.run.modify_kind=="remove": current=-current

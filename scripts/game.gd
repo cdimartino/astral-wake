@@ -80,6 +80,8 @@ func owned_card_count(id: String) -> int:
 	return count
 
 func effective_card(instance: Dictionary) -> Dictionary:
+	# Detached printed definition only: never include runtime resources, powerups,
+	# copied payloads or organs. Legacy level 1 retains its exact arithmetic.
 	var definition = card(instance.get("id","")).duplicate(true)
 	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
@@ -93,7 +95,7 @@ func effective_card(instance: Dictionary) -> Dictionary:
 func card_text(instance: Dictionary) -> String:
 	var original = card(instance.get("id",""))
 	var effective = effective_card(instance)
-	var text = str(original.get("description",""))
+	var text = str(effective.get("description",""))
 	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption"}
 	for field in phrases:
 		if int(original.get(field,0))>0:
@@ -323,7 +325,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	if target_index<0 or target_index>=battle.enemies.size() or int(battle.enemies[target_index].hp)<=0: return _fail("Choose a living target.")
 	var incoming_before=_incoming_damage(state)
 	var instance=battle.hand[hand_index]
-	var definition=card(instance.id)
+	var definition=effective_card(instance)
 	var cost=int(definition.cost)
 	if cost>int(battle.command_points): return _fail("Not enough command points: this command costs %d, with %d remaining."%[cost,int(battle.command_points)])
 	var trace_before=int(battle.get("trace",0))
@@ -331,11 +333,11 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var previous_kind=str(battle.get("last_command_kind",""))
 	var vessel_id=str(state.get("character","cartographer"))
 	var ward_gain=0
-	var effective=effective_card(instance)
-	var damage=int(effective.get("damage",0))
-	var heal=int(effective.get("heal",0))
-	var vent=int(effective.get("vent",0))
-	var disrupt=int(effective.get("disrupt",0))
+	var damage=int(definition.get("damage",0))
+	var heal=int(definition.get("heal",0))
+	var vent=int(definition.get("vent",0))
+	var disrupt=int(definition.get("disrupt",0))
+	# Snapshot before resource spending/copying, conditional powerups and organs.
 	var plain_payload={"damage":damage,"heal":heal,"disrupt":disrupt}
 	if vessel_id=="palimpsest":
 		battle.trace=mini(6,int(battle.trace)+int(definition.get("trace",0)))
@@ -503,7 +505,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		cooled.append(mini(int(battle.strain[i]),vent))
 		battle.strain[i]=maxi(0,int(battle.strain[i])-vent)
 	if vent>0: presentation.append({"kind":"cooling","amounts":cooled})
-	var pure_utility_upgrade=effective.first_free
+	var pure_utility_upgrade=definition.first_free
 	for i in range(route.size()):
 		if not (pure_utility_upgrade and i==0): battle.strain[int(route[i])]+=1
 	if vent>0: events.append("Cool every organ by %d before route strain."%vent)
@@ -512,6 +514,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"link","route":route.duplicate()})
 		if route.size()>1 and not _edge_exists(battle.edges,int(route[0]),int(route[-1])): battle.edges.append([int(route[0]),int(route[-1])])
 		events.append("Connections restored; route endpoints linked for this battle.")
+	# Commit to discard before drawing: an empty deck can redraw this same UID.
 	battle.discard.append(battle.hand.pop_at(hand_index))
 	presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
 	_draw(state,int(definition.get("draw",0)),presentation)

@@ -1,6 +1,16 @@
 extends SceneTree
 const Main = preload("res://scripts/main.gd")
+const Game = preload("res://scripts/game.gd")
 var failures := 0
+
+# Existing-field seam: display and selection must not bypass effective_card.
+class EffectiveGame extends Game:
+	func effective_card(instance: Dictionary) -> Dictionary:
+		var result = super.effective_card(instance)
+		result.cost = 2
+		result.damage = 20
+		result.trace = 3
+		return result
 
 func require(value: bool, message: String) -> void:
 	if not value:
@@ -45,6 +55,23 @@ func check() -> void:
 				if definition.id == "carbon_breath":
 					var labels = effects.find_children("*", "Label", true, false)
 					require(labels.any(func(label): return label.text == "Vent %d" % (1 + level)), "Carbon Breath vent invisible")
+	ui.game = EffectiveGame.new(OS.get_environment("TMPDIR").path_join("astral-card-seam-%d" % Time.get_ticks_usec()))
+	ui.game.new_run(2026)
+	ui.game.choose_node(ui.game.run.map[0][0].id)
+	ui.game.run.battle.hand = [{"id":"needle", "uid":1, "level":0}]
+	ui.game.run.battle.command_points = 1
+	ui._clear_selection()
+	ui._render()
+	require(ui.hand_buttons[0].disabled, "Hand affordability uses effective cost")
+	require(ui.hand_buttons[0].tooltip_text.contains("2 command points") and ui.hand_buttons[0].tooltip_text.contains("Deal 20 damage"), "Tooltip cost and text share effective definition")
+	ui._select_card(0)
+	require(ui.selected_card == -1, "Selection refuses effective cost even when raw catalog cost is affordable")
+	ui.game.run.battle.command_points = 2
+	ui._render()
+	ui._select_card(0)
+	require(ui.selected_card == 0 and not ui.hand_buttons[0].disabled, "Selection permits effective cost when affordable")
+	var labels = ui.hand_buttons[0].find_children("*", "Label", true, false)
+	require(labels.any(func(label): return label.text == "2") and labels.any(func(label): return label.text == "20") and labels.any(func(label): return label.text == "Trace +3"), "Face cost, printed payload and resource badges share effective definition")
 	ui.ambience.stop()
 	ui.audio.stop()
 	OS.delay_msec(200)

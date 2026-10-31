@@ -57,7 +57,7 @@ func capture() -> void:
     ui.game.run.battle.hand.append({"id":id,"uid":100 + ui.game.run.battle.hand.size(),"level":1})
   ui._render()
   for index in range(ui.game.run.battle.hand.size()):
-   var card = ui.game.card(ui.game.run.battle.hand[index].id)
+   var card = ui.game.effective_card(ui.game.run.battle.hand[index])
    if int(card.get("damage", 0)) > 0:
     ui._select_card(index)
     ui._select_organ(0)
