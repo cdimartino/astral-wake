@@ -311,12 +311,12 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 		visited.append(node)
 	return ""
 
-func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int) -> Dictionary:
+func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int, preview_only: bool = false) -> Dictionary:
 	if state.get("mode","")!="combat": return _fail("There is no active battle.")
 	var battle=state.battle
 	if hand_index<0 or hand_index>=battle.hand.size(): return _fail("Choose a card from your hand.")
 	var route_error=_validate_route(state,route)
-	if not route_error.is_empty(): return _fail(route_error)
+	if not route_error.is_empty() and not (preview_only and route.is_empty()): return _fail(route_error)
 	if target_index<0 or target_index>=battle.enemies.size() or int(battle.enemies[target_index].hp)<=0: return _fail("Choose a living target.")
 	var incoming_before=_incoming_damage(state)
 	var instance=battle.hand[hand_index]
@@ -352,6 +352,9 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			battle.resonance=0
 			damage+=spent*2
 			heal+=spent
+	var resource_preview={"trace_before":trace_before,"resonance_before":resonance_before,"card_trace":int(battle.get("trace",0)),"card_resonance":int(battle.get("resonance",0))}
+	if route.is_empty():
+		return {"ok":false,"error":"Choose an organ to begin routing.","resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":[]}
 	if damage>0:
 		damage+=_effect(state,"damage")
 		if battle.first_play: damage+=_effect(state,"first_damage")
@@ -360,7 +363,14 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	if heal>0: heal+=_effect(state,"heal")
 	var split=false
 	var redirect=0
+	var route_steps=[]
+	var other_living=false
+	for i in range(battle.enemies.size()):
+		if i!=target_index and int(battle.enemies[i].hp)>0: other_living=true
 	for index in route:
+		var before_payload=[damage,heal,disrupt,redirect,split,ward_gain]
+		var before_trace=int(battle.get("trace",0))
+		var before_resonance=int(battle.get("resonance",0))
 		match organ(int(index)).id:
 			"lens":
 				if damage>0: damage+=3
@@ -414,6 +424,18 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 				if int(battle.resonance)>=2:
 					battle.resonance-=2
 					ward_gain=3
+		var payload_changed=before_payload!=[damage,heal,disrupt,redirect,split,ward_gain]
+		var id=str(organ(int(index)).id)
+		if id in ["fork","splice","chorus"] and split: payload_changed=damage>0 and other_living and (int(floor(damage/2.0))+_effect(state,"fork"))>0
+		if id=="prism": payload_changed=other_living and int(battle.enemies[target_index].redirect)<3
+		if id=="cadence": payload_changed=ward_gain>int(before_payload[5]) and int(battle.ward)<3
+		var resource_gained=int(battle.get("trace",0))>before_trace or int(battle.get("resonance",0))>before_resonance
+		var resource_spent=int(battle.get("trace",0))<before_trace or int(battle.get("resonance",0))<before_resonance
+		var status="active" if payload_changed or resource_gained else "wasted" if resource_spent else "inactive"
+		if status=="active" and ((id=="redact" and before_trace==0) or (id=="splice" and before_trace<2) or (id=="chorus" and before_resonance<2)): status="fallback"
+		var reasons={"lens":"Needs damage", "fork":"No split target", "echo":"No damage/repair", "prism":"No redirect available", "scribe":"Trace full", "splice":"No split target", "recall":"Needs damage/Trace", "palimend":"Needs 1 Trace", "rewrite":"Needs Trace/base", "conductor":"Same kind or full", "chorus":"No split target", "crescendo":"No gain from spending", "rest":"Needs non-attack", "cadence":"Needs resource/ward room"}
+		var reason="Effect applied" if status=="active" else "Fallback applied" if status=="fallback" else "Spent without benefit" if status=="wasted" else str(reasons.get(id,"No payload change"))
+		route_steps.append({"organ":int(index),"status":status,"reason":reason,"trace_before":before_trace,"trace_after":int(battle.get("trace",0)),"resonance_before":before_resonance,"resonance_after":int(battle.get("resonance",0)),"payload_before":before_payload,"payload_after":[damage,heal,disrupt,redirect,split,ward_gain]})
 	if disrupt>0: disrupt+=_effect(state,"disrupt")
 	var target=battle.enemies[target_index]
 	var events=[]
@@ -465,7 +487,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			events.append("%s: +%d disruption for this enemy phase (combined defense caps at half an attack)."%[target.name,disrupt])
 			if int(target.intent.get("interrupt",0))>0:
 				events.append("%s: action interrupted."%target.name if int(target.disrupt)>=int(target.intent.interrupt) else "%s: %d more disruption interrupts this action."%[target.name,int(target.intent.interrupt)-int(target.disrupt)])
-		var other_living=false
+		other_living=false
 		for i in range(battle.enemies.size()):
 			if i!=target_index and int(battle.enemies[i].hp)>0: other_living=true
 		var added_redirect=mini(3,int(target.redirect)+redirect)-int(target.redirect) if other_living else 0
@@ -501,10 +523,10 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"heal","amount":finish_heal,"source":"repair_after"})
 		events.append("After combat: repair %d hull."%finish_heal)
 	_log(state,definition.name+": "+" ".join(events))
-	return {"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation}
+	return {"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
 
 func preview_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
-	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index)
+	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true)
 	result.erase("next")
 	return result
 

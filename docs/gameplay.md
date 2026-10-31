@@ -12,6 +12,8 @@ The combat header's **Last command** box shows the previous card, its kind, and 
 
 Card faces show their effective upgraded numbers, including Vent, Draw, and vessel-resource gains. Effect badges wrap rather than disappearing beneath long descriptions. Upgrades do not increase Draw: pure utility upgrades instead spare the first routed organ's strain.
 
+While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
+
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.
