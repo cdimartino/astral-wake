@@ -8,6 +8,8 @@ python3 tests/check_audio.py
 python3 tests/check_art.py
 "$engine" --headless --path . --editor --import --quit
 "$engine" --headless --path . --script tests/run_tests.gd
+"$engine" --headless --path . --script tests/seed_tests.gd
+"$engine" --headless --path . --script tests/seed_ui_test.gd
 "$engine" --headless --path . --script tests/balance_tests.gd
 "$engine" --headless --path . --script tests/enemy_tactics_tests.gd
 "$engine" --headless --path . --script tests/enemy_tactics_ui_test.gd
