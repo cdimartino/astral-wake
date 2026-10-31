@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """Summarize completed baseline JSONL without treating missing/error runs as losses."""
 import collections
-import json
-import pathlib
 import sys
+from baseline import load_capture
 
 
 def report(path):
-    records = [json.loads(line) for line in pathlib.Path(path).read_text().splitlines()]
-    metadata = records[0]["metadata"]
-    rows = [row for row in records if "status" in row]
+    metadata, rows, summary = load_capture(path)
     key = lambda row: (row["seed"], row["character"], row.get("unlocks"), row["policy"])
     planned = {key(row) for row in metadata["planned"]}
     actual = [key(row) for row in rows]
@@ -17,11 +14,15 @@ def report(path):
         raise ValueError("Duplicate or unplanned result")
     counts = collections.Counter(row["status"] for row in rows)
     print(f'Revision: `{metadata["revision"]}`; engine: `{metadata["engine"]}`')
-    print(f"\nCompleted {len(rows)}/{len(planned)} cases; missing {len(planned - set(actual))}.")
+    print(f"\nRecorded {len(rows)}/{len(planned)} cases; missing {len(planned - set(actual))}.")
     print(f"Statuses: {dict(sorted(counts.items()))}")
-    summary = next((r["summary"] for r in records if "summary" in r), None)
     if summary:
-        print(f'Wall time: {summary["wall_seconds"]} seconds.')
+        print(f'Wall time (this invocation only): {summary["wall_seconds"]} seconds.')
+    else:
+        print("INTERRUPTED / INCOMPLETE: no final summary; missing cases have no recorded outcome, not timeouts or defeats.")
+    if "resume" in metadata:
+        resume = metadata["resume"]
+        print(f'Resume: {resume["inherited_rows"]} retained rows; revision relationship: {resume["revision_relationship"]}.')
     print("\n| Ship | Tier | Policy | Wins | Defeats | Errors | Unfinished | Timeout | Missing |")
     print("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |")
     for ship, tier, policy in sorted({(r["character"], r["unlocks"], r["policy"]) for r in metadata["planned"]}):
