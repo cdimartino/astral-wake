@@ -276,12 +276,12 @@
       "heal": 0,
       "vent": 0,
       "draw": 1,
-      "disrupt": 3,
+      "disrupt": 6,
       "link": false,
       "rarity": 1,
       "unlock": 0,
       "art": 5,
-      "description": "Draw 1 card. Apply 3 disruption to the chosen enemy.",
+      "description": "Draw 1 card. Apply 6 disruption to the chosen enemy.",
       "cost": 1
     },
     {
@@ -500,12 +500,12 @@
       "heal": 0,
       "vent": 1,
       "draw": 0,
-      "disrupt": 4,
+      "disrupt": 8,
       "link": false,
       "rarity": 2,
       "unlock": 0,
       "art": 18,
-      "description": "Cool every organ by 1 before routing. Apply 4 disruption to the chosen enemy.",
+      "description": "Cool every organ by 1 before routing. Apply 8 disruption to the chosen enemy.",
       "cost": 1
     },
     {
@@ -842,7 +842,7 @@
       "heal": 0,
       "vent": 0,
       "draw": 1,
-      "disrupt": 3,
+      "disrupt": 6,
       "link": false,
       "cost": 1,
       "rarity": 2,
@@ -850,7 +850,7 @@
       "art": 19,
       "character": "palimpsest",
       "trace": 1,
-      "description": "Draw 1 card. Apply 3 disruption this enemy phase. Gain 1 Trace, up to 6."
+      "description": "Draw 1 card. Apply 6 disruption this enemy phase. Gain 1 Trace, up to 6."
     },
     {
       "id": "double_exposure",
@@ -1021,7 +1021,7 @@
       "heal": 0,
       "vent": 0,
       "draw": 0,
-      "disrupt": 2,
+      "disrupt": 4,
       "link": false,
       "cost": 1,
       "rarity": 0,
@@ -1029,7 +1029,7 @@
       "art": 19,
       "character": "hollow_choir",
       "resonance": 1,
-      "description": "Apply 2 disruption this enemy phase. Gain 1 Resonance, up to 3."
+      "description": "Apply 4 disruption this enemy phase. Gain 1 Resonance, up to 3."
     },
     {
       "id": "bright_canon",
@@ -1146,7 +1146,7 @@
       "heal": 0,
       "vent": 1,
       "draw": 0,
-      "disrupt": 3,
+      "disrupt": 6,
       "link": false,
       "cost": 1,
       "rarity": 1,
@@ -1154,7 +1154,7 @@
       "art": 19,
       "character": "hollow_choir",
       "resonance": 1,
-      "description": "Cool every organ by 1 before routing. Apply 3 disruption this enemy phase. Gain 1 Resonance, up to 3."
+      "description": "Cool every organ by 1 before routing. Apply 6 disruption this enemy phase. Gain 1 Resonance, up to 3."
     },
     {
       "id": "orbital_round",
@@ -1419,6 +1419,7 @@
       "hp": 70,
       "art": 1,
       "description": "A coal with too many legs.",
+      "tactics": {"name":"Soot skirmisher","counter":"Bites, then dusts the most strained organs. Soot leaves it exposed: each hit deals 4 extra damage on that turn.","phases":[{}, {"exposed":4}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1440,6 +1441,7 @@
       "hp": 84,
       "art": 2,
       "description": "It mistakes the ship for a warmer star.",
+      "tactics": {"name":"Pulsing hide","counter":"Arc has 3 armor per hit; Afterglow takes 5 extra damage per hit. Defend the bright pulse, burst during the dim pulse.","phases":[{"armor":3}, {"exposed":5}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1461,6 +1463,7 @@
       "hp": 96,
       "art": 3,
       "description": "A small voice in the dead sun’s throat.",
+      "tactics": {"name":"Interruptible hymn","counter":"Apply 3 disruption during Dry hymn to cancel its strain. Cough gains 2 damage per saturated organ: vent before it lands.","phases":[{"interrupt":3}, {"overload":2}]},
       "pattern": [
         {
           "kind": "strain",
@@ -1482,6 +1485,7 @@
       "hp": 80,
       "art": 4,
       "description": "It feeds where the ship joins itself.",
+      "tactics": {"name":"Conduit parasite","counter":"Unstitch cuts your last route first. Drink repairs the hull damage it actually deals. One-organ attacks deal 5 extra damage; bait cuts and disrupt its feeding turn.","weakness":"short","bonus":5,"phases":[{}, {"drain":true}]},
       "pattern": [
         {
           "kind": "sever",
@@ -1503,6 +1507,7 @@
       "hp": 220,
       "art": 5,
       "description": "It tends the heat that should have died.",
+      "tactics": {"name":"Kiln cycle","counter":"Brand has 4 armor. Interrupt Kiln breath with 4 disruption or prepare to vent: Crook gains 3 damage per saturated organ, but takes 5 extra damage per hit.","phases":[{"armor":4}, {"interrupt":4}, {"overload":3,"exposed":5}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1529,6 +1534,7 @@
       "hp": 300,
       "art": 6,
       "description": "A dawn still inside its shell. Its eggs hatch after two enemy phases.",
+      "tactics": {"name":"Brood furnace","counter":"Laying has 5 armor but 5 disruption stops the egg. Corona is exposed for 4 extra damage per hit. Fever precedes Shellfall, which gains 2 damage per saturated organ. Kill eggs before they hatch.","phases":[{"armor":5,"interrupt":5}, {"exposed":4}, {}, {"overload":2}]},
       "pattern": [
         {
           "kind": "incubate",
@@ -1560,6 +1566,7 @@
       "hp": 96,
       "art": 7,
       "description": "A customs post that learned to drift.",
+      "tactics": {"name":"Armored tollgate","counter":"Tariff has 4 armor, followed by a heavier Fine exposed for 4 extra damage per hit. Three-organ attacks gain 5 damage in either phase: build a strong route rather than chip away.","weakness":"long","bonus":5,"phases":[{"armor":4}, {"exposed":4}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1581,6 +1588,7 @@
       "hp": 106,
       "art": 8,
       "description": "She carries a nest of abandoned fasteners.",
+      "tactics": {"name":"Rivet ambush","counter":"Unpin has 4 armor and cuts the last route first. Rivet rain has no armor. Secondary split hits gain 6 damage: hit her companion while she prepares.","weakness":"split","bonus":6,"phases":[{"armor":4}, {}]},
       "pattern": [
         {
           "kind": "sever",
@@ -1602,6 +1610,7 @@
       "hp": 116,
       "art": 9,
       "description": "Each bolt remembers a different ship.",
+      "tactics": {"name":"Overload chorus","counter":"Dissonance gains 3 damage per saturated organ. Its following Resonance can be stopped with 3 disruption and takes 3 extra damage per hit. Keep the circuit cool across the cycle.","phases":[{"overload":3}, {"interrupt":3,"exposed":3}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1623,6 +1632,7 @@
       "hp": 110,
       "art": 10,
       "description": "Its ledger names the living as salvage.",
+      "tactics": {"name":"Debt collector","counter":"Collection is the heavy hit; Interest repairs actual hull damage dealt and takes 4 extra damage per hit. One-organ attacks gain 4 damage. Save prevention for the feeding turn when possible.","weakness":"short","bonus":4,"phases":[{}, {"drain":true,"exposed":4}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1644,6 +1654,7 @@
       "hp": 300,
       "art": 11,
       "description": "An old verdict wrapped in newer wreckage.",
+      "tactics": {"name":"Siege court","counter":"Gavel has 5 armor. Refit takes 4 extra damage per hit and 4 disruption cancels its group repair. Adjourn cuts your last route first; use that quiet turn to rebuild your circuit.","phases":[{"armor":5}, {"interrupt":4,"exposed":4}, {}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1670,6 +1681,7 @@
       "hp": 440,
       "art": 12,
       "description": "Attendants keep its endless session. The assembly rebuilds its members.",
+      "tactics": {"name":"Protected assembly","counter":"Each living attendant absorbs 2 damage from every hit on Parliament. Kill attendants first; 5 disruption cancels Ratify repairs. Censure has 3 armor, but Division takes 6 extra damage per hit.","phases":[{"interrupt":5}, {"armor":3}, {}, {"exposed":6}]},
       "pattern": [
         {
           "kind": "rebuild",
@@ -1701,6 +1713,7 @@
       "hp": 120,
       "art": 13,
       "description": "It checks the ship against an impossible original.",
+      "tactics": {"name":"Route examiner","counter":"Annotate has 3 armor but 3 disruption prevents its route mark. Correction takes 4 extra damage per hit. Three-organ attacks gain 4 damage; vary their order once marked.","weakness":"long","bonus":4,"phases":[{"armor":3,"interrupt":3}, {"exposed":4}]},
       "pattern": [
         {
           "kind": "mark",
@@ -1722,6 +1735,7 @@
       "hp": 114,
       "art": 14,
       "description": "A hole held open by a graceful frame.",
+      "tactics": {"name":"Hollow frame","counter":"Erase cuts your last route first and takes 5 extra damage per hit. Vacuum has 4 armor. Secondary split hits gain 5 damage; exploit the open frame before it closes.","weakness":"split","bonus":5,"phases":[{"exposed":5}, {"armor":4}]},
       "pattern": [
         {
           "kind": "sever",
@@ -1743,6 +1757,7 @@
       "hp": 130,
       "art": 15,
       "description": "It wants the face the ship left behind.",
+      "tactics": {"name":"Alternating mirror","counter":"Recognition is a heavy hit with 5 armor. Denial takes 6 extra damage per hit. One-organ attacks gain 6 damage: conserve the circuit while bracing, then punish Denial.","weakness":"short","bonus":6,"phases":[{"armor":5}, {"exposed":6}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1764,6 +1779,7 @@
       "hp": 140,
       "art": 16,
       "description": "Every lost voyage has a page in it.",
+      "tactics": {"name":"Saturation index","counter":"Catalogue targets the most strained organs and can be stopped with 4 disruption. Redaction gains 4 damage per saturated organ. Three-organ attacks gain 6 damage, but vent before the strike.","weakness":"long","bonus":6,"phases":[{"interrupt":4}, {"overload":4}]},
       "pattern": [
         {
           "kind": "strain",
@@ -1785,6 +1801,7 @@
       "hp": 380,
       "art": 17,
       "description": "The last librarian burns the paths between shelves.",
+      "tactics": {"name":"Sealed record","counter":"Record has 5 armor but 4 disruption prevents its mark. Seal cuts your last route first. Close the book takes 8 extra damage per hit: spend the two setup turns preparing a burst.","phases":[{"armor":5,"interrupt":4}, {}, {"exposed":8}]},
       "pattern": [
         {
           "kind": "mark",
@@ -1811,6 +1828,7 @@
       "hp": 560,
       "art": 18,
       "description": "It remembers each route, then cuts the links that made it possible.",
+      "tactics": {"name":"Cross-examination","counter":"Witness has 4 armor; 5 disruption prevents the mark. Testimony takes 4 extra damage per hit. Interrupt Sever with 4 disruption. Rebuttal has 4 armor. Cross-examine sets up Final testimony: vent to avoid its +3 damage per saturated organ, then exploit its +7 damage taken per hit.","phases":[{"armor":4,"interrupt":5}, {"exposed":4}, {"interrupt":4}, {"armor":4}, {}, {"overload":3,"exposed":7}]},
       "pattern": [
         {
           "kind": "mark",
@@ -1852,6 +1870,7 @@
       "hp": 74,
       "art": 19,
       "description": "A small engine carrying too much spring.",
+      "tactics": {"name":"Pollen shell","counter":"Pollen lance has 2 armor; Seed dust takes 5 extra damage per hit. Secondary split hits gain 4 damage. Pick off its companions while it shelters, then finish it during dusting.","weakness":"split","bonus":4,"phases":[{"armor":2}, {"exposed":5}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1873,6 +1892,7 @@
       "hp": 82,
       "art": 19,
       "description": "Roots search for the seams in your hull.",
+      "tactics": {"name":"Root and feed","counter":"Take root cuts your last route first and can be stopped with 3 disruption. Graft drains actual hull damage; Tendril takes 5 extra damage per hit. Defend the middle turn, attack the last.","phases":[{"interrupt":3}, {"drain":true}, {"exposed":5}]},
       "pattern": [
         {
           "kind": "sever",
@@ -1899,6 +1919,7 @@
       "hp": 88,
       "art": 19,
       "description": "It counts every drop that escapes.",
+      "tactics": {"name":"Sap medic","counter":"Tap drains actual hull damage. Sap wash repairs the group unless interrupted with 3 disruption. Press has 3 armor. Three-organ attacks gain 5 damage; focus it before its allies can be repaired.","weakness":"long","bonus":5,"phases":[{"drain":true}, {"interrupt":3}, {"armor":3}]},
       "pattern": [
         {
           "kind": "attack",
@@ -1925,6 +1946,7 @@
       "hp": 92,
       "art": 19,
       "description": "A flower that learned the shape of a weapon.",
+      "tactics": {"name":"Thorn bloom","counter":"Bloom has 4 armor while straining your busiest organs. Thornfall gains 2 damage per saturated organ but takes 6 extra damage per hit. Vent during Bloom and burst during Thornfall.","phases":[{"armor":4}, {"overload":2,"exposed":6}]},
       "pattern": [
         {
           "kind": "strain",
@@ -1946,6 +1968,7 @@
       "hp": 220,
       "art": 19,
       "description": "A wandering orchard of scarred metal.",
+      "tactics": {"name":"Orchard seasons","counter":"Regrow has 4 armor but 4 disruption cancels the repair. Bough takes 5 extra damage per hit. Root pressure can be interrupted with 4 disruption; Harvest drains actual hull damage.","phases":[{"armor":4,"interrupt":4}, {"exposed":5}, {"interrupt":4}, {"drain":true}]},
       "pattern": [
         {
           "kind": "rebuild",
@@ -1977,6 +2000,7 @@
       "hp": 300,
       "art": 19,
       "description": "Its roots repair what its captive sun burns.",
+      "tactics": {"name":"Solar growth cycle","counter":"Entangle has 4 armor; Solar sap gains 3 damage per saturated organ. Germinate takes 4 extra damage per hit and 5 disruption stops the repair. Root flare drains actual hull damage. Alternate cooling, interruption and prevention.","phases":[{"armor":4}, {"overload":3}, {"interrupt":5,"exposed":4}, {"drain":true}]},
       "pattern": [
         {
           "kind": "strain",
@@ -2008,6 +2032,7 @@
       "hp": 72,
       "art": 19,
       "description": "Its fins turn like unnumbered pages.",
+      "tactics": {"name":"Fragile annotator","counter":"Index takes 6 extra damage per hit and 2 disruption prevents its mark. Page edge has 3 armor. Burst or interrupt immediately; alternate routes if the mark lands.","phases":[{"exposed":6,"interrupt":2}, {"armor":3}]},
       "pattern": [
         {
           "kind": "mark",
@@ -2029,6 +2054,7 @@
       "hp": 84,
       "art": 19,
       "description": "It writes with the pull of a dark tide.",
+      "tactics": {"name":"Gravity trap","counter":"Drag has 3 armor. Gravity ink strains busy organs; Undertow gains 3 damage per saturated organ and takes 4 extra damage per hit. One-organ attacks gain 4 damage, leaving more room to vent.","weakness":"short","bonus":4,"phases":[{"armor":3}, {}, {"overload":3,"exposed":4}]},
       "pattern": [
         {
           "kind": "attack",
@@ -2055,6 +2081,7 @@
       "hp": 96,
       "art": 19,
       "description": "A library bound in one enormous spine.",
+      "tactics": {"name":"Iron binding","counter":"Binding has 6 armor per hit. Rebind takes 5 extra damage per hit and 3 disruption cancels its group repair. Save large hits for the binding; repeated small hits work when it opens.","phases":[{"armor":6}, {"interrupt":3,"exposed":5}]},
       "pattern": [
         {
           "kind": "attack",
@@ -2076,6 +2103,7 @@
       "hp": 78,
       "art": 19,
       "description": "Its wings fold the shortest paths shut.",
+      "tactics": {"name":"Double fold","counter":"Fold cuts two links from your last route first; 3 disruption cancels both cuts. Weight takes 3 extra damage per hit. One-organ attacks gain 5 damage and require no conduits.","weakness":"short","bonus":5,"phases":[{"interrupt":3}, {"exposed":3}]},
       "pattern": [
         {
           "kind": "sever",
@@ -2097,6 +2125,7 @@
       "hp": 220,
       "art": 19,
       "description": "Every lost course returns to its shelves.",
+      "tactics": {"name":"Depth lock","counter":"Record can be stopped with 4 disruption. Pressure has 5 armor. Seal shelf takes 5 extra damage per hit and cuts the last route first. Deep water drains actual hull damage; keep defense for that turn.","phases":[{"interrupt":4}, {"armor":5}, {"exposed":5}, {"drain":true}]},
       "pattern": [
         {
           "kind": "mark",
@@ -2128,6 +2157,7 @@
       "hp": 300,
       "art": 19,
       "description": "The archive repeats your routes in a voice deeper than sound.",
+      "tactics": {"name":"Tidal ledger","counter":"Remember has 4 armor but 4 disruption prevents its mark. Black tide drains actual hull damage. Restore record can be interrupted with 5 disruption. Closing volume takes 7 extra damage per hit: plan a finishing burst there.","phases":[{"armor":4,"interrupt":4}, {"drain":true}, {"interrupt":5}, {"exposed":7}]},
       "pattern": [
         {
           "kind": "mark",
@@ -2159,6 +2189,7 @@
       "hp": 80,
       "art": 19,
       "description": "A bright oath in a hollow suit of armor.",
+      "tactics": {"name":"Dueling armor","counter":"Challenge has 5 armor, then Riposte takes 5 extra damage per hit but gains 2 damage per saturated organ. Three-organ attacks gain 6 damage: exploit the long-route weakness without overheating before the counterstrike.","weakness":"long","bonus":6,"phases":[{"armor":5}, {"exposed":5,"overload":2}]},
       "pattern": [
         {
           "kind": "attack",
@@ -2180,6 +2211,7 @@
       "hp": 70,
       "art": 19,
       "description": "It dances wherever a current breaks.",
+      "tactics": {"name":"Static discharge","counter":"Static takes 4 extra damage per hit and 2 disruption cancels its strain. Arc gains 3 damage per saturated organ; Return stroke takes 3 extra damage per hit. Stop the setup or cool before Arc.","phases":[{"interrupt":2,"exposed":4}, {"overload":3}, {"exposed":3}]},
       "pattern": [
         {
           "kind": "strain",
@@ -2206,6 +2238,7 @@
       "hp": 86,
       "art": 19,
       "description": "Thin wings catch the lightning between ships.",
+      "tactics": {"name":"Conduit hunter","counter":"Snip has 3 armor and cuts the last route first. Thunderline gains 2 damage per saturated organ. Secondary split hits gain 7 damage; bait its cut away from your cooling route.","weakness":"split","bonus":7,"phases":[{"armor":3}, {"overload":2}]},
       "pattern": [
         {
           "kind": "sever",
@@ -2227,6 +2260,7 @@
       "hp": 90,
       "art": 19,
       "description": "Every announcement arrives as a strike.",
+      "tactics": {"name":"Binding oath","counter":"Proclamation has 3 armor. Oath takes 4 extra damage per hit and 3 disruption prevents its mark. Echoing oath drains actual hull damage. Exploit the announcement gap, then vary your defenses.","phases":[{"armor":3}, {"interrupt":3,"exposed":4}, {"drain":true}]},
       "pattern": [
         {
           "kind": "attack",
@@ -2253,6 +2287,7 @@
       "hp": 220,
       "art": 19,
       "description": "The crown’s last servant refuses to kneel.",
+      "tactics": {"name":"Dividing scepter","counter":"Scepter has 5 armor. Divide cuts two links from the last route first; 4 disruption cancels it. Judgment gains 3 damage per saturated organ but takes 6 extra damage per hit. Preserve a cool route for the finish.","phases":[{"armor":5}, {"interrupt":4}, {"overload":3,"exposed":6}]},
       "pattern": [
         {
           "kind": "attack",
@@ -2279,6 +2314,7 @@
       "hp": 300,
       "art": 19,
       "description": "No circuit can hold its storm for long.",
+      "tactics": {"name":"Storm coronation","counter":"Shatter crown has 5 armor but 5 disruption cancels its two cuts. Royal thunder takes 6 extra damage per hit. Coronation can be interrupted with 4 disruption. Unbound arc gains 4 damage per saturated organ: keep cooling and alternate burst turns.","phases":[{"armor":5,"interrupt":5}, {"exposed":6}, {"interrupt":4}, {"overload":4}]},
       "pattern": [
         {
           "kind": "sever",

@@ -186,8 +186,11 @@ func expansion_save_boundary_checks() -> void:
 		test.run.region=area
 		var definition=test.enemy(test.catalog.regions[area].boss)
 		var native=test._make_enemy(definition.id)
-		check(native.max_hp==int(definition.hp),"legacy geography at its original mission stage keeps authored hull")
-		check(int(native.intent.amount)==int(definition.pattern[0].amount),"legacy geography at its original mission stage keeps authored intent strength")
+		var scale=[1.0,1.4/1.3,1.8/1.6][area]
+		check(native.max_hp==int(round(int(definition.hp)*scale)),"legacy geography normalizes authored hull to the new area curve")
+		var expected=int(definition.pattern[0].amount)
+		if definition.pattern[0].kind in ["rebuild","mark"]: expected=int(round(expected*scale))
+		check(int(native.intent.amount)==expected,"legacy boss utility intent uses the new area curve")
 	test.run.region=0
 	var altered=test.run.duplicate(true)
 	altered.battle.hand[0].id="margin_knife"

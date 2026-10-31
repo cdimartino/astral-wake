@@ -8,6 +8,9 @@ var actions=0
 var started=0
 var route_options=[]
 var checkpoints=[]
+var policy="balanced"
+var no_bonuses=false
+var allow_defeat=false
 
 func _initialize() -> void:
 	started=Time.get_ticks_msec()
@@ -18,6 +21,9 @@ func _initialize() -> void:
 		if arg.begins_with("--seed="): seed_value=int(arg.trim_prefix("--seed="))
 		if arg.begins_with("--character="): character_id=arg.trim_prefix("--character=")
 		if arg.begins_with("--hp-scale="): hp_scale=float(arg.trim_prefix("--hp-scale="))
+		if arg.begins_with("--policy="): policy=arg.trim_prefix("--policy=")
+		if arg=="--no-bonuses": no_bonuses=true
+		if arg=="--allow-defeat": allow_defeat=true
 	game=Game.new("/tmp/astral-playthrough-%d-%d"%[seed_value,Time.get_ticks_usec()])
 	for definition in game.catalog.enemies: definition.hp=int(round(definition.hp*hp_scale))
 	game.new_run(seed_value,character_id)
@@ -31,7 +37,7 @@ func _initialize() -> void:
 			"transition":
 				checkpoints.append({"region":game.run.region,"turns":game.run.turns,"hull":game.run.hull,"cards":game.run.deck.size()})
 				outcome=game.continue_region()
-			"recovery": outcome=game.recover("repair" if game.run.hull<72 else "upgrade")
+			"recovery": outcome=game.recover("repair" if no_bonuses or game.run.hull<72 else "upgrade")
 			"modify": outcome=modify()
 			"shop": outcome=shop()
 			"event": outcome=event()
@@ -46,8 +52,10 @@ func _initialize() -> void:
 		actions+=1
 		if actions%100==0: print("PROGRESS actions=%d region=%d layer=%d hull=%d mode=%s"%[actions,game.run.region+1,game.run.layer+1,game.run.hull,game.run.mode])
 	var result={"seed":seed_value,"character":game.run.character,"route_regions":game.run.route_regions,"mode":game.run.mode,"region":game.run.region+1,"layer":game.run.layer+1,"turns":game.run.turns,"battles":game.run.battles,"cards_played":cards_played,"max_cards_per_turn":max_cards_per_turn,"actions":actions,"hull":game.run.hull,"deck":game.run.deck,"powerups":game.run.powerups,"checkpoints":checkpoints,"wall_seconds":(Time.get_ticks_msec()-started)/1000.0,"save_directory":game.store.directory}
+	result.policy=policy
+	result.no_bonuses=no_bonuses
 	print("PLAYTHROUGH "+JSON.stringify(result))
-	quit(0 if game.run.mode=="victory" else 2)
+	quit(0 if game.run.mode=="victory" or (allow_defeat and game.run.mode=="defeat") else 2)
 
 func prepare_routes() -> void:
 	route_options.clear()
@@ -111,6 +119,12 @@ func plan_combat_action() -> Dictionary:
 					net+=int(forecast.strain[i])-int(battle.strain[i])
 					if int(forecast.strain[i])>=int(battle.capacity): score-=1.2
 				score-=net*1.2
+				if policy=="tactical":
+					var incoming=maxi(0,game._incoming_damage(game.run)-int(battle.ward))
+					var urgency=clampf(float(incoming+30)/maxf(1,float(game.run.hull)),0.5,4.0)
+					score+=(maxi(0,int(forecast.heal))+maxi(0,int(forecast.get("attack_reduction",0))))*urgency
+					score/=float(definition.cost)
+				if policy=="aggressive": score=float(forecast.damage)-net*1.2
 				if score>best_score:
 					best_score=score
 					best={"hand":card_index,"route":route,"target":target}
@@ -130,6 +144,7 @@ func combat_action() -> Dictionary:
 	return result
 
 func choose_reward() -> Dictionary:
+	if no_bonuses: return game.choose_reward(-1)
 	var best=-1
 	var best_score=8.0
 	for i in range(game.run.reward.choices.size()):
@@ -147,6 +162,7 @@ func choose_reward() -> Dictionary:
 	return game.choose_reward(best)
 
 func modify() -> Dictionary:
+	if no_bonuses: return game.cancel_modify()
 	var best=-1
 	var score=-10000.0
 	for i in range(game.run.deck.size()):
@@ -162,6 +178,7 @@ func modify() -> Dictionary:
 	return game.modify_card(best)
 
 func shop() -> Dictionary:
+	if no_bonuses: return game.leave_location()
 	for i in range(game.run.shop.items.size()):
 		var item=game.run.shop.items[i]
 		if not item.sold and item.cost<=game.run.salvage and item.kind=="powerup": return game.buy(i)
@@ -171,6 +188,7 @@ func shop() -> Dictionary:
 	return game.leave_location()
 
 func event() -> Dictionary:
+	if no_bonuses: return game.leave_location()
 	var definition={}
 	for item in game.catalog.events:
 		if item.id==game.run.event_id: definition=item

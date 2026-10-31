@@ -33,9 +33,13 @@ Open **Astral Wake** from Applications. Developers can also open the local **dis
 
 A skippable opening cinematic leads into the title screen; press any key or click to skip it. Combat and encounter choices use a fixed game stage, while the illustrated overmap scrolls vertically through branching routes that fork and merge. Ships move against regional backgrounds with six original looping soundtracks and action cues. Hover or focus a card to lift and enlarge its illustrated face, command cost, and effect icons. All enemies appear together, with names and hull bars below their artwork. Target markers, projectiles, impact flashes, floating points, healing, disruption, cooling and distinct enemy actions show what each command did. Reduced motion and volume controls are available in Settings.
 
-Astral Wake Display is an original font drawn for headings and card names, with Avenir Next supplied through the macOS system font API for body text. The custom font is reproducible with `tools/make_font.py`.
+Astral Wake Display is an original font reserved for large headings. Gameplay readouts and body text use Avenir Next, with semibold card and enemy names, brighter secondary text, and dark reading surfaces over illustrated backgrounds. The custom font is reproducible with `tools/make_font.py`. See the [UI legibility audit](docs/ui-legibility-audit.md) for findings and verification.
 
 Choose **New expedition** and a vessel. Pick a connected map destination, then select a command, choose one to three connected organs, select an enemy, and confirm the preview. Rules commit immediately; a brief effect sequence shows each impact before the next action. Each turn gives you 3 command points: standard cards cost 1 and stronger cards cost 2. Organ strain also limits which routes remain available. End your turn to let enemies act, cool organs, and draw again. The opening encounter teaches the controls.
+
+The living circuit sits beside a large ship portrait, above the command hand. Each illustrated organ shows its function and segmented strain meter. Teal borders mark available next steps; gold numbers and traveling signals show route order. Broken conduits show a coral cut, and hovering or focusing an organ highlights its connections. Filled cells are current strain, with gold outlines marking previewed changes. Full effects and conditions remain available in organ tooltips.
+
+An [embedded-organ sample](docs/anatomy-sample.md) is available in combat and opens by default: organs sit inside a wide, translucent ship cutaway. Use **Console view / Anatomy view** above the vessel to compare layouts during the same battle. Anatomy uses strain arcs around specimens instead of the console's segmented cells.
 
 | Input | Action |
 | --- | --- |
@@ -72,7 +76,9 @@ Each new expedition samples three different areas without replacement using its 
 | The Tidal Archive | The Drowned Catalogue |
 | The Crown of Storms | The Crown Unbound |
 
-Enemy intentions are visible. The Parliament shares protection while attendants survive; the Witness punishes repeating the immediately previous route. New areas bring rebuilding root engines, gravity records and storms that can sever multiple links.
+Enemy intentions appear as icon-and-number badges. Hover or keyboard-focus a badge for a rich explanation of its action, targets, and defenses; attack numbers show damage after disruption and redirection, before shared ward absorption. Plasma, shards, sonic waves, memory trails and kinetic fire have distinct combat effects. Hull repairs stitch across the vessel, wards form hexagonal shells, and enemy phases signal each acting foe before cooling and command-point refill. The Parliament shares protection while attendants survive; the Witness punishes repeating the immediately previous route. New areas bring rebuilding root engines, gravity records and storms that can sever multiple links.
+
+All 36 enemies have distinct repeating tactical profiles: armored and exposed phases, route weaknesses, interruptible support actions, drain, or overload attacks. Hover or focus an intent badge for its cycle and counter. Strain targets the busiest organs; cuts target your last route first, letting you anticipate and bait them. See the [enemy field guide](docs/enemies.md).
 
 The release contains **72 command cards, 18 shared powerups, 24 regular enemy types, 6 elites, 6 bosses and 18 events**.
 
@@ -82,7 +88,7 @@ Progress saves after committed actions and completed choices. Continue resumes t
 
 Default save folder: `~/Library/Application Support/Godot/app_userdata/Astral Wake/`.
 
-Files: `save.json` and `save.backup.json`. Earlier saves retain the Cartographer and their original three-area itinerary without reshuffling the deck or map. Combat saves from the earlier cost-free prototype resume with zero points if a card had already been played that turn; End Turn starts the next turn with all 3 points. Settings include volume, fullscreen, and reduced motion. Everything stays on this Mac. Test tools use isolated temporary save directories through `ASTRAL_SAVE_DIR`.
+Files: `save.json` and `save.backup.json`. Earlier saves retain the Cartographer and their original three-area itinerary without reshuffling the deck or map. Combat saves from the earlier cost-free prototype resume with zero points if a card had already been played that turn; End Turn starts the next turn with all 3 points. Settings include master volume plus separate music/cinematic, combat-effects, and interface volumes, fullscreen, and reduced motion. Audio sliders apply and save immediately; zero mutes the selected category. Existing profiles retain their master volume with category levels at 100%. Everything stays on this Mac. Test tools use isolated temporary save directories through `ASTRAL_SAVE_DIR`.
 
 ## Develop
 
@@ -112,7 +118,7 @@ The bootstrap downloads approximately 1.5GB of editor/export archives into ignor
 - `scripts/main.gd`, `scripts/space_canvas.gd`, `scripts/intro_cinematic.gd`: native presentation, opening film, input and audio.
 - `data/catalog.json`: authored content, stable IDs, balance values.
 - `art/`: original backgrounds, vessel/enemy artwork, and 72 command illustrations; prompts and provenance live alongside the assets and in `art/PROMPTS.md`.
-- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`.
+- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 21 layered combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation.
 - `tests/`: headless rules/regression checks, native scene smoke and deterministic full-run policy.
 - `docs/`: gameplay guide, ship and organ reference, and reproducible native screenshots.
 

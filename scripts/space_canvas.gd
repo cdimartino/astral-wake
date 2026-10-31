@@ -18,6 +18,7 @@ var pulse_progress := 0.0:
 var icon_kind := ""
 var effect_kind := ""
 var effect_echo := false
+var effect_style := "kinetic"
 var effect_from := Vector2.ZERO
 var effect_to := Vector2.ZERO
 var effect_color := Color("7be0ca")
@@ -85,9 +86,9 @@ func _draw_icon() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(size.x / 22.0, size.y / 22.0))
 	var tint := Color("f39789") if icon_kind == "damage" else Color("7be0ca") if icon_kind == "heal" else Color("e7c381")
 	match icon_kind:
-		"damage":
+		"damage", "attack":
 			draw_colored_polygon(PackedVector2Array([Vector2(13, 1), Vector2(4, 12), Vector2(10, 12), Vector2(7, 21), Vector2(19, 8), Vector2(12, 8)]), tint)
-		"heal":
+		"heal", "rebuild":
 			draw_rect(Rect2(8, 2, 6, 18), tint)
 			draw_rect(Rect2(2, 8, 18, 6), tint)
 		"disrupt":
@@ -101,6 +102,25 @@ func _draw_icon() -> void:
 			draw_circle(Vector2(11, 11), 3, tint)
 		"cost":
 			draw_colored_polygon(PackedVector2Array([Vector2(11, 1), Vector2(20, 11), Vector2(11, 21), Vector2(2, 11)]), tint)
+		"sever":
+			draw_line(Vector2(2, 17), Vector2(8, 11), tint, 3, true)
+			draw_line(Vector2(14, 11), Vector2(20, 5), tint, 3, true)
+			draw_line(Vector2(7, 3), Vector2(15, 19), Color("f39789"), 3, true)
+		"mark":
+			draw_arc(Vector2(11, 11), 7, 0, TAU, 24, tint, 2, true)
+			draw_circle(Vector2(11, 11), 3, tint)
+			for i in range(4):
+				var direction := Vector2.from_angle(i * PI / 2)
+				draw_line(Vector2(11, 11) + direction * 8, Vector2(11, 11) + direction * 11, tint, 2, true)
+		"incubate":
+			draw_ellipse_shape(Vector2(11, 12), Vector2(7, 9), tint)
+			draw_line(Vector2(8, 12), Vector2(11, 8), tint, 2, true)
+			draw_line(Vector2(11, 8), Vector2(14, 13), tint, 2, true)
+
+func draw_ellipse_shape(center: Vector2, radii: Vector2, color: Color) -> void:
+	var outline := PackedVector2Array()
+	for i in range(41): outline.append(center + Vector2.from_angle(i * TAU / 40) * radii)
+	draw_polyline(outline, color, 2, true)
 
 func _draw_effect() -> void:
 	var t := effect_progress
@@ -110,7 +130,26 @@ func _draw_effect() -> void:
 		var travel := minf(1.0, t / 0.55)
 		var head := effect_from.lerp(effect_to, travel)
 		var tail := effect_from.lerp(effect_to, maxf(0.0, travel - 0.22))
-		if effect_kind == "beam":
+		var direction := (effect_to - effect_from).normalized()
+		var normal := direction.orthogonal()
+		if effect_style == "sonic":
+			for i in range(4):
+				var center := effect_from.lerp(effect_to, maxf(0, travel - i * 0.09))
+				draw_arc(center, 12 + i * 8, direction.angle() - PI * 0.6, direction.angle() + PI * 0.6, 28, Color(tint, tint.a * (1 - i * 0.18)), 3, true)
+		elif effect_style == "fracture":
+			for i in range(5):
+				var shard := head + normal * (i - 2) * 12 - direction * absf(i - 2) * 14
+				draw_colored_polygon(PackedVector2Array([shard + direction * 18, shard - direction * 12 + normal * 4, shard - direction * 7 - normal * 5]), tint)
+		elif effect_style == "plasma":
+			for i in range(6):
+				var ember := head - direction * i * 11 + normal * sin(i * 2 + t * 18) * 8
+				draw_circle(ember, 14 - i * 1.8, Color(tint, tint.a * (1 - i * 0.13)))
+			draw_circle(head, 7, Color("fff0c1"))
+		elif effect_style == "memory":
+			for i in range(3):
+				var offset := normal * (i - 1) * 15
+				draw_dashed_line(tail + offset, head + offset, Color(tint, tint.a * (0.4 if i != 1 else 1.0)), 4, 8, true)
+		elif effect_kind == "beam" or effect_style == "beam":
 			draw_line(effect_from, head, Color(tint, tint.a * 0.25), 18, true)
 			draw_line(effect_from, head, tint, 5, true)
 			draw_line(effect_from, head, Color(1, 1, 0.9, tint.a), 2, true)
@@ -119,20 +158,53 @@ func _draw_effect() -> void:
 			draw_line(tail, head, Color(tint, tint.a * 0.3), 16, true)
 			draw_line(tail, head, tint, 6 if effect_kind == "shot" else 9, true)
 			draw_circle(head, 7 if effect_kind == "shot" else 11, tint)
+		if effect_echo:
+			draw_arc(head, 24, t * 5, t * 5 + PI * 1.5, 24, Color(tint, 0.5), 2, true)
 		if t > 0.5:
 			var impact := (t - 0.5) * 2
-			for i in range(10):
-				var direction := Vector2.from_angle(i * TAU / 10)
-				draw_line(effect_to + direction * (6 + impact * 18), effect_to + direction * (20 + impact * 68), Color(effect_color, 1 - impact), 3, true)
-			draw_arc(effect_to, 12 + impact * 55, 0, TAU, 40, Color(effect_color, 1 - impact), 3, true)
+			var flare := Color(effect_color, 1 - impact)
+			if effect_style == "sonic":
+				for i in range(3): draw_arc(effect_to, 12 + impact * 90 + i * 14, 0, TAU, 48, Color(flare, flare.a / (i + 1)), 3, true)
+			elif effect_style == "memory":
+				for i in range(7):
+					var offset := Vector2(sin(i * 7.0) * impact * 80, (i - 3) * 14)
+					draw_line(effect_to + offset - Vector2(24, 0), effect_to + offset + Vector2(24, 0), flare, 4, true)
+			else:
+				for i in range(10):
+					var spark := Vector2.from_angle(i * TAU / 10)
+					var point := effect_to + spark * (20 + impact * 68)
+					if effect_style == "plasma": draw_circle(point, 10 * (1 - impact) + 1, Color(flare, flare.a * 0.7))
+					elif effect_style == "fracture": draw_line(point - spark.rotated(0.5) * 14, point, flare, 4, true)
+					else: draw_line(effect_to + spark * (6 + impact * 18), point, flare, 3, true)
+				draw_arc(effect_to, 12 + impact * 55, 0, TAU, 40, flare, 3, true)
 	elif effect_kind == "repair":
+		# Suture rails close across the hull while repair motes converge.
+		for i in range(9):
+			var x := (i - 4) * 20.0
+			var gap := (1 - t) * 55
+			var stitch := effect_to + Vector2(x, sin(i * 0.8) * 15)
+			draw_line(stitch + Vector2(-5, -gap), stitch + Vector2(5, gap), Color(tint, sin(t * PI)), 3, true)
+			draw_circle(stitch + Vector2(0, -gap), 4, tint)
 		draw_arc(effect_to, 22 + t * 90, 0, TAU, 64, tint, 4, true)
 		for i in range(7):
 			var angle := i * TAU / 7 + t
 			var point := effect_to + Vector2.from_angle(angle) * (25 + t * 65) + Vector2(0, -t * 30)
 			draw_line(point - Vector2(7, 0), point + Vector2(7, 0), tint, 3, true)
 			draw_line(point - Vector2(0, 7), point + Vector2(0, 7), tint, 3, true)
-	elif effect_kind in ["disrupt", "shield", "mark", "incubate"]:
+	elif effect_kind == "shield":
+		for shell in range(3):
+			var hex := PackedVector2Array()
+			for i in range(6): hex.append(effect_to + Vector2.from_angle(i * TAU / 6 + PI / 6) * (65 + shell * 20 + t * 16))
+			draw_colored_polygon(hex, Color(tint, 0.04 * (1 - t)))
+			hex.append(hex[0])
+			draw_polyline(hex, Color(tint, tint.a * (1 - shell * 0.25)), 3, true)
+	elif effect_kind == "disrupt":
+		for i in range(9):
+			var y := (i - 4) * 17.0
+			var offset := sin(t * 32 + i * 4) * 18
+			draw_line(effect_to + Vector2(-65 + offset, y), effect_to + Vector2(65 + offset, y), Color(tint, tint.a * 0.65), 3, true)
+			draw_arc(effect_to, 85 - t * 45, 0, TAU, 48, tint, 2, true)
+	elif effect_kind in ["mark", "incubate"]:
 		for i in range(3):
 			var radius := 26 + i * 18 + t * 30
 			var angle := t * TAU * (1 if i % 2 == 0 else -1)
@@ -161,3 +233,31 @@ func _draw_effect() -> void:
 		draw_line(effect_to - Vector2(-14, 14), effect_to + Vector2(-14, 14), tint, 5, true)
 	elif effect_kind == "link":
 		for i in range(3): draw_arc(effect_to, 25 + i * 20 + t * 60, t * 3 + i, t * 3 + i + PI, 32, tint, 3, true)
+	elif effect_kind == "charge":
+		for i in range(3):
+			var angle := i * TAU / 3 - PI / 2
+			var point := effect_to + Vector2.from_angle(angle) * (95 - t * 35)
+			draw_line(point, point + Vector2.from_angle(angle + 0.5) * 16, tint, 3, true)
+			draw_line(point, point + Vector2.from_angle(angle - 0.5) * 16, tint, 3, true)
+		draw_arc(effect_to, 90 - t * 30, 0, TAU, 48, Color(tint, 0.35 * (1 - t)), 2, true)
+	elif effect_kind == "phase":
+		var x := 800 + t * 620
+		draw_rect(Rect2(x - 65, 174, 65, 350), Color(tint, sin(t * PI) * 0.07))
+		draw_line(Vector2(x, 174), Vector2(x, 524), Color(tint, sin(t * PI) * 0.5), 2, true)
+	elif effect_kind == "ready":
+		for i in range(3):
+			var point := effect_to + Vector2((i - 1) * 38, 0)
+			var diamond := PackedVector2Array([point + Vector2(0, -12), point + Vector2(12, 0), point + Vector2(0, 12), point + Vector2(-12, 0)])
+			draw_colored_polygon(diamond, Color(tint, sin(t * PI)))
+	elif effect_kind == "draw":
+		for i in range(3):
+			var point := effect_to + Vector2((i - 1) * 30, -t * 45)
+			draw_style_box(_card_outline(tint), Rect2(point - Vector2(12, 18), Vector2(24, 36)))
+
+func _card_outline(color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(color, 0.08)
+	style.border_color = color
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(3)
+	return style

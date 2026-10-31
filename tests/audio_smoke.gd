@@ -64,5 +64,22 @@ func _run() -> void:
 		print("REGION %d: format=%d length=%.4f loop=%d..%d captured=%d min20msRMS=%.5f maxStep=%.5f at=%.4f before=%s after=%s" % [region, stream.format, length, stream.loop_begin, stream.loop_end, frames.size(), minimum_rms, maximum_step, float(maximum_index) / mix_rate, frames[maximum_index - 1], frames[maximum_index]])
 		player.stop()
 		await create_timer(.1).timeout
+	var combat_files := DirAccess.get_files_at("res://audio")
+	var combat_count := 0
+	for filename in combat_files:
+		if not filename.begins_with("combat_") or not filename.ends_with(".wav"): continue
+		combat_count += 1
+		var stream: AudioStreamWAV = load("res://audio/" + filename)
+		check(stream != null and stream.loop_mode == AudioStreamWAV.LOOP_DISABLED, "Combat cues import as one-shots")
+		player.stream = stream
+		capture.clear_buffer()
+		player.play()
+		await create_timer(stream.get_length() + .12).timeout
+		var frames := capture.get_buffer(capture.get_frames_available())
+		var peak := 0.0
+		for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
+		check(peak > .02 and peak < .99, filename + " must decode audibly without clipping")
+		check(not player.playing, filename + " must end without looping")
+	check(combat_count == 21, "All 21 combat cues were mixed")
 	print("AUDIO SMOKE: %d failures" % failures)
 	quit(1 if failures else 0)

@@ -13,6 +13,7 @@ func start(volume: float) -> void:
 	black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(black)
 	video = VideoStreamPlayer.new()
+	video.bus = "Music" if AudioServer.get_bus_index("Music") >= 0 else "Master"
 	video.expand = true
 	video.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	video.volume_db = linear_to_db(maxf(0.001, volume))
