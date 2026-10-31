@@ -190,7 +190,7 @@ Older saves retain the Cartographer and their original three-area itinerary. In 
 | Enter | Activate the focused control. |
 | Any key or click during the opening film | Skip the film. |
 
-Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, reduced motion, and four audio sliders: **Master**, **Music & cinematic**, **Combat effects**, and **Interface**. Category sliders change independently; zero mutes that category, while Master zero mutes everything. Changes apply and save immediately. Reduced motion stops ship/star drift and animated combat feedback, retains result information, and skips the opening film on launch.
+Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, reduced motion, and four audio sliders: **Master**, **Music & cinematic**, **Combat effects**, and **Interface**. Category sliders change independently; zero mutes that category, while Master zero mutes everything. Changes apply and save immediately. Reduced motion stops ship, enemy and star drift plus animated combat feedback, retains result information, and skips the opening film on launch.
 
 ## Glossary
 

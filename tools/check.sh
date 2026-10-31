@@ -31,6 +31,7 @@ python3 tests/manual_replay_cli_test.py "$engine"
 "$engine" --headless --path . --script tests/keyword_tooltip_test.gd
 "$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
+"$engine" --headless --path . --script tests/actor_motion_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd
 "$engine" --headless --path . --script tests/intro_test.gd

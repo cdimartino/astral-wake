@@ -702,11 +702,10 @@ func _last_command() -> void:
 	_at(inspect, Rect2(800, 129, 590, 36))
 
 func _ship_cutaway(battle: Dictionary) -> void:
-	player_art = _art(0, 344)
+	player_art = _float_art(0, Rect2(38, 184, 744, 344), 4.0, 0.35, 4.2)
 	player_art.name = "PlayerShip"
 	player_art.stretch_mode = TextureRect.STRETCH_SCALE
 	player_art.modulate = Color.WHITE
-	_at(player_art, Rect2(38, 184, 744, 344))
 	var hull := ShipAnatomy.new()
 	var ship_id := str(game.run.get("character", "cartographer"))
 	hull.tint = Color("bcb5ff") if ship_id == "hollow_choir" else GOLD if ship_id == "palimpsest" else TEAL
@@ -740,7 +739,7 @@ func _ship_console(battle: Dictionary) -> void:
 		resource_label.name = "CharacterResource"
 	else:
 		_screen_text("Living circuit · 6 organs\nFilled cells show strain", Rect2(48, 488, 266, 43), 14, MUTED)
-	player_art = _float_art(0, PLAYER_COMBAT_RECT)
+	player_art = _float_art(0, PLAYER_COMBAT_RECT, 5.0, 0.5, 3.6)
 	player_art.name = "PlayerShip"
 	_screen_text(str(game.character().name), Rect2(48, 438, 266, 29), 22, TEAL)
 	var player_hull_label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 466, 146, 23), 16, CREAM)
@@ -1698,20 +1697,33 @@ func _layout_stage() -> void:
 	page.scale = Vector2(factor, factor)
 	page.position = (viewport_size - Vector2(1440, 900) * factor) * 0.5
 
-func _float_art(slot: int, rect: Rect2) -> TextureRect:
+func _float_art(slot: int, rect: Rect2, amplitude: float = 7.0, sway: float = 0.0, duration: float = 3.3) -> TextureRect:
 	var image := _art(slot, rect.size.y)
 	_at(image, rect)
-	image.set_meta("idle_y", rect.position.y)
+	_idle_art(image, amplitude, sway, duration)
+	return image
+
+func _idle_art(image: TextureRect, amplitude: float = 7.0, sway: float = 0.0, duration: float = 3.3) -> void:
+	image.set_meta("idle_y", image.position.y)
+	image.set_meta("idle_amplitude", amplitude)
+	image.set_meta("idle_sway", sway)
+	image.set_meta("idle_duration", duration)
+	# Keep the artwork anchored while it drifts, so hit reactions can shake it freely.
+	image.pivot_offset = image.size * 0.5
 	if not game.profile.get("settings", {}).get("reduced_motion", false):
 		_animate_art(image)
-	return image
 
 func _animate_art(image: TextureRect) -> void:
 	var y := float(image.get_meta("idle_y"))
+	var amplitude := float(image.get_meta("idle_amplitude", 7.0))
+	var sway := float(image.get_meta("idle_sway", 0.0))
+	var duration := float(image.get_meta("idle_duration", 3.3))
 	var tween := image.create_tween().set_loops()
 	image.set_meta("idle_tween", tween)
-	tween.tween_property(image, "position:y", y - 7, 3.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(image, "position:y", y, 3.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(image, "position:y", y - amplitude, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(image, "rotation", deg_to_rad(sway), duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(image, "position:y", y, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(image, "rotation", 0.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _sync_motion() -> void:
 	var reduced: bool = game.profile.get("settings", {}).get("reduced_motion", false)
@@ -1729,6 +1741,13 @@ func _sync_motion() -> void:
 		if not image.has_meta("idle_y"): continue
 		var old_tween = image.get_meta("idle_tween") if image.has_meta("idle_tween") else null
 		if old_tween != null and old_tween.is_valid(): old_tween.kill()
+		for key in ["action_tween", "pulse_tween", "impact_tween"]:
+			var motion_tween = image.get_meta(key) if image.has_meta(key) else null
+			if motion_tween != null and motion_tween.is_valid(): motion_tween.kill()
+		image.position.y = float(image.get_meta("idle_y"))
+		image.rotation = 0.0
+		if image.has_meta("action_x"): image.position.x = float(image.get_meta("action_x"))
+		image.scale = Vector2.ONE
 		if not reduced: _animate_art(image)
 
 func _map_details(node: Dictionary) -> void:
@@ -2027,7 +2046,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 		var amount := int(event.get("amount", 0))
 		if enemy_phase and source_index >= 0 and not signaled_sources.has(source_index):
 			signaled_sources.append(source_index)
-			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay})
+			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay, "source_index":source_index})
 		match kind:
 			"discard_card", "zone_card", "draw_card", "retrieve_card", "shuffle":
 				var cue: Dictionary = event.duplicate(true)
@@ -2036,7 +2055,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 				if kind in ["discard_card", "zone_card"]: discard_clock += 0.08
 				else: draw_clock += 0.12
 			"damage":
-				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
+				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "source_index":source_index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
 				if amount > 0 and source_index < 0:
 					cues[-1]["style"] = attack_style
 					cues[-1]["color"] = _style_color(attack_style)
@@ -2044,7 +2063,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 				var absorbed := int(event.get("absorbed", 0))
 				var redirected := int(event.get("redirected", 0))
 				if amount > 0:
-					cues.append({"kind":"enemy_shot", "from":origin, "to":ship, "label":"HULL −%d" % amount, "color":CORAL, "delay":delay, "player":true, "hp_delta":-amount})
+					cues.append({"kind":"enemy_shot", "from":origin, "to":ship, "label":"HULL −%d" % amount, "color":CORAL, "delay":delay, "player":true, "source_index":source_index, "hp_delta":-amount})
 					var region := int(game.enemy(str(old_enemies[source_index].id)).get("region", 0)) if source_index >= 0 else 0
 					var style := str(["plasma", "kinetic", "fracture", "sonic", "memory", "fracture"][clampi(region, 0, 5)])
 					cues[-1]["style"] = style
@@ -2063,7 +2082,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 				var heal_delay := phase_source * 0.32 + 0.3 if enemy_phase and emergency else phase_tail if enemy_phase else command_impact
 				cues.append({"kind":"repair", "to":ship, "label":("REIGNITED +" if emergency else "REPAIR +") + str(amount), "color":GOLD if emergency else TEAL, "player":true, "hp_delta":amount, "delay":heal_delay})
 			"enemy_heal":
-				if amount > 0: cues.append({"kind":"repair", "to":point, "label":"REPAIR +%d" % amount, "color":TEAL, "target_index":index, "hp_delta":amount, "delay":delay})
+				if amount > 0: cues.append({"kind":"repair", "to":point, "label":"REPAIR +%d" % amount, "color":TEAL, "target_index":index, "source_index":source_index, "hp_delta":amount, "delay":delay})
 			"interrupted":
 				cues.append({"kind":"disrupt", "to":origin, "label":"INTERRUPTED", "color":TEAL, "delay":delay})
 			"disrupt":
@@ -2108,6 +2127,7 @@ func _play_cue(cue: Dictionary) -> void:
 		_static_cue(cue)
 		return
 	_combat_sound(cue, true)
+	_animate_cue_actor(cue)
 	var effect := SpaceCanvas.new()
 	effect.stars = false
 	effect.effect_kind = str(cue.get("kind", "shot"))
@@ -2130,6 +2150,54 @@ func _play_cue(cue: Dictionary) -> void:
 		var serial := feedback_serial
 		get_tree().create_timer(impact_delay).timeout.connect(func():
 			if serial == feedback_serial: _apply_cue_impact(cue, true))
+
+func _animate_cue_actor(cue: Dictionary) -> void:
+	if game.profile.get("settings", {}).get("reduced_motion", false): return
+	var kind := str(cue.get("kind", ""))
+	var source_index := int(cue.get("source_index", -1))
+	var source: TextureRect = enemy_art[source_index] if source_index >= 0 and source_index < enemy_art.size() else null
+	var target_index := int(cue.get("target_index", -1))
+	var target: TextureRect = enemy_art[target_index] if target_index >= 0 and target_index < enemy_art.size() else null
+	match kind:
+		"charge":
+			if is_instance_valid(source): _actor_pulse(source, 1.06)
+		"enemy_shot":
+			if is_instance_valid(source): _actor_lunge(source, -1.0, 22.0)
+		"shot", "beam":
+			# Enemy-phase damage carries a source index; player commands do not.
+			if source_index < 0 and not cue.get("player", false): _actor_lunge(player_art, 1.0, 12.0)
+		"route":
+			_actor_pulse(player_art, 1.025)
+		"repair":
+			if cue.get("player", false): _actor_pulse(player_art, 1.04)
+			elif is_instance_valid(target): _actor_pulse(target, 1.04)
+		"shield", "link", "vent", "ready", "draw":
+			if cue.get("player", false): _actor_pulse(player_art, 1.04)
+		"incubate":
+			if is_instance_valid(source): _actor_pulse(source, 1.05)
+
+func _actor_lunge(image: TextureRect, direction: float, distance: float) -> void:
+	if not is_instance_valid(image): return
+	_kill_motion(image, "action_tween")
+	var base_x := float(image.get_meta("action_x", image.position.x))
+	image.set_meta("action_x", base_x)
+	var tween := image.create_tween()
+	image.set_meta("action_tween", tween)
+	tween.tween_property(image, "position:x", base_x + distance * direction, 0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(image, "position:x", base_x, 0.24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+func _actor_pulse(image: TextureRect, amount: float) -> void:
+	if not is_instance_valid(image): return
+	_kill_motion(image, "pulse_tween")
+	var tween := image.create_tween()
+	image.set_meta("pulse_tween", tween)
+	tween.tween_property(image, "scale", Vector2.ONE * amount, 0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(image, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+func _kill_motion(image: TextureRect, key: String) -> void:
+	if not image.has_meta(key): return
+	var tween = image.get_meta(key)
+	if tween != null and tween.is_valid(): tween.kill()
 
 func _apply_cue_impact(cue: Dictionary, animated: bool) -> void:
 	_combat_sound(cue)
@@ -2165,11 +2233,18 @@ func _impact_art(image: TextureRect, color: Color, shake: bool) -> void:
 	tween.tween_interval(0.11)
 	tween.tween_property(image, "self_modulate", Color.WHITE, 0.4)
 	if shake:
-		var original_x := image.position.x
+		var original_x := float(image.get_meta("action_x", image.position.x))
+		image.set_meta("action_x", original_x)
 		var movement := image.create_tween()
 		movement.tween_property(image, "position:x", original_x + 14, 0.06)
 		movement.tween_property(image, "position:x", original_x - 10, 0.08)
 		movement.tween_property(image, "position:x", original_x, 0.16)
+		# A brief squash makes the hit land even when the artwork is large.
+		_kill_motion(image, "impact_tween")
+		var squash := image.create_tween()
+		image.set_meta("impact_tween", squash)
+		squash.tween_property(image, "scale", Vector2(1.05, 0.95), 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		squash.tween_property(image, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 func _cue_label(text: String, point: Vector2, color: Color, animated: bool, prominent: bool = false) -> void:
 	var position := Vector2(clampf(point.x - 85, 20, 1210), clampf(point.y - 25, 160, 480))
@@ -2264,6 +2339,8 @@ func _enemy_target(index: int, enemy: Dictionary, rect: Rect2, count: int) -> vo
 	image.name = "EnemyArt%d" % index
 	image.flip_h = true
 	_at(image, art_rect, button)
+	# Stagger the drift so a group of enemies never breathes in lockstep.
+	_idle_art(image, 3.0, 0.5 if small else 0.3, 3.4 + (index % 4) * 0.22)
 	enemy_art.append(image)
 	var hp := _hull_bar(enemy.hp, enemy.max_hp, CORAL)
 	hp.name = "EnemyHullBar%d" % index
