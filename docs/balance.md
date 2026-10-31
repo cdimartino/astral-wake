@@ -45,3 +45,50 @@ The tactical policy won Hollow Choir seeds 424242 and 101 with 82 and 77 hull, a
 All 36 authored enemies now have different mechanical pattern signatures; validation rejects profiles that differ only in names or numbers. The [field guide](enemies.md) documents their counters. Regression tests cover phase windows, route weaknesses, interruption thresholds, drain prevention, saturation-dependent attacks, deterministic targeting, saved intents, and visible explanations.
 
 On seed 424242 with the new rules, the Cartographer's original balanced policy loses in area 3, while the tactical policy completes the expedition with 79 hull. The same seed's aggressive policies died in area 1 for all three ships in the comparison run. This gives a concrete decision-sensitive regression rather than requiring every policy to win.
+
+## Issue #22 frozen baseline protocol
+
+`tools/baseline.py` runs the existing, unchanged `tests/playthrough.gd` decisions.
+These are **automated headless rules expeditions**, not manual or graphical UX tests.
+The original manual-input seed-777 loss remains a loss; this harness does not replay,
+correct, or replace that expedition. Historical results above are not population
+estimates for the present revision.
+
+The published matrix is 30 seed families × 3 ships × 2 discovery tiers × 4 policies
+= **720 expeditions**. For family `i = 0..29`, encode
+`424240 + 104728*i + tier` as a six-character base36 seed, where tier is 0 (fresh)
+or 3 (fully discovered). The JSONL metadata enumerates every exact seed/case before
+execution. No seeds are selected or dropped based on outcomes. Modern RNG/generation
+version is 1; numeric `--seed` fixtures instead use the legacy generator (version 0)
+and must not be pooled with these measurements.
+
+Important: modern practice seeds encode their discovery pool in their low two bits.
+`--unlocks=3` alone does **not** make a tier-0 practice seed fully discovered.
+The harness sets both the profile and corresponding seed tier, then records effective
+`pool_tier`, `profile_unlocks`, and `rng_version` in every successful terminal result.
+Tier pairs have different RNG initializations as well as pools: they are not a
+controlled discoveries-only ablation. Each ship/policy sees the same seeds within
+a tier. No-bonuses means balanced combat with discoveries, shops, events, and
+evolution skipped; repair recovery remains enabled. It is not a fourth combat policy.
+
+Reproduce from the revision recorded in the results metadata (use an installed
+Godot executable and a **new**, isolated scratch path):
+
+```sh
+python3 -m unittest discover -s tests -p test_baseline.py
+python3 tools/baseline.py --engine /path/to/Godot --scratch /approved/temp/new-baseline --output /approved/temp/baseline.jsonl --jobs 3
+```
+
+Use `--families 1` for a representative 24-case cost measurement. Per-case timeout
+defaults to 180 seconds. Saves and stdout/stderr live under scratch, never the
+player's save directory. Output is flushed after each case, preserving partial
+coverage if interrupted. Each row distinguishes victory, defeat, error, unfinished
+(action limit), and timeout. Nonzero exits and Godot script errors are not losses.
+The metadata records the revision, dirty status, engine version, and SHA-256 of the
+rules, RNG, catalog, and playthrough driver. Generation version describes the current
+seed implementation, not a promise of cross-revision content compatibility.
+
+No combat mechanics, enemy stats, or decision scores are changed by this protocol.
+Policy quality remains limited: it is greedy, not an expert planner, and cannot by
+itself confirm a need for next-layer support or estimate human win rates. Turn-level
+decision diagnostics and stable-ID replay belong to the separate trace work.
