@@ -18,6 +18,8 @@ The **Draw** and **Discard** piles flank your hand. Cards travel into and out of
 
 The route preview's **Damage** is damage to the selected enemy. **Split** lists damage to other living enemies, separately; unequal values reflect each recipient's defenses and remaining hull. Hover the preview or Confirm for the full named-target breakdown.
 
+Hover or keyboard-focus a card to read definitions of its keywords beside the enlarged face. The same glossary is available from reward/shop controls, deck card headings, and organ tooltips. Number keys can inspect an unaffordable hand card without selecting or playing it. Long explanations scroll within the viewport, and opening an overlay dismisses hand explanations.
+
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.

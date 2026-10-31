@@ -1,6 +1,8 @@
 extends Control
 
 const Game = preload("res://scripts/game.gd")
+const Keywords = preload("res://scripts/keywords.gd")
+const CardTooltip = preload("res://scripts/card_tooltip.gd")
 const SpaceCanvas = preload("res://scripts/space_canvas.gd")
 const OrganCircuit = preload("res://scripts/organ_circuit.gd")
 const OrganVisuals = preload("res://scripts/organ_visuals.gd")
@@ -182,8 +184,9 @@ func _text(text: String, font_size: int = 17, color: Color = MUTED) -> Label:
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return label
 
-func _button(text: String, callback: Callable, tip: String = "", accent: bool = false) -> Button:
-	var button := Button.new()
+func _button(text: String, callback: Callable, tip: String = "", accent: bool = false, card_instance: Dictionary = {}) -> Button:
+	var button: Button = Button.new() if card_instance.is_empty() else CardTooltip.new()
+	if not card_instance.is_empty(): button.explanation = _card_tip(card_instance, true)
 	button.text = text
 	button.tooltip_text = tip
 	button.custom_minimum_size.y = 44
@@ -196,6 +199,21 @@ func _button(text: String, callback: Callable, tip: String = "", accent: bool = 
 	if accent:
 		button.add_theme_stylebox_override("normal", _style(Color("254840"), TEAL, 10, 12))
 		button.add_theme_color_override("font_color", TEAL)
+	return button
+
+func _card_tip(instance: Dictionary, rich: bool = false) -> String:
+	return game.card_text(instance) + "\n\n" + Keywords.describe(Keywords.for_card(game.card(instance.id)), rich)
+
+func _card_heading(instance: Dictionary, font_size: int) -> Button:
+	var button := _button("", func(): pass, _card_tip(instance), false, instance)
+	button.custom_minimum_size.y = 48
+	button.set_meta("focus_key", "inspect-" + str(instance.id))
+	for state in ["normal", "hover", "pressed"]:
+		button.add_theme_stylebox_override(state, _style(Color.TRANSPARENT, Color.TRANSPARENT, 0, 0, 0))
+	var title := _card_title(str(game.card(instance.id).name) + (" +" if int(instance.get("level", 0)) > 0 else ""), font_size)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	button.add_child(title)
 	return button
 
 func _column(parent: Node, expand: bool = true) -> VBoxContainer:
@@ -629,7 +647,7 @@ func _last_command_tip() -> String:
 	var battle: Dictionary = game.run.battle
 	var memory: Dictionary = battle.get("last_command", {})
 	var base: Dictionary = memory.get("base", battle.get("last_payload", {}))
-	var tip := "Previous command: none yet." if memory.is_empty() else game.card_text(memory.card)
+	var tip := "Previous command: none yet." if memory.is_empty() else _card_tip(memory.card)
 	if memory.is_empty() and not base.is_empty(): tip = "Previous card identity was not stored in this older save."
 	if not base.is_empty():
 		tip += "\nBase before organs and powerups: Damage %d · Repair %d · Disruption %d." % [int(base.get("damage", 0)), int(base.get("heal", 0)), int(base.get("disrupt", 0))]
@@ -753,6 +771,7 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var readout: Array = OrganVisuals.READOUTS[str(organ.id)]
 		var accent := Color(str(readout[2]))
 		var tip: String = str(organ.name) + " [" + ORGAN_LETTERS[i] + "]\n" + str(organ.description)
+		tip += "\n\n" + Keywords.describe(Keywords.for_organ(str(organ.id)))
 		var step: Dictionary = step_forecast.get(i, {})
 		var effect_status := str(step.get("status", "unselected"))
 		if not step.is_empty():
@@ -966,6 +985,7 @@ func _select_card(index: int) -> void:
 	if cost > remaining:
 		notice = "This command costs %d command points; %d remain. End turn to refill to %d." % [cost, remaining, int(game.run.battle.get("max_command_points", 3))]
 		_render()
+		if index < hand_buttons.size(): hand_buttons[index]._show_focus_tip.call_deferred()
 		return
 	selected_card = index
 	route.clear()
@@ -1028,8 +1048,11 @@ func _rewards() -> void:
 		box.add_child(item_name)
 		var description := _text(game.card_text({"id": choice.id, "level": 0}) if choice.kind == "card" else str(item.get("description", "")), 18)
 		description.max_lines_visible = 8
+		if choice.kind == "card":
+			description.tooltip_text = _card_tip({"id":choice.id,"level":0})
+			description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
-		box.add_child(_button("Take discovery", func(): _perform(func(): return game.choose_reward(i)), "Add this discovery to the expedition.", true))
+		box.add_child(_button("Take discovery", func(): _perform(func(): return game.choose_reward(i)), "Add this discovery to the expedition.", true, {"id":choice.id,"level":0} if choice.kind == "card" else {}))
 	_at(_button("Skip reward →", func(): _perform(func(): return game.choose_reward(-1))), Rect2(1080, 814, 296, 52))
 
 func _event() -> void:
@@ -1067,14 +1090,14 @@ func _shop() -> void:
 		var description := _text(desc, 19)
 		description.max_lines_visible = 3
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		description.tooltip_text = desc
+		description.tooltip_text = _card_tip({"id":item.id,"level":0}) if item.kind == "card" else desc
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
 		var sold: bool = item.get("sold", false)
-		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i)), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost)
+		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i)), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost, {"id":item.id,"level":0} if item.kind == "card" else {})
 		button.disabled = sold or game.run.salvage < item.cost
 		box.add_child(button)
 	_at(_button("Return to the chart →", func(): _perform(func(): return game.leave_location())), Rect2(1040, 814, 336, 52))
@@ -1110,7 +1133,7 @@ func _modify() -> void:
 		var description := _text(game.card_text(instance), 19)
 		description.max_lines_visible = 2
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		description.tooltip_text = game.card_text(instance)
+		description.tooltip_text = _card_tip(instance)
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		var spacer := Control.new()
@@ -1210,6 +1233,8 @@ func _clear_selection() -> void:
 
 func _modal(title: String) -> VBoxContainer:
 	_close_overlay()
+	for button in page.find_children("*", "Button", true, false):
+		if button is CardTooltip: button._hide_focus_tip()
 	page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 	overlay = Control.new()
 	# Hand cards and combat feedback use elevated canvas layers.
@@ -1368,9 +1393,12 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 		var card: Dictionary = game.effective_card(instance)
 		var box := _panel(grid)
 		box.custom_minimum_size.x = 240
-		box.add_child(_card_title(str(card.name) + (" +" if instance.get("level", 0) > 0 else ""), 19))
+		box.add_child(_card_heading(instance, 19))
 		box.add_child(_printed_stats(instance, true))
-		box.add_child(_text(game.card_text(instance), 17))
+		var description := _text(game.card_text(instance), 17)
+		description.tooltip_text = _card_tip(instance)
+		description.mouse_filter = Control.MOUSE_FILTER_STOP
+		box.add_child(description)
 		if selectable:
 			var button := _button("Remove" if game.run.modify_kind == "remove" else "Upgrade", func(): _perform(func(): return game.modify_card(i)), "Select this exact copy of the card.", true)
 			button.disabled = game.run.modify_kind == "upgrade" and instance.get("level", 0) > 0
@@ -1655,7 +1683,7 @@ func _hand() -> void:
 		var affordable := cost <= points
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
-		var button := _button("", func(): _select_card(i), tip, selected_card == i)
+		var button := _button("", func(): _select_card(i), tip, selected_card == i, instance)
 		button.name = "Hand%d" % i
 		button.set_meta("card_uid", int(instance.uid))
 		button.set_meta("focus_key", "hand%d" % i)
