@@ -33,7 +33,8 @@ func capture() -> void:
  root.add_child(ui)
  await settle()
  var anatomy_sample = OS.get_cmdline_user_args().has("--anatomy-sample")
- if not anatomy_sample:
+ var memory_sample = OS.get_cmdline_user_args().has("--last-command")
+ if not anatomy_sample and not memory_sample:
   ui.choosing_character = true
   ui.menu = false
   ui._render()
@@ -57,7 +58,11 @@ func capture() -> void:
      ui._select_organ(1)
      ui._select_organ(2)
     break
-  await shot(pair[0] + ("-anatomy" if anatomy_sample else "-combat"))
+  if memory_sample:
+   ui.game.play_card(ui.selected_card, ui.route, ui.target)
+   ui._clear_selection()
+   ui._render()
+  await shot(pair[0] + ("-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
  ui.ambience.stop()
  ui.queue_free()
  await process_frame
