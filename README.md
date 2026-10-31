@@ -113,6 +113,10 @@ bash tools/export_macos.sh
 bash tools/package_release.sh
 ```
 
+`tools/check.sh` runs the content, audio, and art validators plus the automated headless Godot suite, including combat, UI, save/load, routing, audio playback, intro completion/skipping, and a full-expedition playthrough. GitHub Actions runs the same script on every pull request and pushes to `main` through [`.github/workflows/tests.yml`](.github/workflows/tests.yml); use `bash tools/bootstrap.sh --engine-only` when only the pinned editor is needed for tests. CI uses `ASTRAL_AUDIO_DRIVER=Dummy` to test the audio mixer without physical audio hardware.
+
+To block merging when tests fail, configure a GitHub branch protection rule or ruleset for `main` requiring the **Godot 4.7.2 checks** status check after its first workflow run.
+
 Packaging creates `dist/Astral-Wake-0.1.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
 
 The bootstrap downloads approximately 1.5GB of editor/export archives into ignored `.tools/`. Only the Mac template is extracted. On macOS, editor import/export needs permission to write Godot's normal user-data/editor settings folder; restricted automation sandboxes may require an approved native launch.
