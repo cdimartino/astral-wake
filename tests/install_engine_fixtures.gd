@@ -37,3 +37,16 @@ class FixtureGame extends "res://scripts/game.gd":
 		super(directory)
 		load("res://tests/install_engine_fixtures.gd").register(self)
 		load_saved()
+
+class FixtureSession extends "res://tools/manual_session.gd":
+	func _create_game(directory: String): return FixtureGame.new(directory)
+	func start(directory: String, seed_value, ship: String, unlocks: int) -> Dictionary:
+		var result=super(directory,seed_value,ship,unlocks)
+		if not result.ok: return result
+		load("res://tests/install_engine_fixtures.gd").battle(game)
+		# Keep exact second-turn exhaust choices known across separate processes.
+		game.retain_card(4)
+		game.retain_card(5)
+		game.save()
+		journal.initial=snapshot(game.run)
+		return inspect()

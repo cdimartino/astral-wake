@@ -74,6 +74,16 @@ global ledger before omitting those additive fields. The ledger cannot be assert
 empty: every committed legacy command must record its route. No pre-existing
 result/state/RNG fields are omitted or rebaselined.
 
+Manual journal environment fingerprints include the authoritative `game.gd`,
+`known_selections.gd` (already covered), `install_engines.gd`, `seed_engine.gd`,
+`save_store.gd` and catalog, in addition to HEAD/Godot identity. Dirty engine or
+selection modules at the same HEAD reject both resume and replay before save writes.
+`tests/install_engine_replay_test.py "$GODOT_BIN"` checks real nine-entry Atlas /
+Furnace counter-bearing journals across separate processes, including pending
+selection resume, exact full-state/RNG/result replay, and dirty-source rejection
+using disposable project copies. Older incomplete environment headers fail closed;
+there is no journal fingerprint migration that silently blesses changed rules.
+
 ## Native fixture choices (no production demo hook)
 
 ```sh
