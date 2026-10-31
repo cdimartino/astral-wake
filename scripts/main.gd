@@ -607,7 +607,7 @@ func _ship_cutaway(battle: Dictionary) -> void:
 	inspector.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inspector.z_index = 2
 	inspector.add_theme_stylebox_override("panel", _style(Color("081722"), Color.TRANSPARENT, 20, 0))
-	_at(inspector, Rect2(326, 332, 210, 66))
+	_at(inspector, Rect2(ShipAnatomy.ORIGIN + ShipAnatomy.INSPECTOR_RECT.position, ShipAnatomy.INSPECTOR_RECT.size))
 	anatomy_readout = _screen_text(resource, Rect2(10, 4, 190, 62), 14, TEAL, inspector)
 	_reading_plate(Rect2(42, 505, 742, 28))
 	var label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 509, 150, 23), 16, CREAM)
