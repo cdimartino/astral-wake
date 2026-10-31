@@ -206,9 +206,11 @@ func test_all() -> void:
 	var old=game.run.duplicate(true)
 	old.schema_revision=2
 	old.erase("pending_selection")
+	old.battle.erase("engine_counters")
+	old.battle.erase("engine_routes")
 	game.store.write(game.profile,old)
 	var migrated=Fixtures.FixtureGame.new(game.store.directory)
-	check(migrated.run.schema_revision==3 and migrated.run.pending_selection=={},"explicit zones migration")
+	check(migrated.run.schema_revision==Game.RUN_SCHEMA and migrated.run.pending_selection=={},"explicit zones migration")
 	# Selected repair does not revive a lethal repeated-route mark.
 	game=fresh("fixture_binding")
 	game.run.hull=1

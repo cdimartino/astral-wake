@@ -1,5 +1,9 @@
 # Atomic known-card selections (#14, third scoped slice)
 
+The subsequent [bounded Install slice](bounded-install-engines.md) adds typed
+passive consequences to committed exhausts, never to speculative enumeration.
+Its revision 4 supersedes the historical revision 3 save contract below.
+
 Dormant primitives only: all 72 production definitions remain unchanged. Scrape
 Clean, a Cold Breath branch, Binding Thread and Reprise remain future authoring
 work. #14 is **not complete**. No passive payouts, balancing or engine triggers.

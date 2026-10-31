@@ -7,7 +7,7 @@ const DEFINITIONS := {
 	"Draw":"Move cards from the draw pile into your hand, up to 10 cards. An empty draw pile reshuffles the discard pile when needed.",
 	"Retain":"Stays in hand through end-turn discard and occupies the ten-card hand cap. Intrinsic Retain repeats; a temporary UID mark expires after one upcoming discard or when played. Draw five subject to room.",
 	"Exhaust":"The played card leaves circulation before drawing and cannot reshuffle this combat. It remains in the expedition deck and returns next combat.",
-	"Install":"Dormant storage only: the played card leaves circulation before drawing, with a source-linked identity. Same identity or name cannot stack. Passive activation and triggers are deferred; the card returns next combat.",
+	"Install":"Leaves circulation before drawing; same identity or name cannot stack. Typed engines show source-linked capped later-attack bonuses. Novel ordered routes use all commands this turn; Exhaust engines grant flat ward 3 once per turn when another card exhausts. New stacks never buff the earning command. Untyped installs remain dormant; the card returns next combat.",
 	"Trace":"Palimpsest resource, capped at 6. Card gains happen before routing; organs gain or spend it in route order. Resets each battle.",
 	"Rewrite":"Copies half the previous command's upgraded base damage, repair and disruption, rounded down—not organ, resource or powerup bonuses. The organ spends 2 Trace; Rewrite cards spend all Trace and add their printed bonus if any was spent.",
 	"Resonance":"Choir resource, capped at 3. Changing kind after a previous command gains 1; repeating a kind resets it to 0 before card and organ gains. Resets each battle.",

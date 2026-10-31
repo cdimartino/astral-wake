@@ -36,7 +36,9 @@ static func capture(game) -> Dictionary:
 					result.next.erase("schema_revision")
 					assert(result.next.pending_selection.is_empty())
 					result.next.erase("pending_selection")
-					for field in ["exhausted", "installed", "installed_sources", "temporary_retain"]:
+					assert(result.next.battle.engine_routes==[route])
+					result.next.battle.erase("engine_routes")
+					for field in ["exhausted", "installed", "installed_sources", "temporary_retain", "engine_counters"]:
 						assert(result.next.battle[field].is_empty())
 						result.next.battle.erase(field)
 					results.append(result)

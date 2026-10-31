@@ -4,9 +4,10 @@ extends RefCounted
 const SaveStore = preload("res://scripts/save_store.gd")
 const SeedEngine = preload("res://scripts/seed_engine.gd")
 const Selections = preload("res://scripts/known_selections.gd")
+const Engines = preload("res://scripts/install_engines.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
-const RUN_SCHEMA = 3
+const RUN_SCHEMA = 4
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -107,7 +108,7 @@ func card_text(instance: Dictionary) -> String:
 	if effective.first_free: text+="\nFirst routed organ gains no strain."
 	if effective.get("retain",false): text+="\nRetain: stays in hand at end of turn."
 	if effective.get("exhaust",false): text+="\nExhaust: leaves circulation for this combat."
-	if effective.has("install"): text+="\nInstall: leaves circulation for this combat (passive activation deferred)."
+	if effective.has("install"): text+="\nInstall: "+Engines.detail(self,instance)
 	return text
 
 # Direct fixture/helper operation; authored selection effects commit atomically below.
@@ -296,6 +297,8 @@ func _start_battle(node: Dictionary) -> void:
 	run.battle.exhausted=[]
 	run.battle.installed=[]
 	run.battle.installed_sources=[]
+	run.battle.engine_counters=[]
+	run.battle.engine_routes=[]
 	run.battle.temporary_retain=[]
 	for id in node.enemy_ids: run.battle.enemies.append(_make_enemy(id))
 	if node.type=="boss" and "salvage_parliament" in node.enemy_ids:
@@ -354,6 +357,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var incoming_before=_incoming_damage(state)
 	var instance=battle.hand[hand_index]
 	var definition=effective_card(instance)
+	if not Engines.valid_definition(definition): return _fail("Invalid authored Install engine.")
 	if definition.has("install"):
 		for source in battle.installed_sources:
 			if source.identity==definition.install: return _fail("That Install identity is already installed.")
@@ -402,6 +406,10 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var resource_preview={"trace_before":trace_before,"resonance_before":resonance_before,"card_trace":int(battle.get("trace",0)),"card_resonance":int(battle.get("resonance",0))}
 	if route.is_empty():
 		return {"ok":false,"error":"Choose an organ to begin routing.","resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":[]}
+	var qualifying_attack=definition.kind=="attack" and damage>0
+	# Entry-active stacks only: awards below occur after payload/zone resolution,
+	# and new installs are registered only after old sources have observed events.
+	if qualifying_attack: damage+=Engines.bonus(battle)
 	if damage>0:
 		damage+=_effect(state,"damage")
 		if battle.first_play: damage+=_effect(state,"first_damage")
@@ -568,13 +576,18 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		var chosen_index=Selections.index(battle.hand,uid)
 		Selections.move(battle,op,uid)
 		if op.kind=="exhaust_hand": presentation.append({"kind":"zone_card","zone":"exhausted","card":chosen,"hand_index":chosen_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
-		elif op.kind=="return_discard": presentation.append({"kind":"retrieve_card","card":chosen,"zone":"hand","hand_index":-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+		if op.kind=="exhaust_hand": Engines.trigger(self,state,"other_exhaust",int(uid),presentation,events)
+		if op.kind=="return_discard": presentation.append({"kind":"retrieve_card","card":chosen,"zone":"hand","hand_index":-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
 		events.append("%s: %s (UID %d)."%[op.kind,effective_card(chosen).name,uid])
 	hand_index=Selections.index(battle.hand,instance.uid)
 	var destination="installed" if definition.has("install") else "exhausted" if definition.get("exhaust",false) else "discard"
 	battle[destination].append(battle.hand.pop_at(hand_index))
 	battle.temporary_retain.erase(int(instance.uid))
+	if destination=="exhausted": Engines.trigger(self,state,"other_exhaust",int(instance.uid),presentation,events)
+	if qualifying_attack and not route in battle.engine_routes: Engines.trigger(self,state,"novel_route",int(instance.uid),presentation,events)
+	if not route in battle.engine_routes: battle.engine_routes.append(route.duplicate())
 	if destination=="installed": battle.installed_sources.append({"source_uid":int(instance.uid),"identity":definition.install})
+	if destination=="installed": Engines.install(battle,instance,definition)
 	var movement={"kind":"discard_card" if destination=="discard" else "zone_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()}
 	if destination!="discard": movement.zone=destination
 	presentation.append(movement)
@@ -902,6 +915,7 @@ func end_turn() -> Dictionary:
 		battle.strain[i]=maxi(0,int(battle.strain[i])-1-_effect(run,"cooling"))
 	presentation.append({"kind":"cooling","amounts":cooled})
 	battle.turn+=1
+	Engines.reset_turn(battle)
 	battle.first_play=true
 	battle.command_points=int(battle.max_command_points)
 	run.turns+=1
@@ -1170,17 +1184,34 @@ func load_saved() -> bool:
 		if legacy_schema and not saved.run.is_empty():
 			# Additive fields without a revision indicate damaged new data, not legacy.
 			var old_battle=saved.run.get("battle",{})
-			if saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain"].any(func(key): return old_battle.has(key))):
+			if saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
 				store.error="A save contains incomplete game data. Your existing files have been preserved."
 				continue
 			saved.run.schema_revision=RUN_SCHEMA
 			saved.run.pending_selection={}
 			if old_battle is Dictionary and not old_battle.is_empty():
 				for key in ["exhausted","installed","installed_sources","temporary_retain"]: old_battle[key]=[]
+				old_battle.engine_counters=[]
+				old_battle.engine_routes=[]
 		# Explicit zones-revision migration; never repair current-schema fields.
 		if saved.run.get("schema_revision")==2 and not saved.run.has("pending_selection"):
-			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.schema_revision=3
 			saved.run.pending_selection={}
+		if saved.run.get("schema_revision")==3:
+			var old_battle=saved.run.get("battle",{})
+			if old_battle is Dictionary and (old_battle.has("engine_counters") or old_battle.has("engine_routes")):
+				store.error="A save contains incomplete game data. Your existing files have been preserved."
+				continue
+			var pending=saved.run.get("pending_selection",{})
+			if pending is Dictionary and not pending.is_empty():
+				if not pending.get("guard") is String or pending.guard!=Selections.guard(self,saved.run,pending):
+					store.error="A save contains incomplete game data. Your existing files have been preserved."
+					continue
+			saved.run.schema_revision=RUN_SCHEMA
+			if old_battle is Dictionary and not old_battle.is_empty():
+				old_battle.engine_counters=[]
+				old_battle.engine_routes=[]
+			if pending is Dictionary and not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
 		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
@@ -1305,6 +1336,7 @@ func _valid_run(value) -> bool:
 				if not _enemies.has(id): return false
 	for key in ["battle","reward","shop"]:
 		if not value.get(key) is Dictionary: return false
+	if not value.battle.is_empty() and not Engines.valid_state(self,value.battle): return false
 	if value.mode=="combat":
 		var battle=value.battle
 		for key in COMBAT_ZONES+["installed_sources","temporary_retain","enemies","strain","edges","severed","last_route"]:

@@ -71,7 +71,7 @@ func command_points_checks() -> void:
 	var old=legacy.run.duplicate(true)
 	old.erase("schema_revision")
 	old.erase("pending_selection")
-	for key in ["exhausted","installed","installed_sources","temporary_retain"]: old.battle.erase(key)
+	for key in ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"]: old.battle.erase(key)
 	old.battle.erase("command_points")
 	old.battle.erase("max_command_points")
 	legacy.store.write(legacy.profile,old)
