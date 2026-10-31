@@ -108,8 +108,15 @@ defined by this slice.
 
 The existing draw/discard pile controls also inspect Exhausted and Installed
 counts/contents. Installed inspection explicitly says dormant and displays identity
-and source UID. Hand faces show `[R]`, and deck inspection shows `RETAINED` for
-intrinsic or currently marked copies. Draw inspection remains sorted, never draw
+and source UID. Hand faces use a dedicated duration line, never a title prefix:
+`[R] EVERY TURN` for intrinsic Retain and `[R1] NEXT DISCARD` for temporary-only
+Retain. Hover/focus and deck inspection state respectively "Retained every end
+turn until played" or "Retained through next discard only; expires when played".
+When both apply, the intrinsic marker wins and the card-specific explanation says
+the temporary mark expires without removing intrinsic Retain. After the boundary,
+temporary-only markers disappear; intrinsic markers remain. Tests cover both,
+overlap, expiration, save/resume, and font/rectangle fit in normal and hovered
+cards at 1440×900 and 1100×720. Draw inspection remains sorted, never draw
 order. Headless tests assert node text/connections, **not** graphical legibility,
 animation quality or human playtest evidence.
 The existing keyword tooltip/glossary from #32 also explains Retain (including
@@ -131,5 +138,7 @@ export TMPDIR="$(mktemp -d /private/var/folders/tj/54g2g21d0pd98kcp8btp0s_r0000g
 
 The second command runs assertions then leaves the fixture battle visible. Inspect
 all four pile buttons, dormant Install identity/source UID, and intrinsic/temporary
-`[R]` hand markers. End Turn demonstrates Retain. Close the window to exit. This is
+`[R] EVERY TURN` versus `[R1] NEXT DISCARD` hand markers and their card-specific
+hover/focus text. End Turn removes the one-discard marker but not the intrinsic
+marker. Close the window to exit. This is
 a rules/UI fixture, not evidence about normal card availability or game balance.

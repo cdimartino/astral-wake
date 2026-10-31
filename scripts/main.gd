@@ -204,7 +204,20 @@ func _button(text: String, callback: Callable, tip: String = "", accent: bool = 
 func _card_tip(instance: Dictionary, rich: bool = false) -> String:
 	var names := Keywords.for_card(game.effective_card(instance))
 	if game.retained(instance) and not names.has("Retain"): names.append("Retain")
-	return game.card_text(instance) + "\n\n" + Keywords.describe(names, rich)
+	var duration := _retain_detail(instance)
+	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + Keywords.describe(names, rich)
+
+func _retain_marker(instance: Dictionary) -> String:
+	if game.effective_card(instance).get("retain", false): return "[R] EVERY TURN"
+	if instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", []): return "[R1] NEXT DISCARD"
+	return ""
+
+func _retain_detail(instance: Dictionary) -> String:
+	var intrinsic: bool = game.effective_card(instance).get("retain", false)
+	var temporary: bool = instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", [])
+	if intrinsic:
+		return "Retained every end turn until played." + ("\nTemporary retain also expires at the next discard or when played; intrinsic Retain remains." if temporary else "")
+	return "Retained through next discard only; expires when played." if temporary else ""
 
 func _card_heading(instance: Dictionary, font_size: int) -> Button:
 	var button := _button("", func(): pass, _card_tip(instance), false, instance)
@@ -1399,7 +1412,9 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 		var box := _panel(grid)
 		box.custom_minimum_size.x = 240
 		box.add_child(_card_heading(instance, 19))
-		if game.retained(instance): box.add_child(_text("RETAINED", 17, GOLD))
+		if game.retained(instance):
+			box.add_child(_text(_retain_marker(instance), 17, GOLD))
+			box.add_child(_text(_retain_detail(instance), 17, GOLD))
 		if card.has("install") and game.run.get("battle", {}).get("installed", []).any(func(source): return source.uid == instance.get("uid", -1)):
 			box.add_child(_text("Dormant identity: %s · source UID %d" % [card.install, int(instance.uid)], 17, GOLD))
 		box.add_child(_printed_stats(instance, true))
@@ -1690,6 +1705,7 @@ func _hand() -> void:
 		var cost := int(card.get("cost", 1))
 		var affordable := cost <= points
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
+		if game.retained(instance): tip += "\n" + _retain_detail(instance)
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
 		var button := _button("", func(): _select_card(i), tip, selected_card == i, instance)
 		button.name = "Hand%d" % i
@@ -1704,9 +1720,6 @@ func _hand() -> void:
 		_at(button, Rect2(0, 670, 160, 210))
 		hand_buttons.append(button)
 		var face := _card_face(button, instance, false, affordable)
-		if game.retained(instance):
-			face.title.text = "[R] " + face.title.text
-			button.tooltip_text += "\nRetained through the upcoming end-turn discard."
 		button.set_meta("title_label", face.title)
 		button.set_meta("description_label", face.description)
 		button.set_meta("card_art", face.art)
@@ -1780,6 +1793,13 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(title)
+	if game.retained(instance):
+		# A dedicated full-width line keeps duration and card names independently readable.
+		var marker := _text(_retain_marker(instance), 14, GOLD)
+		marker.name = "RetainMarker"
+		marker.max_lines_visible = 1
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		body.add_child(marker)
 	var art := _card_art(instance, 24)
 	art.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(art)

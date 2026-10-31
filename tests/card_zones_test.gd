@@ -200,9 +200,52 @@ func check() -> void:
 		ui._close_overlay()
 		ui._render()
 		for unused in range(2): await process_frame
-	require(ui.hand_buttons[0].get_meta("title_label").text.begins_with("[R]") and ui.hand_buttons[1].get_meta("title_label").text.begins_with("[R]"),"Intrinsic and temporary retain markers visible in nodes")
+	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and ui.hand_buttons[1].find_child("RetainMarker",true,false).text=="[R1] NEXT DISCARD","Distinct intrinsic and one-discard markers visible")
 	for index in [0,1]:
 		require(ui.hand_buttons[index].explanation.contains("[b]Retain[/b]") and ui.hand_buttons[index].explanation.contains("temporary UID mark"),"Existing rich keyword tooltip explains intrinsic and temporary Retain")
+	var intrinsic_text="Retained every end turn until played."
+	var temporary_text="Retained through next discard only; expires when played."
+	for index in [0,1]:
+		var exact=intrinsic_text if index==0 else temporary_text
+		require(ui.hand_buttons[index].tooltip_text.contains(exact) and ui.hand_buttons[index].explanation.begins_with(exact),"Card-specific hover and focus duration precedes general glossary")
+	await check_retain_readability(ui)
+	var retention_initial=ui.game.run.duplicate(true)
+	ui.game.retain_card(int(ui.game.run.battle.hand[0].uid))
+	ui._render()
+	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN","Intrinsic marker wins when temporary Retain overlaps")
+	var overlap_text="Temporary retain also expires at the next discard or when played; intrinsic Retain remains."
+	require(ui.hand_buttons[0].explanation.begins_with(intrinsic_text) and ui.hand_buttons[0].explanation.contains(overlap_text) and ui.hand_buttons[0].tooltip_text.contains(overlap_text),"Overlap hover/focus explains expiry without removing intrinsic Retain")
+	await check_retain_readability(ui)
+	var retained_resume=Game.new(ui.game.store.directory)
+	Fixtures.register(retained_resume)
+	require(retained_resume.load_saved(),"Resume retention duration fixture")
+	ui.game.run=retained_resume.run
+	ui._render()
+	require(ui.hand_buttons[0].explanation.contains("intrinsic Retain remains") and ui.hand_buttons[1].explanation.begins_with(temporary_text),"Save/resume preserves overlap and one-discard duration text")
+	ui.game.end_turn()
+	ui._render()
+	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and not ui.hand_buttons[0].explanation.contains("Temporary retain also"),"Boundary removes temporary overlap text but retains intrinsic marker")
+	require(ui.hand_buttons[1].find_child("RetainMarker",true,false)==null and not ui.hand_buttons[1].tooltip_text.contains(temporary_text),"One-discard marker and specific temporary text expire after boundary")
+	retained_resume=Game.new(ui.game.store.directory)
+	Fixtures.register(retained_resume)
+	require(retained_resume.load_saved(),"Resume expired retention fixture")
+	ui.game.run=retained_resume.run
+	ui._render()
+	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and ui.hand_buttons[1].find_child("RetainMarker",true,false)==null,"Resume cannot resurrect expired one-discard marker")
+	await check_retain_readability(ui)
+	ui.game.run=retention_initial
+	ui._render()
+	ui._open_deck()
+	for unused in range(3): await process_frame
+	var inspected=[]
+	collect_text(ui,inspected)
+	require(inspected.has(intrinsic_text) and inspected.has(temporary_text),"Owned-copy inspection distinguishes exact intrinsic and temporary duration")
+	ui._close_overlay()
+	for unused in range(3): await process_frame
+	var played_temporary=ui.game.run.battle.hand[1].duplicate(true)
+	require(ui.game.play_card(1,[2],0).ok and ui._retain_marker(played_temporary).is_empty() and ui._retain_detail(played_temporary).is_empty(),"Playing consumes temporary UI duration even if that UID redraws")
+	ui.game.run=retention_initial.duplicate(true)
+	ui._render()
 	for id in ["fixture_exhaust","fixture_install"]:
 		require(ui._card_tip({"id":id,"level":0}).contains("returns next combat"),"Existing keyword glossary explains dedicated zone behavior")
 	var showcase=ui.game.run.duplicate(true)
@@ -224,7 +267,7 @@ func check() -> void:
 	ui._render()
 	print("CARD ZONES: ",checks," checks, ",failures," failures (headless node assertions, not graphical evidence)")
 	if OS.get_cmdline_user_args().has("--demo"):
-		print("TEST FIXTURE DEMO ONLY: inspect the four piles and [R] hand markers. Close window to exit.")
+		print("TEST FIXTURE DEMO ONLY: inspect four piles, [R] EVERY TURN and [R1] NEXT DISCARD. Close window to exit.")
 		return
 	ui.ambience.stop()
 	ui.audio.stop()
@@ -236,3 +279,25 @@ func check() -> void:
 func collect_text(node: Node, values: Array) -> void:
 	if node is Label or node is Button: values.append(node.text)
 	for child in node.get_children(): collect_text(child,values)
+
+func check_retain_readability(ui) -> void:
+	# Font/rectangle checks only, not a claim of native visual review.
+	for window in [Vector2i(1440,900),Vector2i(1100,720)]:
+		root.size=window
+		ui._render()
+		for unused in range(5): await process_frame
+		for index in [0,1]:
+			for hover in [-1,index]:
+				ui.hover_card=hover
+				ui._arrange_hand()
+				for unused in range(3): await process_frame
+				var button=ui.hand_buttons[index]
+				var marker=button.find_child("RetainMarker",true,false)
+				if marker==null: continue
+				var font=marker.get_theme_font("font")
+				var size=int(marker.get_theme_font_size("font_size"))
+				require(font.get_string_size(marker.text,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x<=marker.size.x,"Duration marker fits without truncation at "+str(window))
+				require(font.get_height(size)<=marker.size.y and button.get_global_rect().encloses(marker.get_global_rect()),"Duration marker fits card height/bounds")
+				var title=button.get_meta("title_label")
+				require(not title.text.begins_with("[R"),"Duration marker does not consume card title width")
+				require(title.get_line_count()<=2 and button.get_global_rect().encloses(title.get_global_rect()),"Retained card name fits without truncation at "+str(window))
