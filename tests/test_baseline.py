@@ -16,6 +16,53 @@ spec.loader.exec_module(baseline)
 
 
 class BaselineTests(unittest.TestCase):
+    def test_complete_resumed_capture_and_report(self):
+        root = pathlib.Path(__file__).resolve().parents[1]
+        path = root / "docs/baselines/issue22-complete-resumed.jsonl"
+        prior_path = root / "docs/baselines/issue22-integration-interrupted.jsonl"
+        metadata, rows, summary = baseline.load_capture(path)
+        prior, inherited, _ = baseline.load_capture(prior_path)
+        self.assertEqual(baseline.hashlib.sha256(path.read_bytes()).hexdigest(),
+                         "50a1666218ed4c3d564f7c01a287af5efb58f8e30af796dcccdedce9b355bdc8")
+        self.assertEqual(len(rows), 720)
+        self.assertEqual(metadata["planned"], list(baseline.cases()))
+        self.assertEqual(rows[:354], inherited)
+        self.assertEqual(path.read_bytes().splitlines()[1:355],
+                         prior_path.read_bytes().splitlines()[1:])
+        self.assertEqual(metadata["resume"]["prior_metadata"], prior)
+        self.assertEqual(metadata["resume"]["capture_sha256"],
+                         baseline.hashlib.sha256(prior_path.read_bytes()).hexdigest())
+        self.assertEqual(metadata["resume"]["revision_relationship"], "explicit-compatible-fingerprints")
+        missing = baseline.resume_cases(prior, inherited, metadata, True)
+        self.assertEqual({baseline.case_key(c) for c in missing},
+                         {baseline.case_key(r) for r in rows[354:]})
+        self.assertEqual(len(missing), 366)
+        self.assertEqual(summary["inherited_rows"], 354)
+        self.assertEqual(summary["new_rows"], 366)
+        self.assertEqual(summary["wall_seconds"], 937.623)
+        self.assertEqual(summary["counts"], {"victory": 141, "defeat": 544, "timeout": 35})
+        self.assertFalse(any(r["status"] == "timeout" for r in rows[354:]))
+        for ship, victories in (("cartographer", 42), ("hollow_choir", 40), ("palimpsest", 16)):
+            tactical = [r for r in rows if r["character"] == ship and r["policy"] == "tactical"]
+            self.assertEqual(len(tactical), 60)
+            self.assertEqual(sum(r["status"] == "victory" for r in tactical), victories)
+        for ship in baseline.SHIPS:
+            for tier in (0, 3):
+                for policy in baseline.POLICIES:
+                    group = [r for r in rows if (r["character"], r["unlocks"], r["policy"]) == (ship, tier, policy)]
+                    self.assertEqual(len(group), 30)
+                    self.assertEqual(len({r["seed"] for r in group}), 30)
+        spec = importlib.util.spec_from_file_location("baseline_report", root / "tools/baseline_report.py")
+        report = importlib.util.module_from_spec(spec)
+        with mock.patch.dict("sys.modules", {"baseline": baseline}):
+            spec.loader.exec_module(report)
+        text = io.StringIO()
+        with contextlib.redirect_stdout(text):
+            report.report(path)
+        self.assertIn("Recorded 720/720 cases; missing 0.", text.getvalue())
+        self.assertNotIn("INTERRUPTED / INCOMPLETE", text.getvalue())
+        self.assertIn(text.getvalue(), path.with_suffix(".md").read_text())
+
     def fixture(self):
         metadata = {"schema_version": 1, "kind": "automated-headless-baseline",
                     "revision": "old", "engine": "engine-1", "generation_version": 1,

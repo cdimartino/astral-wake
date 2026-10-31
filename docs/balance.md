@@ -1,5 +1,52 @@
 # Difficulty tuning
 
+## Latest frozen baseline: all cases recorded, 35 unresolved timeouts
+
+The [completed cumulative report](baselines/issue22-complete-resumed.md) and
+[raw JSONL](baselines/issue22-complete-resumed.jsonl) now cover **720/720 planned
+cases, zero missing: 141 victories, 544 defeats, 35 timeouts**, no errors or
+action-limit unfinished runs. This is complete *record coverage*, not 720 resolved
+expeditions: the 35 timeouts are **not losses** and were not retried or resolved.
+Earlier interrupted/representative evidence below is preserved as historical;
+its “incomplete” statements describe those individual captures, not this new one.
+
+The resume inherited all **354** integration rows unchanged and ran only the
+**366** missing cases. Its clean historical measurement revision is
+`5a616c60e9380e83d9d8895bfaf6bb361c383d05`, not latest-main gameplay. Engine,
+generation, ordered plan, timeout, and all four recorded source fingerprints match
+the parent; historical Git objects at both measured revisions were checked against
+those hashes. The resumed invocation took **937.623 seconds**, not a measurement
+of total experiment time. The 1.30 MB uncompressed capture retains original
+metadata, parent hash, per-case results and resume provenance for direct auditing.
+
+Tactical recorded **42/60 Cartographer**, **40/60 Hollow Choir**, and **16/60
+Palimpsest** victories across both tiers. These scheduled-case counts are not human
+win rates or proof of optimal ship viability. Tactical's higher recorded victory
+count than the simpler policies supports keeping decision-sensitive comparisons;
+it does not identify which mechanic caused the gap or justify weaker enemies.
+Fresh/full tiers use **different seeds and RNG initializations**, so this is not a
+discoveries-only ablation. Do not infer a need for next-layer support from these
+policy outcomes or replace the original seed-777 loss.
+
+Future comparisons should reuse the published case plan, label changed source
+fingerprints, compare paired cases, and keep timeouts separate. Any timeout retry
+must be a new labelled runtime experiment, not a replacement of these rows.
+Expansion-specific ablations and audited graphical/manual expeditions remain
+outstanding; **issue #22 remains open**. No expeditions were run while publishing
+this report, and no gameplay or policy code was changed.
+
+Validate and regenerate counts:
+
+```sh
+python3 -m unittest discover -s tests -p test_baseline.py
+python3 tools/baseline_report.py docs/baselines/issue22-complete-resumed.jsonl
+```
+
+Publication validation: **9 baseline tests passed**, including complete-plan/status
+counts, inherited row byte equality, resume fingerprints/provenance, tactical
+counts, capture hash, and generated report consistency. Historical source hashes
+were additionally checked directly against Git objects at both measured revisions.
+
 ## Manual evidence tooling (issue #22, first slice)
 
 [The guarded JSON manual driver](manual-replay.md) records stable card-instance
