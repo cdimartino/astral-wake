@@ -573,7 +573,10 @@ func _combat() -> void:
 	var maximum := int(battle.get("max_command_points", 3))
 	var points_label := _screen_text("COMMAND POINTS  %d / %d" % [points, maximum], Rect2(430, 95, 345, 32), 20, GOLD if points > 0 else CORAL)
 	points_label.name = "CommandPoints"
-	_screen_text("TURN %d   WARD %d   DRAW %d   DISCARD %d" % [battle.turn, battle.ward, battle.draw.size(), battle.discard.size()], Rect2(800, 96, 600, 32), 18, TEAL)
+	var counters := _screen_text("TURN %d   WARD %d   DRAW %d   DISCARD %d" % [battle.turn, battle.ward, battle.draw.size(), battle.discard.size()], Rect2(800, 96, 600, 32), 18, TEAL)
+	counters.name = "CombatCounters"
+	counters.set_meta("turn", battle.turn)
+	counters.set_meta("ward", battle.ward)
 	if points == 0:
 		_screen_text("NO POINTS LEFT · End turn [E] to refill. Cards remain inspectable.", Rect2(45, 133, 740, 32), 17, CORAL)
 	elif int(game.run.get("tutorial_step", 0)) < 4:
@@ -605,7 +608,22 @@ func _combat() -> void:
 	_reading_plate(Rect2(40, 607, 1360, 22))
 	var hints := _screen_text("1–5 select   Q W E R T Y route   Space confirm   E end turn (Shift+E while routing)   Esc cancel", Rect2(50, 605, 1340, 23), 16, CREAM)
 	hints.name = "ShortcutHints"
+	_card_piles()
 	_hand()
+
+func _card_piles() -> void:
+	for pile in ["draw", "discard"]:
+		var button := _button("%s\n%d" % [pile.to_upper(), game.run.battle[pile].size()], func():
+			var body := _modal(pile.capitalize() + " pile")
+			var cards: Array = game.run.battle[pile].duplicate(true)
+			# Inspect composition, never reveal the shuffled draw order.
+			cards.sort_custom(func(a, b): return str(game.card(a.id).name) < str(game.card(b.id).name))
+			if cards.is_empty(): body.add_child(_text("This pile is empty."))
+			else: _deck_grid(body, false, cards), "Inspect pile contents. Draw order is hidden.")
+		button.name = "DrawPile" if pile == "draw" else "DiscardPile"
+		button.add_theme_font_size_override("font_size", 17)
+		button.add_theme_stylebox_override("normal", _style(Color("122b36"), TEAL if pile == "draw" else GOLD, 12, 4, 2))
+		_at(button, Rect2(40 if pile == "draw" else 1300, 716, 100, 144))
 
 func _last_command_tip() -> String:
 	var battle: Dictionary = game.run.battle
@@ -1432,7 +1450,7 @@ func _audio_setup() -> void:
 			var stream = load(path)
 			if stream != null:
 				sounds[cue] = stream
-	var combat_cues: Array[String] = ["repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw"]
+	var combat_cues: Array[String] = ["repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw", "discard"]
 	for family in ["kinetic", "plasma", "fracture", "sonic", "memory", "beam"]:
 		combat_cues.append(family + "_launch")
 		combat_cues.append(family + "_hit")
@@ -1467,17 +1485,21 @@ func _sound(cue: String) -> void:
 
 func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 	var kind := str(cue.get("kind", ""))
+	if kind in ["draw_card", "shuffle"]: kind = "draw"
+	if kind == "discard_card": kind = "discard"
 	var sound := ""
 	if kind in ["shot", "beam", "enemy_shot"]:
 		var family := str(cue.get("style", "kinetic"))
 		if kind == "beam" and family == "kinetic": family = "beam"
 		sound = family + ("_launch" if launch else "_hit")
 	elif not launch:
-		sound = {"repair":"repair", "shield":"shield", "disrupt":"disrupt", "vent":"vent", "sever":"sever", "link":"link", "phase":"phase", "ready":"ready", "draw":"draw", "mark":"disrupt", "incubate":"link"}.get(kind, "")
+		if kind == "discard": sound = "discard"
+		else:
+			sound = {"repair":"repair", "shield":"shield", "disrupt":"disrupt", "vent":"vent", "sever":"sever", "link":"link", "phase":"phase", "ready":"ready", "draw":"draw", "mark":"disrupt", "incubate":"link"}.get(kind, "")
 	if sound.is_empty() or not sounds.has("combat_" + sound) or combat_voices.is_empty(): return
 	var now := Time.get_ticks_msec()
 	# Six cooling organs / simultaneous split targets should not multiply loudness.
-	if now - int(combat_sound_times.get(sound, -1000)) < 65: return
+	if now - int(combat_sound_times.get(sound, -1000)) < (140 if sound in ["draw", "discard"] else 65): return
 	combat_sound_times[sound] = now
 	var voice := combat_voices[combat_voice_cursor % combat_voices.size()]
 	combat_voice_cursor += 1
@@ -1612,6 +1634,7 @@ func _hand() -> void:
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
 		var button := _button("", func(): _select_card(i), tip, selected_card == i)
 		button.name = "Hand%d" % i
+		button.set_meta("card_uid", int(instance.uid))
 		button.set_meta("focus_key", "hand%d" % i)
 		button.clip_contents = true
 		button.disabled = not affordable
@@ -1643,12 +1666,12 @@ func _hand() -> void:
 
 func _arrange_hand() -> void:
 	var raised := hover_card if hover_card >= 0 else selected_card
-	var step := minf(182, 1180.0 / maxf(1, hand_buttons.size() - 1))
+	var step := minf(182, 940.0 / maxf(1, hand_buttons.size() - 1))
 	var left := (1440.0 - 160 - step * (hand_buttons.size() - 1)) * 0.5
 	for i in range(hand_buttons.size()):
 		var button: Button = hand_buttons[i]
 		var lifted := i == raised
-		button.position = Vector2(clampf(left + i * step - (20 if lifted else 0), 40, 1200 if lifted else 1240), 630 if lifted else 670)
+		button.position = Vector2(clampf(left + i * step - (20 if lifted else 0), 150, 1090 if lifted else 1110), 630 if lifted else 670)
 		button.size = Vector2(200, 250) if lifted else Vector2(160, 210)
 		button.z_index = 50 if lifted else i
 		var title: Label = button.get_meta("title_label")
@@ -1751,10 +1774,55 @@ func _feedback(before: Dictionary, result: Dictionary, action_kind: String, play
 					else: _play_cue(cue))
 
 func _static_cue(cue: Dictionary) -> void:
+	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "shuffle"]:
+		_card_transition(cue, false)
+		return
 	_combat_sound(cue, true)
 	_apply_cue_impact(cue, false)
 	if not str(cue.get("label", "")).is_empty():
 		_cue_label(str(cue.label), cue.get("to", Vector2(720, 250)), cue.get("color", CREAM), false)
+
+func _card_transition(cue: Dictionary, animated: bool) -> void:
+	_combat_sound(cue)
+	var counters := page.find_child("CombatCounters", true, false)
+	if counters != null:
+		counters.text = "TURN %d   WARD %d   DRAW %d   DISCARD %d" % [int(counters.get_meta("turn")), int(counters.get_meta("ward")), int(cue.draw_count), int(cue.discard_count)]
+	for pile in ["draw", "discard"]:
+		var button := page.find_child("DrawPile" if pile == "draw" else "DiscardPile", true, false)
+		if button != null: button.text = "%s\n%d" % [pile.to_upper(), int(cue[pile + "_count"])]
+	var kind := str(cue.kind)
+	if kind == "shuffle":
+		_cue_label("RESHUFFLE", Vector2(90, 700), GOLD, animated)
+		return
+	var start := Vector2(60, 740)
+	var destination := Vector2(1320, 740)
+	if kind == "discard_card":
+		for button in hand_buttons:
+			if int(button.get_meta("card_uid", -1)) == int(cue.card.uid):
+				start = button.position
+				button.hide()
+		if not animated: return
+	else:
+		var count := int(game.run.battle.hand.size()) if game.run.get("mode", "") == "combat" else int(cue.hand_index) + 1
+		var step := minf(182, 940.0 / maxf(1, count - 1))
+		var left := (1440.0 - 160 - step * (count - 1)) * 0.5
+		destination = Vector2(left + int(cue.hand_index) * step, 670)
+	var card := Panel.new()
+	card.name = "CardTransition"
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.clip_contents = true
+	card.z_index = 60 + int(cue.hand_index)
+	card.add_theme_stylebox_override("panel", _style(Color("10202d"), GOLD, 12, 0, 2))
+	_at(card, Rect2(start if animated else destination, Vector2(160, 210)))
+	_card_face(card, cue.card, false, true)
+	if not animated: return
+	card.scale = Vector2.ONE if kind == "discard_card" else Vector2(0.3, 0.3)
+	var tween := card.create_tween().set_parallel(true)
+	tween.tween_property(card, "position", destination, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "scale", Vector2(0.3, 0.3) if kind == "discard_card" else Vector2.ONE, 0.35)
+	if kind == "discard_card":
+		tween.tween_property(card, "modulate:a", 0.0, 0.35)
+		tween.chain().tween_callback(card.queue_free)
 
 func _attack_style(card: Dictionary) -> String:
 	if card.get("character", "") == "hollow_choir": return "sonic"
@@ -1788,14 +1856,12 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	var cooling: Array = []
 	var phase_source := 0
 	var signaled_sources: Array[int] = []
+	var discard_clock := 0.0
+	var draw_clock := phase_tail + 0.55 if enemy_phase else command_impact + 0.2
 	if enemy_phase:
 		cues.append({"kind":"phase", "to":Vector2(1100, 190), "color":CORAL, "label":"ENEMY PHASE"})
 		if game.run.get("mode", "") == "combat":
 			cues.append({"kind":"ready", "to":ship + Vector2(0, 100), "color":TEAL, "label":"COMMAND POINTS REFILLED", "delay":phase_tail + 0.35})
-	elif not played_card.is_empty():
-		var definition: Dictionary = game.card(str(played_card.id))
-		if int(definition.get("draw", 0)) > 0:
-			cues.append({"kind":"draw", "to":ship + Vector2(0, 80), "color":GOLD, "delay":command_impact})
 	for event in records:
 		var kind := str(event.get("kind", ""))
 		if event.has("source_index"): phase_source = int(event.source_index)
@@ -1809,6 +1875,12 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			signaled_sources.append(source_index)
 			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay})
 		match kind:
+			"discard_card", "draw_card", "shuffle":
+				var cue: Dictionary = event.duplicate(true)
+				cue.delay = discard_clock if kind == "discard_card" else draw_clock
+				cues.append(cue)
+				if kind == "discard_card": discard_clock += 0.08
+				else: draw_clock += 0.12
 			"damage":
 				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
 				if amount > 0 and source_index < 0:
@@ -1875,6 +1947,9 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	return cues
 
 func _play_cue(cue: Dictionary) -> void:
+	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "shuffle"]:
+		_card_transition(cue, not game.profile.get("settings", {}).get("reduced_motion", false))
+		return
 	if game.profile.get("settings", {}).get("reduced_motion", false):
 		_static_cue(cue)
 		return
