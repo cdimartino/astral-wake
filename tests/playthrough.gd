@@ -17,6 +17,8 @@ func _initialize() -> void:
 	var seed_value=424242
 	var hp_scale=1.0
 	var character_id="cartographer"
+	var unlocks=0
+	var save_directory=""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--seed="): seed_value=int(arg.trim_prefix("--seed="))
 		if arg.begins_with("--code="): seed_value=arg.trim_prefix("--code=")
@@ -25,7 +27,15 @@ func _initialize() -> void:
 		if arg.begins_with("--policy="): policy=arg.trim_prefix("--policy=")
 		if arg=="--no-bonuses": no_bonuses=true
 		if arg=="--allow-defeat": allow_defeat=true
-	game=Game.new(OS.get_environment("TMPDIR").path_join("astral-playthrough-%s-%d"%[seed_value,Time.get_ticks_usec()]))
+		if arg.begins_with("--unlocks="): unlocks=int(arg.trim_prefix("--unlocks="))
+		if arg.begins_with("--save-dir="): save_directory=arg.trim_prefix("--save-dir=")
+	if unlocks<0 or unlocks>3 or not policy in ["balanced","aggressive","tactical"]:
+		printerr("Invalid unlock tier or policy")
+		quit(1)
+		return
+	if save_directory.is_empty(): save_directory=OS.get_environment("TMPDIR").path_join("astral-playthrough-%s-%d"%[seed_value,Time.get_ticks_usec()])
+	game=Game.new(save_directory)
+	game.profile.unlocks=unlocks
 	for definition in game.catalog.enemies: definition.hp=int(round(definition.hp*hp_scale))
 	var beginning=game.new_run(seed_value,character_id)
 	if not beginning.ok:
@@ -59,6 +69,10 @@ func _initialize() -> void:
 	var result={"seed":seed_value,"character":game.run.character,"route_regions":game.run.route_regions,"mode":game.run.mode,"region":game.run.region+1,"layer":game.run.layer+1,"turns":game.run.turns,"battles":game.run.battles,"cards_played":cards_played,"max_cards_per_turn":max_cards_per_turn,"actions":actions,"hull":game.run.hull,"deck":game.run.deck,"powerups":game.run.powerups,"checkpoints":checkpoints,"wall_seconds":(Time.get_ticks_msec()-started)/1000.0,"save_directory":game.store.directory}
 	result.policy=policy
 	result.no_bonuses=no_bonuses
+	result.profile_unlocks=unlocks
+	result.pool_tier=game.run.get("pool_tier",unlocks)
+	result.rng_version=game.run.get("rng_version",0)
+	result.seeded=game.run.get("seeded",false)
 	print("PLAYTHROUGH "+JSON.stringify(result))
 	quit(0 if game.run.mode=="victory" or (allow_defeat and game.run.mode=="defeat") else 2)
 

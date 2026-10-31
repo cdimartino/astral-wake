@@ -716,10 +716,12 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 	lines.tint = Color("bcb5ff") if ship_id == "hollow_choir" else GOLD if ship_id == "palimpsest" else TEAL
 	_at(lines, Rect2(Vector2.ZERO, ShipAnatomy.GRAPH_SIZE if anatomy_view else OrganCircuit.GRAPH_SIZE), graph)
 	var forecast: Array = []
+	var step_forecast := {}
 	if selected_card >= 0:
 		var preview: Dictionary = game.preview_card(selected_card, route, target)
 		if preview.get("ok", false):
 			forecast = preview.get("strain", [])
+		for step in preview.get("route_steps", []): step_forecast[int(step.organ)] = step
 	for i in range(6):
 		var organ: Dictionary = game.organ(i)
 		var strain: int = battle.strain[i]
@@ -733,6 +735,11 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var readout: Array = OrganVisuals.READOUTS[str(organ.id)]
 		var accent := Color(str(readout[2]))
 		var tip: String = str(organ.name) + " [" + ORGAN_LETTERS[i] + "]\n" + str(organ.description)
+		var step: Dictionary = step_forecast.get(i, {})
+		var effect_status := str(step.get("status", "unselected"))
+		if not step.is_empty():
+			tip += "\nPreview: %s · %s\nTrace %d → %d · Resonance %d → %d" % [effect_status.capitalize(), step.reason, step.trace_before, step.trace_after, step.resonance_before, step.resonance_after]
+			tip += "\nDamage %d → %d · Repair %d → %d · Disruption %d → %d" % [step.payload_before[0], step.payload_after[0], step.payload_before[1], step.payload_after[1], step.payload_before[2], step.payload_after[2]]
 		tip += "\nStrain %d / %d. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
 		tip += "\n" + ("Click to undo this organ and later steps." if selected else "Available next organ." if available else reason if selected_card >= 0 else "Choose a card to begin routing.")
 		var button := _button("", func(): _select_organ(i), tip)
@@ -740,6 +747,7 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		button.set_meta("focus_key", "organ%d" % i)
 		button.set_meta("route_available", available)
 		button.set_meta("route_step", route.find(i) + 1)
+		button.set_meta("effect_status", effect_status)
 		button.mouse_entered.connect(func():
 			lines.hovered = i
 			_anatomy_inspect(i)
@@ -757,12 +765,17 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 			_anatomy_inspect(-1)
 			lines.queue_redraw())
 		var border := GOLD if selected else CORAL if saturated else TEAL if available else Color("425565")
+		if selected and not step.is_empty(): border = TEAL if effect_status == "active" else GOLD if effect_status == "fallback" else CORAL
 		button.add_theme_stylebox_override("normal", _style(Color("21332f") if selected else Color("11232c"), border, 14, 0, 2 if selected or available else 1))
 		button.add_theme_stylebox_override("hover", _style(Color("203642"), GOLD, 14, 0, 2))
 		button.add_theme_stylebox_override("pressed", _style(Color("284039"), GOLD, 14, 0, 2))
 		_at(button, Rect2(ShipAnatomy.POSITIONS[i] if anatomy_view else OrganCircuit.POSITIONS[i], ShipAnatomy.NODE_SIZE if anatomy_view else OrganCircuit.NODE_SIZE), graph)
 		if anatomy_view:
 			_anatomy_organ(button, i, organ, readout, border, strain, int(forecast[i]) if forecast.size() == 6 else strain, selected, available)
+			if not step.is_empty():
+				var effect_label: Label = button.find_child("OrganEffect", true, false)
+				effect_label.text = effect_status.to_upper()
+				effect_label.add_theme_color_override("font_color", border)
 			continue
 		var art := TextureRect.new()
 		art.name = "OrganSpecimen"
@@ -778,7 +791,7 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var title := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 5, 109, 24), 16, CREAM, button)
 		title.name = "OrganName"
 		_screen_text(str(readout[0]), Rect2(82, 27, 134, 23), 16, accent, button)
-		var condition := _screen_text(str(readout[1]), Rect2(82, 48, 134, 35), 14, MUTED, button)
+		var condition := _screen_text(effect_status.capitalize() if not step.is_empty() else str(readout[1]), Rect2(82, 48, 134, 35), 14, border if not step.is_empty() else MUTED, button)
 		condition.name = "OrganCondition"
 		condition.max_lines_visible = 2
 		if selected:
@@ -830,7 +843,8 @@ func _anatomy_organ(button: Button, index: int, organ: Dictionary, readout: Arra
 	_at(caption, Rect2(78, 12, 112, 71), button)
 	var name_label := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 14, 106, 23), 16, CREAM, button)
 	name_label.name = "OrganName"
-	_screen_text(str(readout[0]), Rect2(84, 37, 106, 22), 14, Color(str(readout[2])), button)
+	var effect_label := _screen_text(str(readout[0]), Rect2(84, 37, 106, 22), 14, Color(str(readout[2])), button)
+	effect_label.name = "OrganEffect"
 	var value := "%d/%d strain" % [strain, game.run.battle.capacity]
 	if strain != projected: value = "%d→%d/%d" % [strain, projected, game.run.battle.capacity]
 	var strain_label := _screen_text(value, Rect2(84, 60, 106, 21), 14, GOLD if strain != projected else MUTED, button)
@@ -884,6 +898,7 @@ func _preview() -> void:
 		var result: Dictionary = game.preview_card(selected_card, route, target)
 		valid = result.get("ok", false)
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
+		full_summary += _resource_flow_text(result)
 		summary = "Damage %d · Hull %+d · Disrupt %d · Command points %d → %d" % [int(result.get("damage", 0)), int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))] if valid else full_summary
 	_screen_text(heading, Rect2(58, 545, 700, 26), 19, TEAL)
 	var detail := _screen_text(summary.replace("\n", " · "), Rect2(58, 575, 700, 27), 17, CREAM if selected_card < 0 or valid else CORAL)
@@ -2227,12 +2242,28 @@ func _character_image(id: String, height: float) -> TextureRect:
 
 func _character_resource_text(battle: Dictionary) -> String:
 	var id := str(game.run.get("character", "cartographer"))
+	var forecast: Dictionary = game.preview_card(selected_card, route, target) if selected_card >= 0 else {}
+	var previewing := forecast.has("resource_preview")
 	if id == "palimpsest":
 		var payload: Dictionary = battle.get("last_payload", {})
-		return "TRACE %d / 6\n%s" % [int(battle.get("trace", 0)), "Previous command in memory" if not payload.is_empty() else "Play a command to store memory"]
+		var value := "%d → %d" % [int(battle.get("trace", 0)), int(forecast.trace)] if previewing else str(int(battle.get("trace", 0)))
+		if previewing: return "TRACE %s / 6 · PREVIEW" % value
+		return "TRACE %s / 6%s\n%s" % [value, " · PREVIEW" if previewing else "", "Previous command in memory" if not payload.is_empty() else "Play a command to store memory"]
 	if id == "hollow_choir":
-		return "RESONANCE %d / 3\nLast command: %s" % [int(battle.get("resonance", 0)), (str(battle.get("last_command_kind", "")).capitalize() if not str(battle.get("last_command_kind", "")).is_empty() else "None")]
+		var value := "%d → %d" % [int(battle.get("resonance", 0)), int(forecast.resonance)] if previewing else str(int(battle.get("resonance", 0)))
+		if previewing: return "RESONANCE %s / 3 · PREVIEW" % value
+		return "RESONANCE %s / 3%s\nLast command: %s" % [value, " · PREVIEW" if previewing else "", (str(battle.get("last_command_kind", "")).capitalize() if not str(battle.get("last_command_kind", "")).is_empty() else "None")]
 	return ""
+
+func _resource_flow_text(result: Dictionary) -> String:
+	if not result.has("resource_preview"): return ""
+	var resource := "trace" if game.run.character == "palimpsest" else "resonance" if game.run.character == "hollow_choir" else ""
+	if resource.is_empty(): return ""
+	var values: Dictionary = result.resource_preview
+	var text := "\n%s preview: card %d → %d" % [resource.capitalize(), int(values[resource + "_before"]), int(values["card_" + resource])]
+	for step in result.get("route_steps", []):
+		text += "\n%s: %d → %d · %s (%s)" % [game.organ(int(step.organ)).name, int(step[resource + "_before"]), int(step[resource + "_after"]), step.status, step.reason]
+	return text
 
 func _enemy_image(id: String, height: float) -> TextureRect:
 	var image := _art(int(game.enemy(id).get("art", 19)), height)
