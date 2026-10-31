@@ -163,3 +163,69 @@ expedition was performed. The data do **not** establish that next-layer support 
 required, prove a ship unviable, or justify changing enemy strength. Preserve the
 current enemies and original seed-777 loss; finish the matrix and collect audited
 human outcomes before a numerical difficulty target or balance recommendation.
+
+### Interrupted integration capture and missing-only resume
+
+The later integration experiment was cancelled by a server restart. Its
+[separate raw capture](baselines/issue22-integration-interrupted.jsonl) is preserved
+byte-for-byte, alongside an explicitly [INTERRUPTED report](baselines/issue22-integration-interrupted.md).
+It records **354/720 cases: 62 victories, 257 defeats, 35 timeouts, zero errors or
+action-limit unfinished results; 366 cases are missing**. Missing means no recorded
+outcome, including possible in-flight cancellation, not a timeout or a defeat.
+There is no final summary or measured total wall time. The original representative
+and 27-row partial captures above remain unchanged; do not combine their duplicate
+cases into this measurement.
+
+Integration source revision: `1cd5596a653c7dfe66c3d976f96f88c6c2d61fa1`, clean tree;
+Godot `4.7.2.stable.official.ed1daf0bf`; generation v1; four workers; 180-second
+per-case timeout. See the report for exact ship/tier/policy counts. These partial,
+automated observations do not meet the completed 30-seed requirement or establish
+human win rates.
+
+`tools/baseline.py --resume-from CAPTURE` now retains **every recorded row**, including
+errors, unfinished outcomes, and timeouts, and schedules **only absent cases**.
+It creates a new cumulative JSONL with the original rows unchanged, the complete
+plan, parent capture SHA-256, original metadata/revision, current measurement
+revision, retained/scheduled counts, and explicit revision relationship. Existing
+captures, log directories, and saves are never overwritten or resumed. Interrupted
+unrecorded cases start new automated experiments in **new scratch directories**;
+this does not restart the original seed-777 expedition.
+
+Resume fails closed unless schema/kind, engine version, generation version, ordered
+full plan, all four recorded source SHA-256 values (`scripts/game.gd`,
+`scripts/seed_engine.gd`, `data/catalog.json`, `tests/playthrough.gd`), and per-case
+timeout match exactly. A differing Git revision additionally requires
+`--allow-compatible-revision`; this permission never overrides a fingerprint
+mismatch. The historical capture did not fingerprint other files, so compatibility
+is limited to that explicitly recorded fingerprint scope, not a universal proof of
+identical repositories. Worker count may change and is recorded for the new segment.
+Duplicate plans/results, unplanned rows, unknown statuses, malformed JSON, and
+inconsistent final summaries are rejected rather than repaired or silently dropped.
+Even recorded failures/timeouts are not retried; retry experiments must be separate.
+
+**Current blocker:** latest `origin/main` at follow-up base `c279f1d` has a different
+`scripts/game.gd` SHA-256 from this integration measurement. Resume correctly refuses
+that tree even with compatible-revision permission. No gameplay files were changed
+to bypass this guard. A future authorized run needs an isolated matching-source
+checkout with this resume tooling installed, or a separate newly labelled baseline
+for the changed rules. Do not mix changed-rule outcomes into this capture.
+
+Compatibility check only (runs engine `--version`, no expeditions or output files):
+
+```sh
+python3 tools/baseline.py --engine /path/to/Godot --resume-from docs/baselines/issue22-integration-interrupted.jsonl --allow-compatible-revision --scratch /approved/temp/new-resume-check --output /approved/temp/new-resume-check.jsonl --jobs 4 --timeout 180 --check-resume
+```
+
+Once compatibility passes and a run is authorized, omit `--check-resume`, using
+fresh scratch/output paths. Default `--families 30` preserves the full 720-case plan;
+changing it fails plan validation. Exactly **366** cases would be scheduled from
+this capture, not the 35 recorded timeouts or any other recorded outcome. A further
+interruption can be resumed from the new cumulative capture under the same checks.
+`baseline_report.py` labels absent final summaries as interrupted/incomplete and
+reports inherited rows; any resumed wall-time summary covers only that invocation,
+not total elapsed time across cancellations. No follow-up full run was launched.
+
+Validation for this follow-up: **8 baseline tests passed**, covering fingerprints,
+plan/engine/timeout mismatches, explicit compatible revisions, duplicate/unplanned
+rows, skipping all five recorded statuses, retaining failed/timeout rows, new-scratch
+protection, check-only behavior, and the preserved capture's counts and byte hash.
