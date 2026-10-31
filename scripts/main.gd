@@ -30,6 +30,7 @@ var notice := ""
 var menu := true
 var choosing_character := false
 var selected_character := "cartographer"
+var expedition_seed := ""
 var ship_atlas: Texture2D
 var card_atlas: Texture2D
 var player_hd: Texture2D
@@ -375,6 +376,7 @@ func _title() -> void:
 	_screen_text("A nervous system built for the unknown.", Rect2(922, 790, 420, 50), 20, CREAM)
 
 func _request_new() -> void:
+	expedition_seed = ""
 	choosing_character = true
 	menu = true
 	selected_character = str(game.run.get("character", selected_character))
@@ -382,6 +384,10 @@ func _request_new() -> void:
 	_render()
 
 func _begin_character_run() -> void:
+	if not expedition_seed.is_empty() and not Game.SeedEngine.valid(Game.SeedEngine.canonical(expedition_seed)):
+		notice = "Use exactly 6 letters or digits (A–Z, 0–9), or leave the seed blank."
+		_render()
+		return
 	if game.run_exists() or (game.run.is_empty() and not game.save_error.is_empty()):
 		var body := _modal("Replace this expedition?")
 		body.add_child(_text("Begin a new voyage aboard %s. The active expedition will be replaced and its current progress cannot be resumed." % str(game.character(selected_character).name), 19, CREAM))
@@ -394,11 +400,22 @@ func _begin_character_run() -> void:
 func _new_run() -> void:
 	choosing_character = false
 	menu = false
-	_perform(func(): return game.new_run(0, selected_character))
+	_perform(func(): return game.new_run(expedition_seed, selected_character))
 
 func _character_selection() -> void:
 	_reading_plate(Rect2(44, 118, 1352, 84))
 	_screen_text("Select your ship", Rect2(60, 130, 1320, 66), 43, CREAM)
+	_screen_text("Seed (optional)", Rect2(600, 137, 180, 29), 18, CREAM)
+	var seed_input := LineEdit.new()
+	seed_input.name = "ExpeditionSeed"
+	seed_input.placeholder_text = "e.g. A1B2C3"
+	seed_input.text = expedition_seed
+	seed_input.max_length = 6
+	seed_input.add_theme_font_size_override("font_size", 20)
+	seed_input.tooltip_text = "Blank: normal expedition. Enter 6 letters/digits: reproducible practice, with no durable progression or unlocks. Use the same ship and game version to retry tactics."
+	seed_input.text_changed.connect(func(value: String): expedition_seed = value)
+	_at(seed_input, Rect2(786, 132, 190, 40))
+	_screen_text("Entered seed = practice · no progression or unlocks", Rect2(600, 176, 760, 26), 16, GOLD)
 	var characters: Array = game.catalog.get("characters", [])
 	for i in range(characters.size()):
 		var character: Dictionary = characters[i]
@@ -1080,13 +1097,23 @@ func _ending() -> void:
 	_screen_text("VICTORY" if won else "SHIP LOST", Rect2(175, 733, 440, 65), 42, TEAL if won else CORAL)
 	_reading_plate(Rect2(758, 270, 610, 444))
 	_screen_text("EXPEDITION RECORD", Rect2(780, 282, 560, 40), 20, GOLD)
-	_screen_text("Region %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
-	_screen_text("Discovery tier %d / 3. New possibilities; the same starting strength." % game.profile.get("unlocks", 0), Rect2(780, 622, 560, 75), 22, TEAL)
+	var record := _screen_text("Region %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
+	record.name = "ExpeditionRecord"
+	_screen_text("Seeded practice · no durable progression or unlocks." if game.run.get("seeded", false) else "Discovery tier %d / 3. New possibilities; the same starting strength." % game.profile.get("unlocks", 0), Rect2(780, 622, 560, 75), 22, TEAL)
+	if game.run.seed is String:
+		_at(_button("Retry seed · " + str(game.run.seed), _retry_seed, "Restart with the same ship and seed. Practice runs do not grant progression."), Rect2(780, 812, 560, 52))
 	_at(_button("New expedition", _request_new, "Begin again.", true), Rect2(780, 740, 270, 56))
 	_at(_button("Return to title", func():
 		menu = true
 		_clear_selection()
 		_render()), Rect2(1070, 740, 270, 56))
+
+func _retry_seed() -> void:
+	if not game.run.get("seed") is String: return
+	expedition_seed = str(game.run.seed)
+	selected_character = str(game.run.character)
+	_clear_selection()
+	_new_run()
 
 func _perform(action: Callable, action_kind: String = "") -> void:
 	if presentation_busy(): return
@@ -1302,6 +1329,7 @@ func _open_history() -> void:
 		var box := _panel(body)
 		var outcome := "Victory" if record.get("won", false) else "Defeat"
 		box.add_child(_label(outcome + "  ·  Seed " + str(record.get("seed", "—")), 22, TEAL if outcome.to_lower() == "victory" else CORAL))
+		if record.get("seeded", false): box.add_child(_text("Seeded practice · no durable progression or unlocks", 17, GOLD))
 		var seconds := int(record.get("seconds", 0))
 		box.add_child(_text(str(game.character(str(record.get("character", "cartographer"))).name), 18, TEAL))
 		box.add_child(_text("Region %d · %d turns · %d battles · %d:%02d elapsed" % [int(record.get("region", 0)) + 1, int(record.get("turns", 0)), int(record.get("battles", 0)), seconds / 60, seconds % 60], 17))
@@ -1309,7 +1337,7 @@ func _open_history() -> void:
 func _open_unlocks() -> void:
 	var body := _modal("Discoveries")
 	var tier := int(game.profile.get("unlocks", 0))
-	body.add_child(_text("Discovery tier %d / 3. Each concluded expedition reveals more possibilities. Your starting hull and strength stay the same." % tier, 20, CREAM))
+	body.add_child(_text("Discovery tier %d / 3. Ordinary expeditions reveal more possibilities; entered-seed practice does not grant progression. Your starting hull and strength stay the same." % tier, 20, CREAM))
 	for kind in ["cards", "powerups"]:
 		body.add_child(_label(kind.to_upper(), 14, GOLD))
 		for item in game.catalog.get(kind, []):

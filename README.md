@@ -61,11 +61,17 @@ A route cannot repeat an organ or cross a severed connection. A saturated organ 
 - **The Palimpsest** starts with 96 hull and has 18 distinct cards. Build up to 6 Trace, then spend it to recall damage, repair, redact or rewrite part of the previous command’s base payload. Its six organs form their own routing network.
 - **The Hollow Choir** starts with 104 hull and has 18 distinct cards. Changing command kinds builds Resonance, up to 3; repeating a kind resets it before card and organ gains. Coordinate the phrase, then spend it on Crescendo, Cadence or Concert commands through a different six-organ network.
 
-All three are available immediately, each with a ten-card starter deck and its own card rewards and shop pool. Every vessel has three command points, base capacity 3 and cooling 1. Concluded voyages unlock six optional Cartographer cards and three powerups; progression never increases a vessel’s starting stats.
+All three are available immediately, each with a ten-card starter deck and its own card rewards and shop pool. Every vessel has three command points, base capacity 3 and cooling 1. Concluded ordinary voyages unlock six optional Cartographer cards and three powerups; progression never increases a vessel’s starting stats. Entered-seed practice voyages never award durable progression or unlocks.
 
 ### Three stops, six possible areas
 
 Each new expedition samples three different areas without replacement using its seed. Each visited area has twelve map layers, two to four destinations per ordinary layer, and one final boss. Enemy strength scales with the area’s position in the mission rather than its geographic identity.
+
+### Replay a seed
+
+New expeditions receive a **six-character code using A–Z and 0–9**. Leave the seed field blank for an ordinary voyage, or enter a code on the ship-selection screen to start reproducible practice. Victory and defeat both display the code and offer **Retry seed**, which restarts with the same vessel. Use the same vessel, game version and choices to reproduce maps, enemies, card order, rewards and shops. Lowercase entry is accepted and normalized to uppercase.
+
+Entered-seed runs allow normal in-voyage upgrades but **no durable leveling, discovery-tier gains or unlocks**, including after defeat or abandonment. They still save/resume and appear as practice in run history. The code includes the original discovery pool, so a retry is unaffected by later profile progression. [Seeding engine and guarantees](docs/seeds.md).
 
 | Possible area | Guardian |
 | --- | --- |
@@ -114,6 +120,7 @@ The bootstrap downloads approximately 1.5GB of editor/export archives into ignor
 ## Structure
 
 - `scripts/game.gd`: deterministic action validation, previews/resolution, expedition, rewards and progression.
+- `scripts/seed_engine.gd`: versioned gameplay RNG, independent persisted streams, six-character codes and legacy RNG compatibility.
 - `scripts/save_store.gd`: versioned JSON, atomic replacement and validated-backup preservation.
 - `scripts/main.gd`, `scripts/space_canvas.gd`, `scripts/intro_cinematic.gd`: native presentation, opening film, input and audio.
 - `data/catalog.json`: authored content, stable IDs, balance values.

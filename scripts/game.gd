@@ -2,6 +2,7 @@ class_name AstralGame
 extends RefCounted
 
 const SaveStore = preload("res://scripts/save_store.gd")
+const SeedEngine = preload("res://scripts/seed_engine.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
@@ -45,22 +46,13 @@ func _ok() -> Dictionary: return {"ok":true,"error":""}
 func _fail(message: String) -> Dictionary: return {"ok":false,"error":message}
 func _mode(expected: String) -> bool: return run.get("mode","") == expected
 
-func _rng(state: Dictionary) -> RandomNumberGenerator:
-	var random = RandomNumberGenerator.new()
-	random.seed = int(state.seed)
-	if state.has("rng_state"): random.state = int(state.rng_state)
-	return random
+func _pick(state: Dictionary, count: int, stream: String = "world") -> int:
+	if state.has("rng_version"): return SeedEngine.pick(state,count,stream)
+	return SeedEngine.pick_legacy(state,count)
 
-func _pick(state: Dictionary, count: int) -> int:
-	if count <= 1: return 0
-	var random = _rng(state)
-	var result = random.randi_range(0,count-1)
-	state.rng_state = str(random.state)
-	return result
-
-func _shuffle(state: Dictionary, items: Array) -> void:
+func _shuffle(state: Dictionary, items: Array, stream: String = "world") -> void:
 	for i in range(items.size()-1,0,-1):
-		var j = _pick(state,i+1)
+		var j = _pick(state,i+1,stream)
 		var old = items[i]
 		items[i] = items[j]
 		items[j] = old
@@ -100,13 +92,24 @@ func card_text(instance: Dictionary) -> String:
 		lines.append("Evolved: " + ", ".join(changes))
 	return "\n".join(lines)
 
-func new_run(seed_value: int = 0, character_id: String = "cartographer") -> Dictionary:
+func new_run(seed_value = "", character_id: String = "cartographer") -> Dictionary:
 	var vessel=character(character_id)
 	if vessel.is_empty(): return _fail("Choose an available vessel.")
-	if seed_value == 0: seed_value = int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec()
-	# Seed stays within JSON's exact integer range; RNG state is stored as a decimal string.
-	seed_value = absi(seed_value) % 2147483647
+	var modern=seed_value is String or (seed_value is int and seed_value==0)
+	var seeded=false
+	if modern:
+		var code=SeedEngine.canonical(str(seed_value)) if seed_value is String else ""
+		seeded=not code.is_empty()
+		if seeded and not SeedEngine.valid(code): return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
+		seed_value=code if seeded else SeedEngine.generate(int(profile.unlocks))
+	elif seed_value is int:
+		# Retain the old numeric API/RNG for legacy saves and deterministic fixtures.
+		seed_value=absi(seed_value)%2147483647
+	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
+	if modern:
+		SeedEngine.initialize(run,seed_value)
+		run.seeded=seeded
 	run.character=character_id
 	run.max_hull=int(vessel.max_hull)
 	run.hull=run.max_hull
@@ -266,7 +269,7 @@ func _start_battle(node: Dictionary) -> void:
 			attendant.hp = int(ceil(attendant.hp*0.6))
 			attendant.max_hp=attendant.hp
 			run.battle.enemies.append(attendant)
-	_shuffle(run,run.battle.draw)
+	_shuffle(run,run.battle.draw,"cards")
 	_draw(run,5+_effect(run,"draw"))
 	_log(run,"Encounter: " + run.battle.enemies[0].name)
 
@@ -278,7 +281,7 @@ func _draw(state: Dictionary, count: int) -> void:
 			if battle.discard.is_empty(): break
 			battle.draw=battle.discard.duplicate(true)
 			battle.discard.clear()
-			_shuffle(state,battle.draw)
+			_shuffle(state,battle.draw,"cards")
 		battle.hand.append(battle.draw.pop_back())
 
 func _edge_exists(edges: Array, a: int, b: int) -> bool:
@@ -712,13 +715,13 @@ func _check_battle_end() -> void:
 func _available_cards() -> Array:
 	var result=[]
 	for definition in catalog.cards:
-		if int(definition.get("unlock",0))<=int(profile.unlocks) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
+		if int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
 	return result
 
 func _available_powerups() -> Array:
 	var result=[]
 	for definition in catalog.powerups:
-		if int(definition.get("unlock",0))<=int(profile.unlocks) and not definition.id in run.powerups: result.append(definition.id)
+		if int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and not definition.id in run.powerups: result.append(definition.id)
 	return result
 
 func _finish_battle() -> void:
@@ -733,12 +736,12 @@ func _finish_battle() -> void:
 	_log(run,"Recovered %d salvage."%salvage)
 	var choices=[]
 	var pool=_available_cards()
-	_shuffle(run,pool)
+	_shuffle(run,pool,"rewards")
 	var card_choices=(2 if kind in ["elite","boss"] else 3)+_effect(run,"reward_choices")
 	for i in range(mini(card_choices,pool.size())): choices.append({"kind":"card","id":pool[i]})
 	if kind in ["elite","boss"]:
 		var powers=_available_powerups()
-		_shuffle(run,powers)
+		_shuffle(run,powers,"rewards")
 		for i in range(mini(2,powers.size())): choices.append({"kind":"powerup","id":powers[i]})
 	run.reward={"choices":choices,"boss":kind=="boss"}
 	run.mode="reward"
@@ -780,10 +783,10 @@ func _make_shop() -> void:
 	run.mode="shop"
 	var items=[]
 	var cards=_available_cards()
-	_shuffle(run,cards)
+	_shuffle(run,cards,"shop")
 	for i in range(2): items.append({"kind":"card","id":cards[i],"cost":35+i*8,"sold":false})
 	var powers=_available_powerups()
-	_shuffle(run,powers)
+	_shuffle(run,powers,"shop")
 	for i in range(mini(2,powers.size())): items.append({"kind":"powerup","id":powers[i],"cost":75,"sold":false})
 	items.append({"kind":"remove","id":"","cost":30,"sold":false})
 	items.append({"kind":"upgrade","id":"","cost":35,"sold":false})
@@ -880,14 +883,14 @@ func event_choice(index: int) -> Dictionary:
 			run.hull=mini(int(run.max_hull),int(run.hull)+35)
 		"card":
 			var pool=_available_cards()
-			run.deck.append(_instance(run,pool[_pick(run,pool.size())]))
+			run.deck.append(_instance(run,pool[_pick(run,pool.size(),"events")]))
 		"powerup","capacity_trade":
 			var pool=_available_powerups()
 			if pool.is_empty(): return _fail("You have already integrated every available powerup.")
 			if effect=="capacity_trade":
 				run.max_hull-=8
 				run.hull=mini(int(run.hull),int(run.max_hull))
-			_grant_powerup(pool[_pick(run,pool.size())])
+			_grant_powerup(pool[_pick(run,pool.size(),"events")])
 		"upgrade","remove":
 			run.mode="modify"
 			run.modify_return="event"
@@ -910,8 +913,8 @@ func _finish_run(won: bool) -> void:
 	_tick_time()
 	run.finished=true
 	run.mode="victory" if won else "defeat"
-	profile.unlocks=mini(3,int(profile.unlocks)+1)
-	profile.history.push_front({"id":run.id,"seed":run.seed,"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
+	if not run.get("seeded",false): profile.unlocks=mini(3,int(profile.unlocks)+1)
+	profile.history.push_front({"id":run.id,"seed":run.seed,"seeded":run.get("seeded",false),"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
 	if profile.history.size()>30: profile.history.resize(30)
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
@@ -1023,7 +1026,9 @@ func _valid_profile(value) -> bool:
 	if value.history.size()>30: return false
 	for item in value.history:
 		if not item is Dictionary: return false
-		for key in ["seed","region","turns","battles","seconds","date","deck_size"]:
+		if not _number(item.get("seed")) and not (item.get("seed") is String and SeedEngine.valid(item.seed)): return false
+		if item.has("seeded") and not item.seeded is bool: return false
+		for key in ["region","turns","battles","seconds","date","deck_size"]:
 			if not _number(item.get(key)): return false
 		if not item.get("won") is bool: return false
 		if item.has("character") and (not item.character is String or character(item.character).is_empty()): return false
@@ -1039,14 +1044,17 @@ func _valid_run(value) -> bool:
 	if value.is_empty(): return true
 	if not value.get("character") is String or character(value.character).is_empty(): return false
 	if not _valid_itinerary(value.get("route_regions")): return false
-	for key in ["seed","region","layer","hull","max_hull","salvage","turns","started_at","elapsed_seconds","tutorial_step","next_uid","battles"]:
+	if value.get("seed") is String:
+		if not SeedEngine.valid_state(value): return false
+	elif not _number(value.get("seed")) or value.has("rng_version") or value.has("rng_streams") or value.has("seeded") or value.has("pool_tier"): return false
+	for key in ["region","layer","hull","max_hull","salvage","turns","started_at","elapsed_seconds","tutorial_step","next_uid","battles"]:
 		if not _number(value.get(key)): return false
 	if int(value.region)<0 or int(value.region)>2 or int(value.layer)<-1 or int(value.layer)>11: return false
 	if int(value.hull)<0 or int(value.hull)>int(value.max_hull) or int(value.max_hull)<1 or int(value.max_hull)>1000: return false
 	if not value.get("mode","") in MODES or not value.get("finished") is bool: return false
-	for key in ["id","current_node","event_id","modify_return","modify_kind","rng_state"]:
+	for key in ["id","current_node","event_id","modify_return","modify_kind"]:
 		if not value.get(key) is String: return false
-	if not value.rng_state.is_valid_int(): return false
+	if not value.has("rng_version") and (not value.get("rng_state") is String or not value.rng_state.is_valid_int()): return false
 	for key in ["deck","powerups","map","visited","log"]:
 		if not value.get(key) is Array: return false
 	if value.deck.size()<5 or value.deck.size()>200 or value.map.size()!=12: return false

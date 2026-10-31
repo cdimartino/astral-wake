@@ -128,7 +128,7 @@ Base combat salvage is **18 / 25 / 32** in the first, second and third regions. 
 
 Salvage is awarded automatically after victory. Then choose **one** offered discovery or skip. Normal rewards offer three card choices. Elites and bosses offer two cards and up to two distinct, unowned powerups. Many Pockets adds another card choice. You still take just one discovery: choose the card or powerup that addresses your deck's current weakness.
 
-Cards come from the chosen ship's unlocked pool. Duplicate cards are allowed, and each copy can evolve independently. Powerups are shared between ships, last for the expedition and cannot be acquired twice in the same voyage. They do not become starting equipment for future runs.
+Cards come from the chosen ship's discovery pool, fixed when the expedition starts. New ordinary voyages use your current discovery tier; a seed replay restores the pool encoded in that code regardless of the current profile. Duplicate cards are allowed, and each copy can evolve independently. Powerups are shared between ships, last for the expedition and cannot be acquired twice in the same voyage. They do not become starting equipment for future runs.
 
 Shops normally offer two commands priced at 35 and 43 salvage, two distinct unowned powerups for 75 each, removal for 30, and evolution for 35. Old Favour discounts these prices by 20%. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
 
@@ -138,7 +138,7 @@ Hull, maximum-hull changes, salvage, deck changes and powerups persist through t
 
 ## Discoveries, history and saves
 
-Every concluded expedition—victory, defeat or abandonment—advances the profile's discovery tier by one, up to tier 3. Each tier adds two optional Cartographer cards and one shared powerup to the available reward/shop pools:
+Every concluded **ordinary** expedition—victory, defeat or abandonment—advances the profile's discovery tier by one, up to tier 3. **Entered-seed practice never advances durable progression or grants unlocks.** Each tier adds two optional Cartographer cards and one shared powerup to the available reward/shop pools:
 
 | Tier | Cards | Powerup |
 | --- | --- | --- |
@@ -147,6 +147,10 @@ Every concluded expedition—victory, defeat or abandonment—advances the profi
 | 3 | Whole Horizon, Unbroken Song | Buried Dawn |
 
 Discoveries broaden future options; they do not increase starting hull, capacity or command points. All ships are available without unlocking them. **Discoveries** shows the tiers; **Run history** lists the last thirty concluded voyages. Abandoning records a defeat. Simply replacing an active expedition with a new one does not conclude it or award a discovery tier.
+
+### Seeded practice
+
+On **Select your ship**, enter a six-character seed (letters A–Z and digits 0–9), or leave it blank for an ordinary voyage. Both final screens show your code. **Retry seed** restarts the same vessel and code in practice mode. Practice saves and resumes normally, permits temporary deck upgrades and powerups, and records a marked history entry, but cannot grant durable progression. Reuse the same vessel, game version and actions to reproduce tactics exactly. See [seeds](seeds.md) for details and legacy-save limitations.
 
 The game has one active expedition and saves locally after committed actions and choices. **Save and return to title**, then **Continue expedition**, resumes that state, including the selected ship, itinerary, deck order, combat meters and pending rewards. An unconfirmed route selection is not a committed action. Settings save immediately.
 

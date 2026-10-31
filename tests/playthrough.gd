@@ -19,14 +19,19 @@ func _initialize() -> void:
 	var character_id="cartographer"
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--seed="): seed_value=int(arg.trim_prefix("--seed="))
+		if arg.begins_with("--code="): seed_value=arg.trim_prefix("--code=")
 		if arg.begins_with("--character="): character_id=arg.trim_prefix("--character=")
 		if arg.begins_with("--hp-scale="): hp_scale=float(arg.trim_prefix("--hp-scale="))
 		if arg.begins_with("--policy="): policy=arg.trim_prefix("--policy=")
 		if arg=="--no-bonuses": no_bonuses=true
 		if arg=="--allow-defeat": allow_defeat=true
-	game=Game.new("/tmp/astral-playthrough-%d-%d"%[seed_value,Time.get_ticks_usec()])
+	game=Game.new(OS.get_environment("TMPDIR").path_join("astral-playthrough-%s-%d"%[seed_value,Time.get_ticks_usec()]))
 	for definition in game.catalog.enemies: definition.hp=int(round(definition.hp*hp_scale))
-	game.new_run(seed_value,character_id)
+	var beginning=game.new_run(seed_value,character_id)
+	if not beginning.ok:
+		printerr(beginning.error)
+		quit(1)
+		return
 	prepare_routes()
 	while not game.run.mode in ["victory","defeat"] and actions<4000:
 		var outcome={"ok":true}
