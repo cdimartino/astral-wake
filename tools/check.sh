@@ -27,5 +27,7 @@ python3 tests/manual_replay_cli_test.py "$engine"
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd
-"$engine" --headless --audio-driver CoreAudio --path . --script tests/audio_smoke.gd
+"$engine" --headless --path . --script tests/intro_test.gd
+"$engine" --headless --path . --script tests/intro_test.gd -- --skip
+"$engine" --headless --audio-driver "${ASTRAL_AUDIO_DRIVER:-CoreAudio}" --path . --script tests/audio_smoke.gd
 "$engine" --headless --path . --script tests/playthrough.gd -- --seed=424242 --policy=tactical
