@@ -69,6 +69,8 @@ func command_points_checks() -> void:
 	# Legacy saves know whether a card was played, but cannot prove remaining actions.
 	var legacy=battle_game()
 	var old=legacy.run.duplicate(true)
+	old.erase("schema_revision")
+	for key in ["exhausted","installed","installed_sources","temporary_retain"]: old.battle.erase(key)
 	old.battle.erase("command_points")
 	old.battle.erase("max_command_points")
 	legacy.store.write(legacy.profile,old)

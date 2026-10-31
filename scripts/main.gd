@@ -202,7 +202,22 @@ func _button(text: String, callback: Callable, tip: String = "", accent: bool = 
 	return button
 
 func _card_tip(instance: Dictionary, rich: bool = false) -> String:
-	return game.card_text(instance) + "\n\n" + Keywords.describe(Keywords.for_card(game.card(instance.id)), rich)
+	var names := Keywords.for_card(game.effective_card(instance))
+	if game.retained(instance) and not names.has("Retain"): names.append("Retain")
+	var duration := _retain_detail(instance)
+	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + Keywords.describe(names, rich)
+
+func _retain_marker(instance: Dictionary) -> String:
+	if game.effective_card(instance).get("retain", false): return "[R] EVERY TURN"
+	if instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", []): return "[R1] NEXT DISCARD"
+	return ""
+
+func _retain_detail(instance: Dictionary) -> String:
+	var intrinsic: bool = game.effective_card(instance).get("retain", false)
+	var temporary: bool = instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", [])
+	if intrinsic:
+		return "Retained every end turn until played." + ("\nTemporary retain also expires at the next discard or when played; intrinsic Retain remains." if temporary else "")
+	return "Retained through next discard only; expires when played." if temporary else ""
 
 func _card_heading(instance: Dictionary, font_size: int) -> Button:
 	var button := _button("", func(): pass, _card_tip(instance), false, instance)
@@ -210,7 +225,7 @@ func _card_heading(instance: Dictionary, font_size: int) -> Button:
 	button.set_meta("focus_key", "inspect-" + str(instance.id))
 	for state in ["normal", "hover", "pressed"]:
 		button.add_theme_stylebox_override(state, _style(Color.TRANSPARENT, Color.TRANSPARENT, 0, 0, 0))
-	var title := _card_title(str(game.card(instance.id).name) + (" +" if int(instance.get("level", 0)) > 0 else ""), font_size)
+	var title := _card_title(str(game.effective_card(instance).name) + (" +" if int(instance.get("level", 0)) > 0 else ""), font_size)
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	button.add_child(title)
@@ -630,18 +645,21 @@ func _combat() -> void:
 	_hand()
 
 func _card_piles() -> void:
-	for pile in ["draw", "discard"]:
+	for pile in ["draw", "discard", "exhausted", "installed"]:
 		var button := _button("%s\n%d" % [pile.to_upper(), game.run.battle[pile].size()], func():
 			var body := _modal(pile.capitalize() + " pile")
+			if pile == "installed": body.add_child(_text("Dormant Install storage — no active passives or triggers in this slice."))
+			if pile == "exhausted": body.add_child(_text("Out of circulation until the next combat. Still in your expedition deck."))
 			var cards: Array = game.run.battle[pile].duplicate(true)
 			# Inspect composition, never reveal the shuffled draw order.
 			cards.sort_custom(func(a, b): return str(game.effective_card(a).name) < str(game.effective_card(b).name))
 			if cards.is_empty(): body.add_child(_text("This pile is empty."))
 			else: _deck_grid(body, false, cards), "Inspect pile contents. Draw order is hidden.")
-		button.name = "DrawPile" if pile == "draw" else "DiscardPile"
+		button.name = pile.capitalize() + "Pile"
+		button.add_theme_font_size_override("font_size", 14 if pile in ["exhausted", "installed"] else 20)
 		button.add_theme_font_size_override("font_size", 17)
 		button.add_theme_stylebox_override("normal", _style(Color("122b36"), TEAL if pile == "draw" else GOLD, 12, 4, 2))
-		_at(button, Rect2(40 if pile == "draw" else 1300, 716, 100, 144))
+		_at(button, Rect2(40 if pile in ["draw", "exhausted"] else 1300, 716 if pile in ["draw", "discard"] else 792, 100, 68))
 
 func _last_command_tip() -> String:
 	var battle: Dictionary = game.run.battle
@@ -1394,6 +1412,11 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 		var box := _panel(grid)
 		box.custom_minimum_size.x = 240
 		box.add_child(_card_heading(instance, 19))
+		if game.retained(instance):
+			box.add_child(_text(_retain_marker(instance), 17, GOLD))
+			box.add_child(_text(_retain_detail(instance), 17, GOLD))
+		if card.has("install") and game.run.get("battle", {}).get("installed", []).any(func(source): return source.uid == instance.get("uid", -1)):
+			box.add_child(_text("Dormant identity: %s · source UID %d" % [card.install, int(instance.uid)], 17, GOLD))
 		box.add_child(_printed_stats(instance, true))
 		var description := _text(game.card_text(instance), 17)
 		description.tooltip_text = _card_tip(instance)
@@ -1682,6 +1705,7 @@ func _hand() -> void:
 		var cost := int(card.get("cost", 1))
 		var affordable := cost <= points
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
+		if game.retained(instance): tip += "\n" + _retain_detail(instance)
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
 		var button := _button("", func(): _select_card(i), tip, selected_card == i, instance)
 		button.name = "Hand%d" % i
@@ -1769,6 +1793,13 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(title)
+	if game.retained(instance):
+		# A dedicated full-width line keeps duration and card names independently readable.
+		var marker := _text(_retain_marker(instance), 14, GOLD)
+		marker.name = "RetainMarker"
+		marker.max_lines_visible = 1
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		body.add_child(marker)
 	var art := _card_art(instance, 24)
 	art.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(art)
@@ -1825,7 +1856,7 @@ func _feedback(before: Dictionary, result: Dictionary, action_kind: String, play
 					else: _play_cue(cue))
 
 func _static_cue(cue: Dictionary) -> void:
-	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "shuffle"]:
+	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "zone_card", "shuffle"]:
 		_card_transition(cue, false)
 		return
 	_combat_sound(cue, true)
@@ -1842,12 +1873,16 @@ func _card_transition(cue: Dictionary, animated: bool) -> void:
 		var button := page.find_child("DrawPile" if pile == "draw" else "DiscardPile", true, false)
 		if button != null: button.text = "%s\n%d" % [pile.to_upper(), int(cue[pile + "_count"])]
 	var kind := str(cue.kind)
+	var leaving := kind in ["discard_card", "zone_card"]
 	if kind == "shuffle":
 		_cue_label("RESHUFFLE", Vector2(90, 700), GOLD, animated)
 		return
 	var start := Vector2(60, 740)
 	var destination := Vector2(1320, 740)
-	if kind == "discard_card":
+	if leaving:
+		if kind == "zone_card":
+			destination = Vector2(60 if cue.zone == "exhausted" else 1320, 816)
+			_cue_label(str(cue.zone).to_upper(), destination, GOLD, animated)
 		for button in hand_buttons:
 			if int(button.get_meta("card_uid", -1)) == int(cue.card.uid):
 				start = button.position
@@ -1867,11 +1902,11 @@ func _card_transition(cue: Dictionary, animated: bool) -> void:
 	_at(card, Rect2(start if animated else destination, Vector2(160, 210)))
 	_card_face(card, cue.card, false, true)
 	if not animated: return
-	card.scale = Vector2.ONE if kind == "discard_card" else Vector2(0.3, 0.3)
+	card.scale = Vector2.ONE if leaving else Vector2(0.3, 0.3)
 	var tween := card.create_tween().set_parallel(true)
 	tween.tween_property(card, "position", destination, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(card, "scale", Vector2(0.3, 0.3) if kind == "discard_card" else Vector2.ONE, 0.35)
-	if kind == "discard_card":
+	tween.tween_property(card, "scale", Vector2(0.3, 0.3) if leaving else Vector2.ONE, 0.35)
+	if leaving:
 		tween.tween_property(card, "modulate:a", 0.0, 0.35)
 		tween.chain().tween_callback(card.queue_free)
 
@@ -1926,11 +1961,11 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			signaled_sources.append(source_index)
 			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay})
 		match kind:
-			"discard_card", "draw_card", "shuffle":
+			"discard_card", "zone_card", "draw_card", "shuffle":
 				var cue: Dictionary = event.duplicate(true)
-				cue.delay = discard_clock if kind == "discard_card" else draw_clock
+				cue.delay = discard_clock if kind in ["discard_card", "zone_card"] else draw_clock
 				cues.append(cue)
-				if kind == "discard_card": discard_clock += 0.08
+				if kind in ["discard_card", "zone_card"]: discard_clock += 0.08
 				else: draw_clock += 0.12
 			"damage":
 				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
@@ -1998,7 +2033,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	return cues
 
 func _play_cue(cue: Dictionary) -> void:
-	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "shuffle"]:
+	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "zone_card", "shuffle"]:
 		_card_transition(cue, not game.profile.get("settings", {}).get("reduced_motion", false))
 		return
 	if game.profile.get("settings", {}).get("reduced_motion", false):

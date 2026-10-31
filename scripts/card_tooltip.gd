@@ -40,6 +40,8 @@ func _rich_tip() -> Control:
 
 func _show_focus_tip() -> void:
 	_hide_focus_tip()
+	# A render can detach this button before its deferred focus callback runs.
+	if not is_inside_tree() or is_queued_for_deletion(): return
 	focus_tip = _rich_tip()
 	# The hand clips its own card face. A viewport sibling keeps definitions
 	# outside that clip and above raised cards without hiding the hand.
@@ -48,7 +50,7 @@ func _show_focus_tip() -> void:
 	_place_focus_tip.call_deferred()
 
 func _place_focus_tip() -> void:
-	if not is_instance_valid(focus_tip): return
+	if not is_inside_tree() or not is_instance_valid(focus_tip): return
 	var bounds := get_viewport_rect().size
 	var rect := get_global_rect()
 	var x := rect.end.x + 12
