@@ -23,7 +23,7 @@ jobs:
       ASTRAL_AUDIO_DRIVER: Dummy
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install pinned Godot engine
         run: bash tools/bootstrap.sh --engine-only
