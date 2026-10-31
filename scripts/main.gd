@@ -917,9 +917,10 @@ func _preview() -> void:
 		valid = result.get("ok", false)
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
 		full_summary += _resource_flow_text(result)
-		summary = "Damage %d · Hull %+d · Disrupt %d · Command points %d → %d" % [int(result.get("damage", 0)), int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))] if valid else full_summary
+		summary = _command_preview_summary(result) if valid else full_summary
 	_screen_text(heading, Rect2(58, 545, 700, 26), 19, TEAL)
 	var detail := _screen_text(summary.replace("\n", " · "), Rect2(58, 575, 700, 27), 17, CREAM if selected_card < 0 or valid else CORAL)
+	detail.name = "RoutePreviewSummary"
 	detail.max_lines_visible = 1
 	detail.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	detail.tooltip_text = full_summary
@@ -934,6 +935,28 @@ func _preview() -> void:
 		_clear_selection()
 		_render(), "Clear command and route. [Esc]"), Rect2(1084, 549, 100, 50))
 	_at(_button("End turn [E]", _end_turn, "Enemies act, organs cool and a new hand arrives. Shift+E while routing."), Rect2(1194, 549, 190, 50))
+
+func _damage_breakdown(result: Dictionary) -> Dictionary:
+	var breakdown := {"primary":0, "secondary":[]}
+	for event in result.get("presentation", []):
+		if event.get("kind", "") != "damage": continue
+		if event.get("split", false):
+			breakdown.secondary.append({"target_index":int(event.target_index), "amount":int(event.amount)})
+		else: breakdown.primary += int(event.amount)
+	return breakdown
+
+func _command_preview_summary(result: Dictionary) -> String:
+	var breakdown := _damage_breakdown(result)
+	var text := "Damage %d" % int(breakdown.primary)
+	if not breakdown.secondary.is_empty():
+		var amounts: Array[String] = []
+		for hit in breakdown.secondary: amounts.append(str(int(hit.amount)))
+		var uniform := amounts.all(func(amount): return amount == amounts[0])
+		var count := amounts.size()
+		var values := amounts[0] + (" each" if count > 1 else "") if uniform else "/".join(amounts)
+		text += " · Split %s (%d %s)" % [values, count, "foe" if count == 1 else "foes"]
+	text += " · Hull %+d · Disrupt %d · CP %d→%d" % [int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))]
+	return text
 
 func _select_card(index: int) -> void:
 	if presentation_busy(): return
