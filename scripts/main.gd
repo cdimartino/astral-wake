@@ -321,7 +321,7 @@ func _render() -> void:
 	_focus_first.call_deferred()
 
 func _focus_first() -> void:
-	if not is_instance_valid(page):
+	if not is_instance_valid(page) or is_instance_valid(overlay):
 		return
 	var buttons := page.find_children("*", "Button", true, false)
 	if not menu and game.run.get("mode", "") == "map":

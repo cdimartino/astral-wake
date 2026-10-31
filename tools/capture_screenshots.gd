@@ -34,7 +34,8 @@ func capture() -> void:
  await settle()
  var anatomy_sample = OS.get_cmdline_user_args().has("--anatomy-sample")
  var memory_sample = OS.get_cmdline_user_args().has("--last-command")
- if not anatomy_sample and not memory_sample:
+ var deck_sample = OS.get_cmdline_user_args().has("--deck-view")
+ if not anatomy_sample and not memory_sample and not deck_sample:
   ui.choosing_character = true
   ui.menu = false
   ui._render()
@@ -62,7 +63,13 @@ func capture() -> void:
    ui.game.play_card(ui.selected_card, ui.route, ui.target)
    ui._clear_selection()
    ui._render()
-  await shot(pair[0] + ("-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
+  if deck_sample:
+   ui._open_deck()
+   await settle()
+   var scroll = ui.overlay.find_children("*", "ScrollContainer", true, false)[0]
+   scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+  await shot(pair[0] + ("-deck-overlay" if deck_sample else "-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
+  if deck_sample: ui._close_overlay()
  ui.ambience.stop()
  ui.queue_free()
  await process_frame
