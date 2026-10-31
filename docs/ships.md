@@ -21,6 +21,17 @@ For combat controls, enemy intentions and the expedition map, see the [gameplay 
 
 The examples below use unupgraded cards, no powerups, open links and available strain capacity. Damage is before enemy protection and remaining-hull limits; healing cannot exceed your maximum hull. Always check the live preview for the current battle.
 
+### Reading the living circuit
+
+Your ship and its organs share one console directly above the hand, with a large vessel portrait beside two columns of specimens. Each specimen has a short function readout; hover for the complete effect and its conditions. The six keys run clockwise: **Q W** on the top row, **Y E** in the middle, and **T R** at the bottom.
+
+- **Teal outline:** a legal next organ for the selected card. Hover or keyboard-focus an organ to illuminate its connections.
+- **Gold number and signal:** a selected step and its direction through the route. Click a selected organ to undo it and all later steps.
+- **Strain cells:** filled cells show current strain; gold outlines mark cells that will change. The adjacent numbers show current → projected strain and capacity. Full organs are marked **FULL**.
+- **Coral cut:** a severed conduit. It cannot carry a command until restored.
+
+The illustrations and conduit colors vary with the vessel. Reduced motion retains numbered steps, direction arrows and every state indicator without moving signals.
+
 ## The Cartographer
 
 ![The Cartographer previews an attacking route through its six-organ circuit, with the selected card and enemy intentions visible](screenshots/cartographer-combat.png)
@@ -194,9 +205,9 @@ Concert and Crescendo are separate spends. A Concert card empties the meter befo
 | 2 | Warm Refrain | Repair | 1 | Restore 6 hull; gain 1 Resonance |
 | 1 | Silent Measure | Utility | 1 | Cool all organs by 1; draw 1; gain 1 Resonance |
 | 1 | Call and Response | Attack | 1 | 6 damage; draw 1; gain 1 Resonance |
-| 1 | Tuning Fork | Utility | 1 | 2 disruption; gain 1 Resonance |
+| 1 | Tuning Fork | Utility | 1 | 4 disruption; gain 1 Resonance |
 | 1 | Bright Canon | Attack | 2 | 12 damage; Concert: spend all Resonance for 2 damage and 1 healing per point |
-| 1 | Hushed Chord | Utility | 1 | Cool all organs by 1; 3 disruption; gain 1 Resonance |
+| 1 | Hushed Chord | Utility | 1 | Cool all organs by 1; 6 disruption; gain 1 Resonance |
 
 ### Try these routes
 

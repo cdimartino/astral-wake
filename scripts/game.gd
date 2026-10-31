@@ -4,9 +4,12 @@ extends RefCounted
 const SaveStore = preload("res://scripts/save_store.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
+# Normalize legacy area stats first, then apply expedition pressure consistently.
+const AREA_STRENGTH = [1.0,1.4,1.8]
+const ATTACK_PRESSURE = 1.6
 var catalog: Dictionary = {}
 var run: Dictionary = {}
-var profile: Dictionary = {"version":1,"unlocks":0,"history":[],"settings":{"reduced_motion":false,"volume":0.5,"fullscreen":false}}
+var profile: Dictionary = {"version":1,"unlocks":0,"history":[],"settings":{"reduced_motion":false,"volume":0.5,"music_volume":1.0,"combat_volume":1.0,"interface_volume":1.0,"fullscreen":false}}
 var save_error = ""
 var store
 var _cards = {}
@@ -26,8 +29,8 @@ func _init(save_directory: String = "") -> void:
 
 func card(id: String) -> Dictionary: return _cards.get(id, {})
 func enemy(id: String) -> Dictionary:
-	if id == "_egg": return {"id":id,"name":"Ember Cocoon","art":1,"hp":14,"pattern":[{"kind":"incubate","amount":0,"label":"Hatching"}]}
-	if id == "_hatchling": return {"id":id,"name":"Newborn Flare","art":2,"hp":22,"pattern":[{"kind":"attack","amount":7,"label":"Solar bite"}]}
+	if id == "_egg": return {"id":id,"name":"Ember Cocoon","description":"Cannot attack. Destroy it within two enemy phases to prevent a Newborn Flare; disruption does not delay hatching.","art":1,"hp":14,"pattern":[{"kind":"incubate","amount":0,"label":"Hatching"}]}
+	if id == "_hatchling": return {"id":id,"name":"Newborn Flare","description":"Attacks every turn with no recovery phase. Its low hull makes it a priority for a quick kill or split damage.","art":2,"hp":22,"pattern":[{"kind":"attack","amount":7,"label":"Solar bite"}]}
 	return _enemies.get(id, {})
 func powerup(id: String) -> Dictionary: return _powerups.get(id, {})
 func character(id: String = "") -> Dictionary:
@@ -199,12 +202,18 @@ func choose_node(node_id: String) -> Dictionary:
 func _enemy_scale(id: String) -> float:
 	var native=int(enemy(id).get("region",0))
 	var authored=[1.0,1.3,1.6][native] if native>=0 and native<3 else 1.0
-	return [1.0,1.3,1.6][int(run.get("region",0))]/authored
+	return AREA_STRENGTH[int(run.get("region",0))]/authored
 
 func _intent_for(id: String, turn: int) -> Dictionary:
 	var pattern=enemy(id).pattern
 	var intent=pattern[(turn-1)%pattern.size()].duplicate(true)
+	var tactics=enemy(id).get("tactics",{})
+	var phases=tactics.get("phases",[])
+	if not phases.is_empty(): intent.merge(phases[(turn-1)%phases.size()],true)
 	if intent.kind in ["attack","rebuild","mark"]: intent.amount=maxi(1,int(round(int(intent.amount)*_enemy_scale(id))))
+	# Long fights become dangerous even with a repair-heavy deck. The full damage
+	# is stored in the visible intent, so previews and resolution always agree.
+	if intent.kind=="attack": intent.amount=int(ceil(int(intent.amount)*ATTACK_PRESSURE))+int((turn-1)/4)
 	var name=str(intent.get("label","")).get_slice(" · ",0)
 	match intent.kind:
 		"attack": intent.label=name+" · %d damage"%int(intent.amount)
@@ -212,6 +221,32 @@ func _intent_for(id: String, turn: int) -> Dictionary:
 		"mark": intent.label=name+" · repeated route costs %d hull"%int(intent.amount)
 		"incubate": intent.label=name+" · egg %d hull; hatches in 2 phases"%int(round(14*_enemy_scale("_egg")))
 	return intent
+
+func enemy_tactics_text(index: int) -> String:
+	var foe=run.battle.enemies[index]
+	var definition=enemy(foe.id)
+	var tactics=definition.get("tactics",{})
+	var lines=[str(definition.get("description",""))]
+	if not tactics.is_empty():
+		lines.append(str(tactics.name)+": "+str(tactics.counter))
+		var cycle=[]
+		for step in range(definition.pattern.size()):
+			var phase=_intent_for(foe.id,step+1)
+			cycle.append(str(phase.label).get_slice(" · ",0)+_stance_text(phase))
+		lines.append("Repeats: "+" → ".join(cycle)+".")
+	lines.append("Now: "+str(foe.intent.label)+_stance_text(foe.intent))
+	if int(foe.intent.get("interrupt",0))>0:
+		lines.append("Disruption: %d / %d to interrupt."%[int(foe.disrupt),int(foe.intent.interrupt)])
+	return "\n".join(lines)
+
+func _stance_text(intent: Dictionary) -> String:
+	var traits=[]
+	if int(intent.get("armor",0))>0: traits.append("armor %d per hit"%int(intent.armor))
+	if int(intent.get("exposed",0))>0: traits.append("takes +%d per hit"%int(intent.exposed))
+	if int(intent.get("interrupt",0))>0: traits.append("interrupt with %d disruption"%int(intent.interrupt))
+	if intent.get("drain",false): traits.append("repairs actual hull damage dealt")
+	if int(intent.get("overload",0))>0: traits.append("+%d damage per saturated organ"%int(intent.overload))
+	return " ["+", ".join(traits)+"]" if not traits.is_empty() else ""
 
 func _make_enemy(id: String) -> Dictionary:
 	var definition=enemy(id)
@@ -395,7 +430,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		if hull_delta>0: events.append("Repeated route triggers your last ember: hull restored to %d."%int(state.hull))
 		else: events.append("Repeated route: %d hull lost."%-hull_delta)
 	if damage>0:
-		var dealt=_damage_enemy(state,target_index,damage)
+		var dealt=_damage_enemy(state,target_index,damage,route.size())
 		actual_damage+=dealt
 		presentation.append({"kind":"damage","target_index":target_index,"amount":dealt,"split":false})
 		events.append("%s: %d damage." % [target.name,dealt])
@@ -403,7 +438,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			var splash=int(floor(damage/2.0))+_effect(state,"fork")
 			for i in range(battle.enemies.size()):
 				if i!=target_index and int(battle.enemies[i].hp)>0:
-					var split_dealt=_damage_enemy(state,i,splash)
+					var split_dealt=_damage_enemy(state,i,splash,route.size(),true)
 					actual_damage+=split_dealt
 					presentation.append({"kind":"damage","target_index":i,"amount":split_dealt,"split":true})
 					events.append("%s: %d split damage." % [battle.enemies[i].name,split_dealt])
@@ -421,6 +456,8 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		if disrupt>0:
 			presentation.append({"kind":"disrupt","target_index":target_index,"amount":disrupt})
 			events.append("%s: +%d disruption for this enemy phase (combined defense caps at half an attack)."%[target.name,disrupt])
+			if int(target.intent.get("interrupt",0))>0:
+				events.append("%s: action interrupted."%target.name if int(target.disrupt)>=int(target.intent.interrupt) else "%s: %d more disruption interrupts this action."%[target.name,int(target.intent.interrupt)-int(target.disrupt)])
 		var other_living=false
 		for i in range(battle.enemies.size()):
 			if i!=target_index and int(battle.enemies[i].hp)>0: other_living=true
@@ -472,8 +509,14 @@ func play_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
 	result.erase("next")
 	return result
 
-func _damage_enemy(state: Dictionary, index: int, amount: int) -> int:
+func _damage_enemy(state: Dictionary, index: int, amount: int, route_length: int = 0, split_hit: bool = false) -> int:
+	if amount<=0: return 0
 	var target=state.battle.enemies[index]
+	var tactics=enemy(target.id).get("tactics",{})
+	var weakness=tactics.get("weakness","")
+	if (weakness=="short" and route_length==1) or (weakness=="long" and route_length==3) or (weakness=="split" and split_hit):
+		amount+=int(tactics.get("bonus",0))
+	amount=maxi(0,amount+int(target.intent.get("exposed",0))-int(target.intent.get("armor",0)))
 	# Parliament members share protection while attendants survive.
 	if target.id=="salvage_parliament":
 		var living=0
@@ -509,11 +552,31 @@ func _hurt(state: Dictionary, amount: int, use_ward: bool = true) -> Dictionary:
 	return {"damage":damage,"absorbed":absorbed,"restored":restored}
 
 func enemy_attack_preview(source_index: int) -> Dictionary:
-	return _attack_payload(run,source_index)
+	return _forecast_attack(run,source_index)
 
-func _attack_payload(state: Dictionary, source_index: int) -> Dictionary:
+func _strain_targets(strain: Array) -> Array:
+	var indices=[0,1,2,3,4,5]
+	indices.sort_custom(func(a,b): return int(strain[a])>int(strain[b]) if strain[a]!=strain[b] else a<b)
+	return indices
+
+func _forecast_attack(state: Dictionary, source_index: int) -> Dictionary:
+	# Earlier strain actions can empower an overload attack in the same phase.
+	var strain=state.battle.strain.duplicate()
+	for i in range(source_index):
+		var foe=state.battle.enemies[i]
+		if int(foe.hp)<=0 or foe.intent.kind!="strain": continue
+		if int(foe.intent.get("interrupt",0))>0 and int(foe.disrupt)>=int(foe.intent.interrupt): continue
+		var targets=_strain_targets(strain)
+		for j in range(mini(int(foe.intent.amount),6)):
+			strain[targets[j]]=mini(int(state.battle.capacity),int(strain[targets[j]])+2)
+	return _attack_payload(state,source_index,strain)
+
+func _attack_payload(state: Dictionary, source_index: int, projected_strain: Array = []) -> Dictionary:
 	var foe=state.battle.enemies[source_index]
 	var raw=int(foe.intent.get("amount",0)) if foe.intent.kind=="attack" and int(foe.hp)>0 else 0
+	if raw>0:
+		for strain in (state.battle.strain if projected_strain.is_empty() else projected_strain):
+			if int(strain)>=int(state.battle.capacity): raw+=int(foe.intent.get("overload",0))
 	# Combined defenses can prevent at most half an attack; Prism needs another foe.
 	var budget=int(floor(raw/2.0))
 	var disrupted=mini(budget,maxi(0,int(foe.disrupt)))
@@ -527,7 +590,7 @@ func _attack_payload(state: Dictionary, source_index: int) -> Dictionary:
 
 func _incoming_damage(state: Dictionary) -> int:
 	var amount=0
-	for i in range(state.battle.enemies.size()): amount+=int(_attack_payload(state,i).damage)
+	for i in range(state.battle.enemies.size()): amount+=int(_forecast_attack(state,i).damage)
 	return amount
 
 func end_turn() -> Dictionary:
@@ -551,6 +614,12 @@ func end_turn() -> Dictionary:
 			continue
 		var intent=foe.intent
 		var amount=int(intent.get("amount",0))
+		if int(intent.get("interrupt",0))>0 and int(foe.disrupt)>=int(intent.interrupt):
+			_log(run,"%s: %s interrupted by disruption."%[foe.name,str(intent.label).get_slice(" · ",0)])
+			presentation.append({"kind":"interrupted","source_index":i,"amount":int(foe.disrupt)})
+			foe.disrupt=0
+			foe.redirect=0
+			continue
 		match intent.kind:
 			"attack":
 				var attack=_attack_payload(run,i)
@@ -561,10 +630,15 @@ func end_turn() -> Dictionary:
 				presentation.append({"kind":"enemy_attack","source_index":i,"target_index":-1,"amount":hit.damage,"absorbed":hit.absorbed,"disrupted":attack.disrupted,"redirected":attack.redirected})
 				if hit.restored>0: presentation.append({"kind":"heal","amount":hit.restored,"source":"emergency"})
 				_log(run,"%s strikes: %d hull damage, %d ward absorbed, %d disrupted, %d redirected."%[foe.name,hit.damage,hit.absorbed,attack.disrupted,attack.redirected])
+				if intent.get("drain",false) and int(foe.hp)>0:
+					var restored=mini(int(foe.max_hp)-int(foe.hp),int(hit.damage))
+					foe.hp+=restored
+					if restored>0:
+						presentation.append({"kind":"enemy_heal","source_index":i,"target_index":i,"amount":restored})
+						_log(run,"%s drains %d hull to repair itself."%[foe.name,restored])
 
 			"strain":
-				var indices=[0,1,2,3,4,5]
-				_shuffle(run,indices)
+				var indices=_strain_targets(battle.strain)
 				var added=[0,0,0,0,0,0]
 				for j in range(mini(amount,6)):
 					added[indices[j]]=mini(2,int(battle.capacity)-int(battle.strain[indices[j]]))
@@ -573,10 +647,16 @@ func end_turn() -> Dictionary:
 				_log(run,foe.name+" floods organs with strain.")
 			"sever":
 				var open=[]
+				# Cut the last command's conduits first, in route order; then use
+				# the stable circuit order. Players can bait cuts with a spare route.
+				for j in range(1,battle.last_route.size()):
+					var a=int(battle.last_route[j-1])
+					var b=int(battle.last_route[j])
+					if _edge_exists(battle.edges,a,b) and not _edge_exists(battle.severed,a,b): open.append([a,b])
 				for edge in battle.edges:
-					if not _edge_exists(battle.severed,int(edge[0]),int(edge[1])): open.append(edge)
+					if not _edge_exists(battle.severed,int(edge[0]),int(edge[1])) and not _edge_exists(open,int(edge[0]),int(edge[1])): open.append(edge)
 				for ignored in range(mini(amount,open.size())):
-					var edge=open.pop_at(_pick(run,open.size())).duplicate()
+					var edge=open.pop_front().duplicate()
 					battle.severed.append(edge)
 					presentation.append({"kind":"sever","source_index":i,"edge":edge})
 				_log(run,foe.name+" severs a connection for your next turn.")
@@ -653,11 +733,12 @@ func _finish_battle() -> void:
 	var choices=[]
 	var pool=_available_cards()
 	_shuffle(run,pool)
-	for i in range(mini(3+_effect(run,"reward_choices"),pool.size())): choices.append({"kind":"card","id":pool[i]})
+	var card_choices=(2 if kind in ["elite","boss"] else 3)+_effect(run,"reward_choices")
+	for i in range(mini(card_choices,pool.size())): choices.append({"kind":"card","id":pool[i]})
 	if kind in ["elite","boss"]:
 		var powers=_available_powerups()
 		_shuffle(run,powers)
-		if not powers.is_empty(): choices.append({"kind":"powerup","id":powers[0]})
+		for i in range(mini(2,powers.size())): choices.append({"kind":"powerup","id":powers[i]})
 	run.reward={"choices":choices,"boss":kind=="boss"}
 	run.mode="reward"
 
@@ -699,10 +780,10 @@ func _make_shop() -> void:
 	var items=[]
 	var cards=_available_cards()
 	_shuffle(run,cards)
-	for i in range(3): items.append({"kind":"card","id":cards[i],"cost":35+i*8,"sold":false})
+	for i in range(2): items.append({"kind":"card","id":cards[i],"cost":35+i*8,"sold":false})
 	var powers=_available_powerups()
 	_shuffle(run,powers)
-	if not powers.is_empty(): items.append({"kind":"powerup","id":powers[0],"cost":75,"sold":false})
+	for i in range(mini(2,powers.size())): items.append({"kind":"powerup","id":powers[i],"cost":75,"sold":false})
 	items.append({"kind":"remove","id":"","cost":30,"sold":false})
 	items.append({"kind":"upgrade","id":"","cost":35,"sold":false})
 	for item in items: item.cost=maxi(1,int(round(item.cost*(1.0-_effect(run,"shop_discount")/100.0))))
@@ -857,7 +938,9 @@ func save() -> bool:
 func set_settings(settings: Dictionary) -> void:
 	for key in ["reduced_motion","fullscreen"]:
 		if settings.has(key) and settings[key] is bool: profile.settings[key]=settings[key]
-	if settings.has("volume"): profile.settings.volume=clampf(float(settings.volume),0.0,1.0)
+	for key in ["volume","music_volume","combat_volume","interface_volume"]:
+		if settings.has(key) and (settings[key] is float or settings[key] is int) and is_finite(float(settings[key])):
+			profile.settings[key]=clampf(float(settings[key]),0.0,1.0)
 	save()
 
 func run_exists() -> bool:
@@ -934,6 +1017,9 @@ func _valid_profile(value) -> bool:
 		if item.has("character") and (not item.character is String or character(item.character).is_empty()): return false
 		if item.has("route_regions") and not _valid_itinerary(item.route_regions): return false
 	var settings=value.settings
+	for key in ["music_volume","combat_volume","interface_volume"]:
+		if not settings.has(key): continue # Existing profiles inherit full category volume.
+		if not (settings[key] is float or settings[key] is int) or not is_finite(float(settings[key])) or float(settings[key])<0 or float(settings[key])>1: return false
 	return settings.get("reduced_motion") is bool and settings.get("fullscreen") is bool and (settings.get("volume") is float or settings.get("volume") is int) and is_finite(float(settings.volume)) and float(settings.volume)>=0 and float(settings.volume)<=1
 
 func _valid_run(value) -> bool:
@@ -1010,6 +1096,9 @@ func _valid_run(value) -> bool:
 				if not _number(foe.get(key)): return false
 			if not foe.intent.get("label") is String: return false
 			if not foe.intent.get("kind","") in ["attack","strain","sever","incubate","rebuild","mark"] or not _number(foe.intent.get("amount")): return false
+			for field in ["armor","exposed","interrupt","overload"]:
+				if foe.intent.has(field) and (not _number(foe.intent[field]) or foe.intent[field]<0 or foe.intent[field]>20): return false
+			if foe.intent.has("drain") and not foe.intent.drain is bool: return false
 	if value.mode=="reward":
 		if not value.reward.get("choices") is Array or not value.reward.get("boss") is bool: return false
 		for choice in value.reward.choices:

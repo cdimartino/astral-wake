@@ -2,6 +2,8 @@
 
 - [Gameplay](gameplay.md): learn a turn, route commands, read enemy intentions, plan a voyage, and understand rewards, saves and controls.
 - [Ships](ships.md): compare the three vessels, their starting decks, organ networks and distinct mechanics.
+- [Balance notes](balance.md): difficulty changes and reproducible policy comparisons.
+- [Enemy field guide](enemies.md): repeating patterns, strengths, and counters for every enemy.
 
 New to the game? Start with [your first encounter](gameplay.md#your-first-encounter). Keep the [controls](gameplay.md#controls) and [glossary](gameplay.md#glossary) nearby while learning.
 

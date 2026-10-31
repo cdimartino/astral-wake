@@ -87,6 +87,8 @@ func fixture(game, ship: String, ids: Array) -> void:
 	game.run.battle.hand = game.run.deck.slice(0,ids.size()).duplicate(true)
 	game.run.battle.draw = game.run.deck.slice(ids.size()).duplicate(true)
 	game.run.battle.discard.clear()
+	# Character payload checks use an unarmored target, independently of the map.
+	game.run.battle.enemies = [game._make_enemy("cinder_mite")]
 	for foe in game.run.battle.enemies:
 		foe.hp = 5000
 		foe.max_hp = 5000

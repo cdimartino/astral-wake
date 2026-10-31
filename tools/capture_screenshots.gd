@@ -32,12 +32,14 @@ func capture() -> void:
  ui = Main.new()
  root.add_child(ui)
  await settle()
- ui.choosing_character = true
- ui.menu = false
- ui._render()
- await shot("ship-selection")
- expedition("cartographer", 5)
- await shot("overmap")
+ var anatomy_sample = OS.get_cmdline_user_args().has("--anatomy-sample")
+ if not anatomy_sample:
+  ui.choosing_character = true
+  ui.menu = false
+  ui._render()
+  await shot("ship-selection")
+  expedition("cartographer", 5)
+  await shot("overmap")
  for pair in [["cartographer", 0], ["palimpsest", 4], ["hollow_choir", 5]]:
   expedition(pair[0], pair[1])
   var result = ui.game.choose_node(ui.game.run.map[0][0].id)
@@ -55,7 +57,7 @@ func capture() -> void:
      ui._select_organ(1)
      ui._select_organ(2)
     break
-  await shot(pair[0] + "-combat")
+  await shot(pair[0] + ("-anatomy" if anatomy_sample else "-combat"))
  ui.ambience.stop()
  ui.queue_free()
  await process_frame

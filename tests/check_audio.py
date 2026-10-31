@@ -2,6 +2,7 @@
 import math
 import struct
 import wave
+import hashlib
 from pathlib import Path
 
 
@@ -30,3 +31,21 @@ for path in tracks:
         assert seam < max(nearby_steps) * 1.2 + 2, (path.name, channel, 'boundary click', seam)
         assert max(map(abs, samples)) < 32767, (path.name, channel, 'clipping')
         print(f'{path.name} channel {channel}: RMS {middle:.1f}, seam RMS {edges[0]:.1f}/{edges[1]:.1f}, boundary step {seam}')
+
+combat = sorted((Path(__file__).resolve().parents[1] / 'audio').glob('combat_*.wav'))
+assert len(combat) == 21, 'all combat launches, impacts and support cues must exist'
+digests = set()
+for path in combat:
+    with wave.open(str(path)) as cue:
+        assert (cue.getnchannels(), cue.getsampwidth(), cue.getframerate()) == (2, 2, 22050)
+        count = cue.getnframes()
+        assert .25 < count / 22050 < 1.0, (path.name, 'combat cue must stay responsive')
+        raw = cue.readframes(count)
+        samples = struct.unpack(f'<{count * 2}h', raw)
+    assert max(map(abs, samples)) < 32000, (path.name, 'clipping')
+    assert rms(samples) > 700, (path.name, 'inaudible cue')
+    assert max(map(abs, samples[:2] + samples[-2:])) < 4, (path.name, 'edge click')
+    assert any(a != b for a, b in zip(samples[::2], samples[1::2])), (path.name, 'stereo reflection missing')
+    digests.add(hashlib.sha256(raw).digest())
+assert len(digests) == len(combat), 'combat cues must not be duplicate recordings'
+print('PASS: 21 distinct stereo combat cues, audible levels, clean edges and no clipping')

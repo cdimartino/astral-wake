@@ -65,11 +65,13 @@ The organ buttons show forecast strain. Hover the preview or Confirm for the det
 
 Each enemy displays its next intention, current hull and maximum hull. All living enemies remain visible and can be selected directly.
 
+Attacks grow by **1 damage every four combat turns**, starting on turn 5; the displayed intention includes this increase. Long repair loops become increasingly dangerous. Save defensive commands for attacking turns, use quieter turns to cool or repair, and weigh a kill against preventing incoming damage. Later regions increase enemy strength further.
+
 | Intention | What happens in the enemy phase |
 | --- | --- |
 | Attack | Deals the displayed damage after disruption and redirection; ward can absorb what remains. |
-| Strain | Adds up to 2 strain to each of the indicated number of randomly chosen organs, capped at capacity. Normal end-of-turn cooling follows. |
-| Sever | Cuts the indicated number of available connections for your next turn. |
+| Strain | Adds up to 2 strain to the indicated number of most-strained organs, capped at capacity. Ties use organ index order. Normal end-of-turn cooling follows. |
+| Sever | Cuts the last command's route connections first, in route order, then other open connections in circuit order. Cuts last for your next turn. |
 | Incubate | Creates an Ember Cocoon if fewer than five enemies are present. A cocoon hatches after two subsequent enemy phases; the hatchling does not attack during its hatching phase. |
 | Rebuild / repair | Repairs every living enemy, up to its maximum hull. |
 | Mark | Sets a hull penalty for repeating the immediately previous command's exact ordered route. The mark persists for the combat and compares routes across turns too. |
@@ -81,6 +83,18 @@ For example, a raw attack of 10 with 3 disruption and 3 available redirection lo
 **Ward** absorbs normal attack damage after those reductions and is consumed across attacks. Leftover ward expires at the end of the enemy phase. The enemy's displayed attack forecast is **before ward**, so it can exceed the hull you will actually lose. Ward does not absorb the mark's repeated-route penalty or damage paid in events.
 
 Some guardians have additional rules. Each hit on the Salvage Parliament loses 2 damage for every other living enemy protecting it. Removing those enemies changes later previews. Read the guardian's intentions and compare the preview when choosing a target.
+
+### Learn an enemy's counter
+
+Hover or keyboard-focus an enemy's **intent badge** to read its repeating cycle, current stance, and counter. The action order repeats even when you interrupt a turn. Attack damage still escalates in long fights.
+
+- **Armor** subtracts damage from every hit; use fewer, larger hits or wait for a different stance. **Exposed** adds damage to every positive hit, rewarding several attacks during that window.
+- **Route weaknesses** grant extra damage from a one-organ route, a three-organ route, or a secondary split hit, as specified by that enemy. A primary hit does not count as split damage. Bonuses apply before armor.
+- **Interruptible utility actions** show a disruption threshold. Meet it during that turn to cancel the action entirely. Below the threshold it still happens. Disruption expires afterward; the enemy advances to its next step. Already-applied marks remain until combat ends.
+- **Drain** repairs only the hull damage that attack actually deals. Ward, disruption and redirection deny some or all of that repair.
+- **Overload** adds damage for each saturated organ when the attack lands, before cooling. Vent beforehand, and account for other enemies applying strain earlier in the phase. Attack forecasts include that earlier strain.
+
+For example, Lantern Eel's Arc has armor, while its following Afterglow is exposed. Ash Cantor's hymn can be interrupted before its overload-enhanced Cough. Ribbon Leech rewards short routes, cuts the last-used conduits, then feeds on unprevented damage. See the [enemy field guide](enemies.md) for all 36 enemies.
 
 ## The voyage and its map
 
@@ -100,8 +114,8 @@ Scroll vertically to inspect the chart. The map returns to your progress and foc
 | Destination | What to expect |
 | --- | --- |
 | Battle | Combat, automatic salvage and a choice of card rewards. |
-| Elite | A harder fight, 15 extra salvage and an additional powerup option in the reward selection. |
-| Boss | The region's guardian, 30 extra salvage and a powerup option. Resolve the reward to continue or finish the voyage. |
+| Elite | A harder fight, 15 extra salvage and two powerup alternatives in the reward selection. |
+| Boss | The region's guardian, 30 extra salvage and two powerup alternatives. Resolve the reward to continue or finish the voyage. |
 | Event | A choice that can affect hull, salvage, deck or powerups. Read its terms before choosing; you may also leave. |
 | Shop | Spend salvage on commands, a powerup or deck work. |
 | Recovery | Repair 30 hull or evolve one command for free. You may leave without choosing. |
@@ -110,11 +124,11 @@ Base combat salvage is **18 / 25 / 32** in the first, second and third regions. 
 
 ## Rewards and deck building
 
-Salvage is awarded automatically after victory. Then choose **one** offered discovery or skip. Normal rewards offer three card choices; Many Pockets adds another. Elites and bosses add a powerup option to that same selection—you choose a card or the powerup, not both.
+Salvage is awarded automatically after victory. Then choose **one** offered discovery or skip. Normal rewards offer three card choices. Elites and bosses offer two cards and up to two distinct, unowned powerups. Many Pockets adds another card choice. You still take just one discovery: choose the card or powerup that addresses your deck's current weakness.
 
 Cards come from the chosen ship's unlocked pool. Duplicate cards are allowed, and each copy can evolve independently. Powerups are shared between ships, last for the expedition and cannot be acquired twice in the same voyage. They do not become starting equipment for future runs.
 
-Shops normally offer three commands priced at 35, 43 and 51 salvage, a powerup for 75, removal for 30, and evolution for 35. Old Favour discounts these prices by 20%. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
+Shops normally offer two commands priced at 35 and 43 salvage, two distinct unowned powerups for 75 each, removal for 30, and evolution for 35. Old Favour discounts these prices by 20%. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
 
 A command can evolve once. Evolution adds every applicable printed-stat bonus: **+3 damage, +2 repair, +1 Vent and +1 disruption**, where that base stat is already positive. If none of those four base stats is positive, the first routed organ instead gains no strain. Evolution does not change the card's command point cost. The card's expanded text lists its actual bonuses.
 
@@ -160,7 +174,7 @@ Older saves retain the Cartographer and their original three-area itinerary. In 
 | Enter | Activate the focused control. |
 | Any key or click during the opening film | Skip the film. |
 
-Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, master volume and reduced motion. Volume zero mutes audio. Reduced motion stops ship/star drift and animated combat feedback, retains result information, and skips the opening film on launch.
+Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, reduced motion, and four audio sliders: **Master**, **Music & cinematic**, **Combat effects**, and **Interface**. Category sliders change independently; zero mutes that category, while Master zero mutes everything. Changes apply and save immediately. Reduced motion stops ship/star drift and animated combat feedback, retains result information, and skips the opening film on launch.
 
 ## Glossary
 

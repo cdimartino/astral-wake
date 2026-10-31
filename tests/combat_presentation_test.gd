@@ -14,6 +14,12 @@ func require(condition: bool, message: String) -> void:
   push_error(message)
 func settle() -> void:
  for i in range(5): await process_frame
+func capture(name: String) -> void:
+ var output=OS.get_environment("ASTRAL_PRESENTATION_CAPTURE")
+ if output.is_empty() or DisplayServer.get_name()=="headless":return
+ DirAccess.make_dir_recursive_absolute(output)
+ await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png(output.path_join(name+".png"))
 func finish() -> void:
  while ui.presentation_busy(): await process_frame
  await settle()
@@ -46,6 +52,51 @@ func check() -> void:
  root.size=Vector2i(1440,900)
  await settle()
  # Duplicate enemy definitions make index-shift mistakes observable.
+ require(ui.combat_voices.size()==12 and ui.sounds.has("combat_beam_launch") and ui.sounds.has("combat_repair"),"Combat sound bank and overlapping voices must load")
+ ui._combat_sound({"kind":"shot","style":"plasma"},true)
+ ui._combat_sound({"kind":"shield"})
+ require(ui.combat_voices.filter(func(voice):return voice.playing).size()==2,"Support sounds must not cut off attack launches")
+ var voices_before=ui.combat_voice_cursor
+ ui._combat_sound({"kind":"shield"})
+ require(ui.combat_voice_cursor==voices_before,"Simultaneous identical cues must not multiply volume")
+ for voice in ui.combat_voices:voice.stop()
+ ui.combat_sound_times.clear()
+ fixture(5,"needle")
+ ui.game.run.battle.enemies[0].intent={"kind":"sever","amount":2,"label":"Cut two links"}
+ ui.game.run.battle.enemies[1].intent={"kind":"attack","amount":12,"label":"Strike"}
+ ui.game.run.battle.enemies[1].disrupt=3
+ ui._render()
+ await settle()
+ var badge=ui.page.find_child("EnemyIntent0",true,false)
+ require(badge is Button and badge.explanation.contains("2 open connection"),"Multi-link sever must have an accurate rich icon explanation")
+ var attack_badge=ui.page.find_child("EnemyIntent1",true,false)
+ require(attack_badge.explanation.contains("9 incoming damage") and attack_badge.explanation.contains("Ward absorbs"),"Attack badge must distinguish defense preview from shared ward")
+ badge.grab_focus()
+ await settle()
+ require(is_instance_valid(badge.focus_tip),"Keyboard focus must reveal rich intent details")
+ await capture("intent-details")
+ var rich_tip=badge._make_custom_tooltip("")
+ require(rich_tip.get_child(0) is RichTextLabel and rich_tip.get_child(0).bbcode_enabled,"Hover explanation must render rich text")
+ rich_tip.free()
+ var styles=[]
+ for id in ["needle","sun_splinter","winter_needle","choral_bolt","margin_knife"]:
+  var style=ui._attack_style(ui.game.card(id))
+  require(not styles.has(style),"Attack families need distinct visual signatures")
+  styles.append(style)
+ for style in styles:
+  var effect=Main.SpaceCanvas.new()
+  effect.stars=false
+  effect.effect_kind="shot"
+  effect.effect_style=style
+  effect.effect_from=Vector2(410,350)
+  effect.effect_to=Vector2(1100,350)
+  effect.effect_color=ui._style_color(style)
+  ui._at(effect,Rect2(0,0,1440,900))
+  for progress in [0.25,0.75]:
+   effect.effect_progress=progress
+   await settle()
+  await capture("impact-"+style)
+  effect.queue_free()
  fixture(2,"needle")
  ui.game.run.battle.enemies[1]=ui.game._make_enemy(ui.game.run.battle.enemies[0].id)
  ui.game.run.battle.enemies[0].hp=5
@@ -59,10 +110,12 @@ func check() -> void:
  require(ui.game.run.battle.enemies.size()==1 and ui.enemy_art.size()==2,"Removed actor was not retained through its hit")
  require(cues("beam").size()==1 and cues("beam")[0].hp_delta==-5,"Damage cue must use actual capped damage")
  require(ui.enemy_hulls[0].value==5,"HP changed before projectile impact")
+ require(ui.combat_voices.any(func(voice):return voice.playing and voice.stream==ui.sounds.combat_beam_launch),"Lens launch must use its beam sound")
  await create_timer(0.18).timeout
  require(ui.enemy_hulls[0].value==5,"Damage number/bar appeared at launch")
  await create_timer(0.22).timeout
  require(ui.enemy_hulls[0].value==0 and ui.enemy_hulls[1].value==peer_hp,"Impact changed the wrong duplicate enemy")
+ require(ui.combat_voices.any(func(voice):return voice.playing and voice.stream==ui.sounds.combat_beam_hit),"Impact sound must arrive with the visible hit")
  require(first_actor.modulate.a<1 and second_actor.self_modulate==Color.WHITE,"Removed-target flash/fade affected its shifted peer")
  var damage_label=ui.page.find_child("DamagePoints",true,false)
  require(damage_label!=null and damage_label.get_theme_font_size("font_size")>=36 and damage_label.get_theme_constant("outline_size")>=4,"Damage points need a large outlined font")
@@ -108,6 +161,7 @@ func check() -> void:
  await settle()
  ui._end_turn()
  var attacks=cues("enemy_shot")
+ require(cues("phase").size()==1 and cues("ready").size()==1 and cues("charge").size()==3,"Round resolution needs a phase sweep, actor signals and command refill")
  require(attacks.size()==3,"Real enemy attacks should appear separately")
  require(attacks[0].delay<attacks[1].delay,"Enemy attacks are not visibly sequential")
  require(ui.player_hull.value==40,"Enemy impact changed hull before travel")

@@ -14,7 +14,7 @@ FIELDS = {
     'cards': {'id', 'name', 'kind', 'description', 'damage', 'heal', 'vent', 'draw',
               'disrupt', 'link', 'rarity', 'unlock', 'art', 'cost'},
     'powerups': {'id', 'name', 'description', 'effect', 'value', 'unlock'},
-    'enemies': {'id', 'name', 'region', 'role', 'hp', 'art', 'description', 'pattern'},
+    'enemies': {'id', 'name', 'region', 'role', 'hp', 'art', 'description', 'pattern', 'tactics'},
     'events': {'id', 'name', 'region', 'text', 'choices'},
     'regions': {'id', 'name', 'subtitle', 'color', 'boss', 'description'},
 }
@@ -155,6 +155,25 @@ def validate(data):
         if e['role'] == 'regular':
             integer(e['hp'], 70, 140, f'{ident}.hp')
         require(isinstance(e['pattern'], list) and e['pattern'], f'{ident}: empty pattern')
+        tactics = e['tactics']
+        require(isinstance(tactics, dict) and {'name', 'counter', 'phases'} <= set(tactics) <= {'name', 'counter', 'phases', 'weakness', 'bonus'}, f'{ident}: invalid tactics')
+        text(tactics['name'], f'{ident}.tactics.name')
+        text(tactics['counter'], f'{ident}.tactics.counter')
+        require(isinstance(tactics['phases'], list) and len(tactics['phases']) == len(e['pattern']), f'{ident}: tactics must match the repeating pattern')
+        require(('weakness' in tactics) == ('bonus' in tactics), f'{ident}: weakness needs its bonus')
+        if 'weakness' in tactics:
+            require(tactics['weakness'] in {'short', 'long', 'split'}, f'{ident}: unknown weakness')
+            integer(tactics['bonus'], 1, 10, f'{ident}.bonus')
+        require(any(tactics['phases']) or 'weakness' in tactics, f'{ident}: missing mechanical identity')
+        for action, phase in zip(e['pattern'], tactics['phases']):
+            require(isinstance(phase, dict) and set(phase) <= {'armor', 'exposed', 'interrupt', 'drain', 'overload'}, f'{ident}: invalid phase trait')
+            for field, value in phase.items():
+                if field == 'drain':
+                    require(type(value) is bool, f'{ident}: drain must be boolean')
+                else:
+                    integer(value, 1, 10, f'{ident}.{field}')
+            require(not {'drain', 'overload'} & set(phase) or action['kind'] == 'attack', f'{ident}: attack trait on utility phase')
+            require('interrupt' not in phase or action['kind'] != 'attack', f'{ident}: only utility actions can be interrupted')
         for p in e['pattern']:
             require(isinstance(p, dict) and set(p) == {'kind', 'amount', 'label'}, f'{ident}: unsupported pattern fields')
             require(p['kind'] in PATTERN_KINDS, f'{ident}: unsupported pattern kind')
@@ -171,6 +190,13 @@ def validate(data):
         require(boss is not None and boss['region'] == region and boss['role'] == 'boss', f'region {region}: wrong boss')
         require(boss['hp'] > elite['hp'], f'{boss["id"]}: boss hull must exceed its elite')
         require(data['regions'][region]['boss'] == boss['id'], f'region {region}: broken boss reference')
+    require(len({e['tactics']['name'] for e in enemies.values()}) == len(enemies), 'enemy tactic names must be distinct')
+    identities = set()
+    for e in enemies.values():
+        # Different names or numeric tuning alone do not make distinct enemies.
+        identity = (e['tactics'].get('weakness'), tuple((p['kind'], tuple(sorted(phase))) for p, phase in zip(e['pattern'], e['tactics']['phases'])))
+        require(identity not in identities, f'{e["id"]}: tactical clone of another enemy')
+        identities.add(identity)
     require('incubate' in {p['kind'] for p in enemies[BOSSES[0]]['pattern']}, 'sun must incubate')
     require('rebuild' in {p['kind'] for p in enemies[BOSSES[1]]['pattern']}, 'parliament must rebuild')
     require({'mark', 'sever'} <= {p['kind'] for p in enemies[BOSSES[2]]['pattern']}, 'witness must mark and sever')
@@ -206,6 +232,12 @@ def self_test(data):
         lambda d: d['regions'][0].__setitem__('boss', 'missing_boss'),
         lambda d: d['events'][0]['choices'][0].__setitem__('effect', 'future_feature'),
         lambda d: d['cards'][1].__setitem__('id', d['cards'][0]['id']),
+        lambda d: d['enemies'][0]['tactics']['phases'].pop(),
+        lambda d: d['enemies'][0]['tactics']['phases'][0].__setitem__('interrupt', 3),
+        lambda d: d['enemies'][0]['tactics']['phases'][1].__setitem__('drain', True),
+        lambda d: d['enemies'][0]['tactics'].__setitem__('weakness', 'missing'),
+        lambda d: d['enemies'][0]['tactics']['phases'][0].__setitem__('armor', -1),
+        lambda d: d['enemies'][1].update(pattern=copy.deepcopy(d['enemies'][0]['pattern']), tactics={**copy.deepcopy(d['enemies'][0]['tactics']), 'name': 'Different name, same tactics'}),
     ]
     for index, mutate in enumerate(mutations, 1):
         broken = copy.deepcopy(data)
@@ -221,7 +253,7 @@ def self_test(data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('catalog', nargs='?', type=Path, default=Path(__file__).resolve().parents[1] / 'data' / 'catalog.json')
-    parser.add_argument('--self-test', action='store_true', help='also prove rejection of fourteen invalid catalogs')
+    parser.add_argument('--self-test', action='store_true', help='also prove rejection of malformed catalogs')
     args = parser.parse_args()
     try:
         data = json.loads(args.catalog.read_text())

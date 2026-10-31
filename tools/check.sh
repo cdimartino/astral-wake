@@ -8,9 +8,15 @@ python3 tests/check_audio.py
 python3 tests/check_art.py
 "$engine" --headless --path . --editor --import --quit
 "$engine" --headless --path . --script tests/run_tests.gd
+"$engine" --headless --path . --script tests/balance_tests.gd
+"$engine" --headless --path . --script tests/enemy_tactics_tests.gd
+"$engine" --headless --path . --script tests/enemy_tactics_ui_test.gd
 "$engine" --headless --path . --script tests/expansion_tests.gd
 "$engine" --headless --path . --script tests/expansion_ui_test.gd
+"$engine" --headless --path . --script tests/organ_routing_test.gd
+"$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
+"$engine" --headless --path . --script tests/audio_settings_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd
 "$engine" --headless --audio-driver CoreAudio --path . --script tests/audio_smoke.gd
-"$engine" --headless --path . --script tests/playthrough.gd -- --seed=424242
+"$engine" --headless --path . --script tests/playthrough.gd -- --seed=424242 --policy=tactical
