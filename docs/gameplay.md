@@ -6,6 +6,8 @@ Choose a living ship, build its deck, and defeat the guardians of three regions.
 
 All three ships are available immediately. **New expedition** opens ship selection; **Details** shows a ship's systems and starting deck. See the [ship guide](ships.md) for their different organ networks, Trace and Resonance mechanics.
 
+The combat header's **Last command** box shows the previous card, its kind, and its resolved damage, repair, and disruption. Hover for its base payload, or click/focus and press Enter to inspect the card. Rewrite uses half the upgraded base damage, repair, and disruption, rounded down—not the results after organs, resources, or powerups. This memory persists across turns and saves; older saves may retain the payload without the card's identity.
+
 ## Your first encounter
 
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.

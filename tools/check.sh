@@ -15,6 +15,7 @@ python3 tests/check_art.py
 "$engine" --headless --path . --script tests/expansion_ui_test.gd
 "$engine" --headless --path . --script tests/organ_routing_test.gd
 "$engine" --headless --path . --script tests/conduit_visibility_test.gd
+"$engine" --headless --path . --script tests/last_command_test.gd
 "$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd

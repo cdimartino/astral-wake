@@ -558,9 +558,10 @@ func _combat() -> void:
 	points_label.name = "CommandPoints"
 	_screen_text("TURN %d   WARD %d   DRAW %d   DISCARD %d" % [battle.turn, battle.ward, battle.draw.size(), battle.discard.size()], Rect2(800, 96, 600, 32), 18, TEAL)
 	if points == 0:
-		_screen_text("NO COMMAND POINTS LEFT  ·  End turn [E] to refill to %d. You can still inspect every card." % maximum, Rect2(45, 133, 1360, 32), 19, CORAL)
+		_screen_text("NO POINTS LEFT · End turn [E] to refill. Cards remain inspectable.", Rect2(45, 133, 740, 32), 17, CORAL)
 	elif int(game.run.get("tutorial_step", 0)) < 4:
-		_screen_text("FIRST CONTACT  ·  %d points each turn · Choose a card → route connected organs [Q W E R T Y] → Space" % maximum, Rect2(45, 133, 1360, 32), 19, GOLD)
+		_screen_text("Choose a card → route connected organs [Q W E R T Y] → Space", Rect2(45, 133, 740, 32), 17, GOLD)
+	_last_command()
 	var anatomy := Panel.new()
 	anatomy.name = "LivingCircuit"
 	anatomy.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -588,6 +589,45 @@ func _combat() -> void:
 	var hints := _screen_text("1–5 select   Q W E R T Y route   Space confirm   E end turn (Shift+E while routing)   Esc cancel", Rect2(50, 605, 1340, 23), 16, CREAM)
 	hints.name = "ShortcutHints"
 	_hand()
+
+func _last_command_tip() -> String:
+	var battle: Dictionary = game.run.battle
+	var memory: Dictionary = battle.get("last_command", {})
+	var base: Dictionary = memory.get("base", battle.get("last_payload", {}))
+	var tip := "Previous command: none yet." if memory.is_empty() else game.card_text(memory.card)
+	if memory.is_empty() and not base.is_empty(): tip = "Previous card identity was not stored in this older save."
+	if not base.is_empty():
+		tip += "\nBase before organs and powerups: Damage %d · Repair %d · Disruption %d." % [int(base.get("damage", 0)), int(base.get("heal", 0)), int(base.get("disrupt", 0))]
+		tip += "\nRewrite adds half these base values, rounded down: Damage %d · Repair %d · Disruption %d (costs 2 Trace)." % [int(base.get("damage", 0)) / 2, int(base.get("heal", 0)) / 2, int(base.get("disrupt", 0)) / 2]
+		tip += "\nBase includes the card's upgrade, but excludes organ, resource and powerup bonuses."
+	if not memory.is_empty():
+		tip += "\nResolved: %d total damage · %d hull repaired · %d disruption applied." % [memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
+		tip += "\nKind: %s. The Choir compares this kind with the next command." % str(memory.kind).capitalize()
+	return tip
+
+func _last_command() -> void:
+	var battle: Dictionary = game.run.battle
+	var memory: Dictionary = battle.get("last_command", {})
+	var text := "LAST COMMAND · None yet"
+	if not memory.is_empty():
+		var instance: Dictionary = memory.card
+		text = "LAST COMMAND · %s%s · %s\nDealt %d · Repaired %d · Disruption %d" % [game.card(instance.id).name, " +" if int(instance.level) > 0 else "", str(memory.kind).capitalize(), memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
+	elif not battle.get("last_payload", {}).is_empty() or not str(battle.get("last_command_kind", "")).is_empty():
+		text = "LAST COMMAND · Older save · Inspect stored memory"
+	var inspect := _button(text, func():
+		var body := _modal("Last command")
+		if not memory.is_empty():
+			var face := PanelContainer.new()
+			face.custom_minimum_size = Vector2(260, 350)
+			body.add_child(face)
+			_card_face(face, memory.card, true, true)
+		body.add_child(_text(_last_command_tip(), 17, CREAM)), _last_command_tip())
+	inspect.name = "LastCommand"
+	inspect.custom_minimum_size.y = 36
+	inspect.add_theme_font_size_override("font_size", 14)
+	for state in ["normal", "hover", "pressed"]:
+		inspect.add_theme_stylebox_override(state, _style(Color("10202d"), TEAL if state != "normal" else Color("344a5e"), 8, 1))
+	_at(inspect, Rect2(800, 129, 590, 36))
 
 func _ship_cutaway(battle: Dictionary) -> void:
 	player_art = _art(0, 344)

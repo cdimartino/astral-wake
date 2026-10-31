@@ -484,6 +484,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	_draw(state,int(definition.get("draw",0)))
 	if vessel_id=="palimpsest": battle.last_payload=plain_payload
 	if vessel_id=="hollow_choir": battle.last_command_kind=definition.kind
+	battle.last_command={"card":instance.duplicate(true),"kind":definition.kind,"base":plain_payload.duplicate(),"resolved":{"damage":actual_damage,"heal":repaired,"disrupt":disrupt if int(target.hp)>0 else 0}}
 	battle.last_route=route.duplicate()
 	battle.first_play=false
 	state.tutorial_step=maxi(1,int(state.tutorial_step))
@@ -997,6 +998,17 @@ func _number(value) -> bool: return (value is int or value is float) and is_fini
 func _valid_instance(instance) -> bool:
 	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1]
 
+func _valid_last_command(value) -> bool:
+	if not value is Dictionary: return false
+	if value.is_empty(): return true
+	if not _valid_instance(value.get("card")): return false
+	if value.get("kind")!=card(value.card.id).kind: return false
+	for payload in ["base","resolved"]:
+		if not value.get(payload) is Dictionary: return false
+		for field in ["damage","heal","disrupt"]:
+			if not _number(value[payload].get(field)) or value[payload][field]<0: return false
+	return true
+
 func _valid_itinerary(value) -> bool:
 	if not value is Array or value.size()!=3: return false
 	var seen=[]
@@ -1068,6 +1080,7 @@ func _valid_run(value) -> bool:
 		if int(battle.max_command_points)!=3 or int(battle.command_points)<0 or int(battle.command_points)>3: return false
 		if int(battle.trace)<0 or int(battle.trace)>6 or int(battle.resonance)<0 or int(battle.resonance)>3: return false
 		if not battle.get("last_payload") is Dictionary or not battle.get("last_command_kind") is String: return false
+		if not _valid_last_command(battle.get("last_command",{})): return false
 		if not battle.last_command_kind in ["","attack","repair","utility"]: return false
 		for field in ["damage","heal","disrupt"]:
 			if battle.last_payload.has(field) and (not _number(battle.last_payload[field]) or battle.last_payload[field]<0): return false
