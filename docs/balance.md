@@ -92,3 +92,55 @@ No combat mechanics, enemy stats, or decision scores are changed by this protoco
 Policy quality remains limited: it is greedy, not an expert planner, and cannot by
 itself confirm a need for next-layer support or estimate human win rates. Turn-level
 decision diagnostics and stable-ID replay belong to the separate trace work.
+
+### Captured baseline evidence (incomplete matrix)
+
+Machine-readable captures:
+
+- [Representative 24-case batch](baselines/issue22-representative.jsonl): rules
+  revision `014ad4a63dd5b27677e5be1618ebf15ed6d17f59`, with uncommitted additive
+  driver flags recorded by dirty status and file hashes. **3 victories, 19 defeats,
+  2 timeouts**, no errors or action-limit unfinished runs. Total wall time
+  **245.764 seconds**, three workers, 180-second per-case limit.
+- [Attempted full matrix](baselines/issue22-full.jsonl): clean harness revision
+  `389382acb5f9b51881e33f9e26fcae01057f4a0a`, identical rules/catalog/RNG and
+  driver hashes. **27 recorded / 720 planned**: 3 victories, 21 defeats,
+  3 timeouts; **693 missing**. The runner and only its own isolated child
+  processes were explicitly stopped after measuring cost. Missing includes
+  interrupted in-flight work; no outcome is assigned to it. There is no final
+  wall-time summary for this interrupted batch.
+- [Timeout stdout/stderr](baselines/issue22-timeouts.json) preserves the available
+  progress markers rather than inferring defeat, stalled turn, or cause of death.
+
+Both captures use Godot `4.7.2.stable.official.ed1daf0bf`, generation/RNG v1.
+The batches overlapped in wall time, so their timings are not isolated performance
+benchmarks. A simple extrapolation of the representative batch is **122.882 minutes**
+for 720 cases at three workers; actual cost and timeout incidence can vary.
+Increasing timeouts or workers needs a new explicitly labelled measurement.
+The full 30-seed-per-ship/profile requirement is **not completed**. The default
+harness publishes and can run the entire matrix; metadata lists all 720 cases,
+including the ones not executed here. Do not combine duplicate cases across these
+two captures or divide victories by 720.
+
+Representative victories were Cartographer tier 3 balanced (44 hull), Cartographer
+tier 3 tactical (64 hull), and Hollow Choir tier 0 tactical (77 hull). All use family
+0 (`0093CG` fresh / `0093CJ` full). Hollow Choir tier 3 tactical and no-bonuses
+timed out in that batch. These are isolated examples, not ship-level win rates.
+The same Cartographer tier-3 tactical run was independently repeated twice and
+produced identical gameplay result dictionaries after excluding timing/save paths.
+
+Regenerate exact per-ship/tier/policy counts (including missing work):
+
+```sh
+python3 tools/baseline_report.py docs/baselines/issue22-representative.jsonl
+python3 tools/baseline_report.py docs/baselines/issue22-full.jsonl
+```
+
+Validation: baseline unit tests passed; seed tests **364**, balance checks **352**,
+and enemy tactics checks **752**, all zero failures; content validation passed,
+including rejection of 20 malformed mutations. The additive flags were exercised
+with isolated save directories and the deterministic repeat above. No graphical
+expedition was performed. The data do **not** establish that next-layer support is
+required, prove a ship unviable, or justify changing enemy strength. Preserve the
+current enemies and original seed-777 loss; finish the matrix and collect audited
+human outcomes before a numerical difficulty target or balance recommendation.

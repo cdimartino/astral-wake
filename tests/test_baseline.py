@@ -1,4 +1,6 @@
 import importlib.util
+import collections
+import json
 import pathlib
 import unittest
 
@@ -9,6 +11,32 @@ spec.loader.exec_module(baseline)
 
 
 class BaselineTests(unittest.TestCase):
+    def test_committed_capture_integrity(self):
+        root = pathlib.Path(__file__).resolve().parents[1]
+        frozen_hashes = None
+        for name, expected in (("representative", {"victory": 3, "defeat": 19, "timeout": 2}),
+                               ("full", {"victory": 3, "defeat": 21, "timeout": 3})):
+            records = [json.loads(line) for line in
+                       (root / f"docs/baselines/issue22-{name}.jsonl").read_text().splitlines()]
+            metadata = records[0]["metadata"]
+            rows = [r for r in records if "status" in r]
+            self.assertEqual(collections.Counter(r["status"] for r in rows), expected)
+            planned = {tuple(sorted(c.items())) for c in metadata["planned"]}
+            seen = set()
+            for row in rows:
+                case = tuple(sorted((k, row[k]) for k in ("seed", "family", "character", "unlocks", "policy")))
+                self.assertIn(case, planned)
+                self.assertNotIn(case, seen)
+                seen.add(case)
+                if row["result"]:
+                    self.assertEqual(row["result"]["seed"], row["seed"])
+                    self.assertEqual(row["result"]["pool_tier"], row["unlocks"])
+                    self.assertEqual(row["result"]["profile_unlocks"], row["unlocks"])
+                    self.assertEqual(row["result"]["rng_version"], 1)
+            if frozen_hashes is None:
+                frozen_hashes = metadata["sha256"]
+            self.assertEqual(metadata["sha256"], frozen_hashes)
+
     def test_published_matrix(self):
         cases = list(baseline.cases())
         self.assertEqual(len(cases), 720)
