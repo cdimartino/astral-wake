@@ -35,7 +35,8 @@ func capture() -> void:
  var anatomy_sample = OS.get_cmdline_user_args().has("--anatomy-sample")
  var memory_sample = OS.get_cmdline_user_args().has("--last-command")
  var deck_sample = OS.get_cmdline_user_args().has("--deck-view")
- if not anatomy_sample and not memory_sample and not deck_sample:
+ var effects_sample = OS.get_cmdline_user_args().has("--upgraded-effects")
+ if not anatomy_sample and not memory_sample and not deck_sample and not effects_sample:
   ui.choosing_character = true
   ui.menu = false
   ui._render()
@@ -49,6 +50,11 @@ func capture() -> void:
    push_error(result.error)
    quit(1)
    return
+  if effects_sample:
+   var examples = {"cartographer":["needle","hull_stitch","cold_breath","quiet_pulse","graft_wire"], "palimpsest":["margin_knife","pale_patch","carbon_breath","first_draft","ghost_line"], "hollow_choir":["choral_bolt","warm_refrain","silent_measure","call_and_response","tuning_fork"]}
+   ui.game.run.battle.hand.clear()
+   for id in examples[pair[0]]:
+    ui.game.run.battle.hand.append({"id":id,"uid":100 + ui.game.run.battle.hand.size(),"level":1})
   ui._render()
   for index in range(ui.game.run.battle.hand.size()):
    var card = ui.game.card(ui.game.run.battle.hand[index].id)
@@ -68,7 +74,10 @@ func capture() -> void:
    await settle()
    var scroll = ui.overlay.find_children("*", "ScrollContainer", true, false)[0]
    scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
-  await shot(pair[0] + ("-deck-overlay" if deck_sample else "-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
+  if effects_sample:
+   ui._clear_selection()
+   ui._render()
+  await shot(pair[0] + ("-upgraded-effects" if effects_sample else "-deck-overlay" if deck_sample else "-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
   if deck_sample: ui._close_overlay()
  ui.ambience.stop()
  ui.queue_free()

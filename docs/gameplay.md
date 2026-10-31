@@ -10,6 +10,8 @@ The combat header's **Last command** box shows the previous card, its kind, and 
 
 ## Your first encounter
 
+Card faces show their effective upgraded numbers, including Vent, Draw, and vessel-resource gains. Effect badges wrap rather than disappearing beneath long descriptions. Upgrades do not increase Draw: pure utility upgrades instead spare the first routed organ's strain.
+
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.

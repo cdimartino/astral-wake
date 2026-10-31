@@ -87,18 +87,27 @@ func owned_card_count(id: String) -> int:
 		if instance.id == id: count += 1
 	return count
 
-func card_text(instance: Dictionary) -> String:
-	var definition = card(instance.get("id",""))
-	var lines = [str(definition.get("description",""))]
+func effective_card(instance: Dictionary) -> Dictionary:
+	var definition = card(instance.get("id","")).duplicate(true)
+	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
-		var changes = []
-		if definition.get("damage",0)>0: changes.append("+3 damage")
-		if definition.get("heal",0)>0: changes.append("+2 repair")
-		if definition.get("vent",0)>0: changes.append("+1 vent")
-		if definition.get("disrupt",0)>0: changes.append("+1 disruption")
-		if changes.is_empty(): changes.append("first routed organ gains no strain")
-		lines.append("Evolved: " + ", ".join(changes))
-	return "\n".join(lines)
+		definition.first_free=true
+		for field in ["damage","heal","vent","disrupt"]:
+			if int(definition.get(field,0))>0:
+				definition[field]+=3 if field=="damage" else 2 if field=="heal" else 1
+				definition.first_free=false
+	return definition
+
+func card_text(instance: Dictionary) -> String:
+	var original = card(instance.get("id",""))
+	var effective = effective_card(instance)
+	var text = str(original.get("description",""))
+	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption"}
+	for field in phrases:
+		if int(original.get(field,0))>0:
+			text=text.replace(phrases[field]%int(original[field]),phrases[field]%int(effective[field]))
+	if effective.first_free: text+="\nFirst routed organ gains no strain."
+	return text
 
 func new_run(seed_value: int = 0, character_id: String = "cartographer") -> Dictionary:
 	var vessel=character(character_id)
@@ -316,16 +325,11 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var previous_kind=str(battle.get("last_command_kind",""))
 	var vessel_id=str(state.get("character","cartographer"))
 	var ward_gain=0
-	var upgraded=int(instance.level)>0
-	var damage=int(definition.get("damage",0))
-	var heal=int(definition.get("heal",0))
-	var vent=int(definition.get("vent",0))
-	var disrupt=int(definition.get("disrupt",0))
-	if upgraded:
-		if damage>0: damage+=3
-		if heal>0: heal+=2
-		if vent>0: vent+=1
-		if disrupt>0: disrupt+=1
+	var effective=effective_card(instance)
+	var damage=int(effective.get("damage",0))
+	var heal=int(effective.get("heal",0))
+	var vent=int(effective.get("vent",0))
+	var disrupt=int(effective.get("disrupt",0))
 	var plain_payload={"damage":damage,"heal":heal,"disrupt":disrupt}
 	if vessel_id=="palimpsest":
 		battle.trace=mini(6,int(battle.trace)+int(definition.get("trace",0)))
@@ -471,7 +475,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		cooled.append(mini(int(battle.strain[i]),vent))
 		battle.strain[i]=maxi(0,int(battle.strain[i])-vent)
 	if vent>0: presentation.append({"kind":"cooling","amounts":cooled})
-	var pure_utility_upgrade=upgraded and int(definition.get("damage",0))==0 and int(definition.get("heal",0))==0 and int(definition.get("vent",0))==0 and int(definition.get("disrupt",0))==0
+	var pure_utility_upgrade=effective.first_free
 	for i in range(route.size()):
 		if not (pure_utility_upgrade and i==0): battle.strain[int(route[i])]+=1
 	if vent>0: events.append("Cool every organ by %d before route strain."%vent)

@@ -1614,7 +1614,7 @@ func _arrange_hand() -> void:
 		title.add_theme_font_size_override("font_size", 17 if lifted else 15)
 		description.add_theme_font_size_override("font_size", 16)
 		description.max_lines_visible = 3 if lifted else 2
-		art.custom_minimum_size.y = 90 if lifted else 70
+		art.custom_minimum_size.y = 24
 
 func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordable: bool) -> Dictionary:
 	var card: Dictionary = game.card(instance.id)
@@ -1622,7 +1622,7 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	var long_text := text.length() > 95 or text.contains("\n")
 	var body := VBoxContainer.new()
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_theme_constant_override("separation", 4)
+	body.add_theme_constant_override("separation", 3)
 	body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	body.offset_left = 6
 	body.offset_right = -6
@@ -1652,7 +1652,8 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(title)
-	var art := _card_art(instance, 90 if expanded else 70)
+	var art := _card_art(instance, 24)
+	art.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(art)
 	var description := _text(text, 16, CREAM)
 	description.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1660,7 +1661,8 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	body.add_child(description)
 	var footer := _printed_stats(instance, false)
-	footer.add_theme_constant_override("separation", 6)
+	footer.name = "CardEffects"
+	footer.add_theme_constant_override("h_separation", 6)
 	for token in footer.get_children():
 		token.add_theme_constant_override("separation", 2)
 		for item in token.get_children():
@@ -2108,20 +2110,24 @@ func _card_art(instance: Dictionary, height: float) -> TextureRect:
 	image.texture = texture
 	return image
 
-func _printed_stats(instance: Dictionary, include_cost: bool) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	var definition: Dictionary = game.card(str(instance.id))
+func _printed_stats(instance: Dictionary, include_cost: bool) -> HFlowContainer:
+	var row := HFlowContainer.new()
+	row.add_theme_constant_override("h_separation", 8)
+	row.add_theme_constant_override("v_separation", 2)
+	var definition: Dictionary = game.effective_card(instance)
 	if include_cost:
 		_stat_token(row, "cost", "%d CP" % int(definition.get("cost", 1)), "Command points spent to play this card. Each turn refills to 3.")
 	for kind in ["damage", "heal", "disrupt"]:
 		var value := int(definition.get(kind, 0))
 		if value <= 0: continue
-		if instance.get("level", 0) > 0:
-			value += 3 if kind == "damage" else 2 if kind == "heal" else 1
 		_stat_token(row, kind, str(value), {"damage":"Damage before organs and powerups.", "heal":"Hull repaired before organs and powerups.", "disrupt":"Reduce the chosen enemy's next attack."}[kind])
-	var first_free: bool = instance.get("level", 0) > 0 and int(definition.get("damage", 0)) == 0 and int(definition.get("heal", 0)) == 0 and int(definition.get("vent", 0)) == 0 and int(definition.get("disrupt", 0)) == 0
-	_stat_token(row, "strain", "0 / +1" if first_free else "+1", "Each routed organ gains 1 strain; vent cools first. Evolved pure utility commands spare the first organ.")
+	for field in ["vent", "draw", "trace", "resonance"]:
+		if int(definition.get(field, 0)) > 0:
+			var label := _label("%s %s%d" % [field.capitalize(), "+" if field in ["trace", "resonance"] else "", int(definition[field])], 15, CREAM)
+			row.add_child(label)
+	for field in ["link", "rewrite", "concert"]:
+		if definition.get(field, false): row.add_child(_label(field.capitalize(), 15, GOLD))
+	_stat_token(row, "strain", "0 / +1" if definition.first_free else "+1", "Each routed organ gains 1 strain; vent cools first. Evolved pure utility commands spare the first organ.")
 	return row
 
 func _stat_token(parent: Node, kind: String, value: String, tip: String) -> void:
