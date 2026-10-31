@@ -628,7 +628,7 @@ func _last_command() -> void:
 	var text := "LAST COMMAND · None yet"
 	if not memory.is_empty():
 		var instance: Dictionary = memory.card
-		text = "LAST COMMAND · %s%s · %s\nDealt %d · Repaired %d · Disruption %d" % [game.card(instance.id).name, " +" if int(instance.level) > 0 else "", str(memory.kind).capitalize(), memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
+		text = "LAST COMMAND · %s%s · %s\nDealt %d · Repaired %d · Disruption %d" % [game.effective_card(instance).name, " +" if int(instance.level) > 0 else "", str(memory.kind).capitalize(), memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
 	elif not battle.get("last_payload", {}).is_empty() or not str(battle.get("last_command_kind", "")).is_empty():
 		text = "LAST COMMAND · Older save · Inspect stored memory"
 	var inspect := _button(text, func():
@@ -894,7 +894,7 @@ func _preview() -> void:
 		var names: Array[String] = []
 		for index in route:
 			names.append(str(game.organ(index).name))
-		heading = str(game.card(instance.id).name) + "  /  " + (" → ".join(names) if not names.is_empty() else "Choose an organ")
+		heading = str(game.effective_card(instance).name) + "  /  " + (" → ".join(names) if not names.is_empty() else "Choose an organ")
 		var result: Dictionary = game.preview_card(selected_card, route, target)
 		valid = result.get("ok", false)
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
@@ -919,7 +919,7 @@ func _preview() -> void:
 
 func _select_card(index: int) -> void:
 	if presentation_busy(): return
-	var card: Dictionary = game.card(game.run.battle.hand[index].id)
+	var card: Dictionary = game.effective_card(game.run.battle.hand[index])
 	var cost := int(card.get("cost", 1))
 	var remaining := int(game.run.battle.get("command_points", 3))
 	if cost > remaining:
@@ -977,7 +977,7 @@ func _rewards() -> void:
 	var width := (1312.0 - 24 * (choices.size() - 1)) / maxf(1, choices.size())
 	for i in range(choices.size()):
 		var choice: Dictionary = choices[i]
-		var item: Dictionary = game.card(choice.id) if choice.kind == "card" else game.powerup(choice.id)
+		var item: Dictionary = game.effective_card({"id":choice.id}) if choice.kind == "card" else game.powerup(choice.id)
 		var box := _surface(Rect2(64 + i * (width + 24), 285, width, 500))
 		box.add_theme_constant_override("separation", 10)
 		box.add_child(_card_art({"id": choice.id, "level": 0}, 90 if choices.size() >= 4 else 130) if choice.kind == "card" else _art(int(item.get("art", 19)), 90 if choices.size() >= 4 else 130))
@@ -1016,7 +1016,7 @@ func _shop() -> void:
 	for i in range(items.size()):
 		var item: Dictionary = items[i]
 		var data: Dictionary = {}
-		if item.kind == "card": data = game.card(item.id)
+		if item.kind == "card": data = game.effective_card({"id":item.id})
 		elif item.kind == "powerup": data = game.powerup(item.id)
 		var box := _surface(Rect2(64 + (i % 3) * 448, 292 + floori(i / 3.0) * 250, 416, 240))
 		box.add_theme_constant_override("separation", 4)
@@ -1061,7 +1061,7 @@ func _modify() -> void:
 		var i := modify_page * 6 + slot
 		if i >= game.run.deck.size(): break
 		var instance: Dictionary = game.run.deck[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var box := _surface(Rect2(64 + (slot % 3) * 448, 292 + floori(slot / 3.0) * 246, 416, 228))
 		box.add_theme_constant_override("separation", 7)
 		box.add_child(_card_title(str(card.name) + (" +" if instance.get("level", 0) > 0 else ""), 26))
@@ -1324,7 +1324,7 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 	var instances: Array = game.run.deck if preview_instances.is_empty() else preview_instances
 	for i in range(instances.size()):
 		var instance: Dictionary = instances[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var box := _panel(grid)
 		box.custom_minimum_size.x = 240
 		box.add_child(_card_title(str(card.name) + (" +" if instance.get("level", 0) > 0 else ""), 19))
@@ -1605,7 +1605,7 @@ func _hand() -> void:
 	var points := int(game.run.battle.get("command_points", 3))
 	for i in range(hand.size()):
 		var instance: Dictionary = hand[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var cost := int(card.get("cost", 1))
 		var affordable := cost <= points
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
@@ -1660,7 +1660,7 @@ func _arrange_hand() -> void:
 		art.custom_minimum_size.y = 24
 
 func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordable: bool) -> Dictionary:
-	var card: Dictionary = game.card(instance.id)
+	var card: Dictionary = game.effective_card(instance)
 	var text := game.card_text(instance)
 	var long_text := text.length() > 95 or text.contains("\n")
 	var body := VBoxContainer.new()
@@ -1782,7 +1782,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	var locations := _enemy_layout(old_enemies.size())
 	var records: Array = result.get("presentation", [])
 	var enemy_phase := action_kind == "enemy_phase"
-	var attack_style := _attack_style(game.card(str(played_card.get("id", "")))) if not played_card.is_empty() else "kinetic"
+	var attack_style := _attack_style(game.effective_card(played_card)) if not played_card.is_empty() else "kinetic"
 	var phase_tail := old_enemies.size() * 0.32 + 0.1 if enemy_phase else 0.0
 	var command_impact := 0.3 if not enemy_phase and int(result.get("damage", 0)) > 0 else 0.0
 	var cooling: Array = []
@@ -1793,7 +1793,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 		if game.run.get("mode", "") == "combat":
 			cues.append({"kind":"ready", "to":ship + Vector2(0, 100), "color":TEAL, "label":"COMMAND POINTS REFILLED", "delay":phase_tail + 0.35})
 	elif not played_card.is_empty():
-		var definition: Dictionary = game.card(str(played_card.id))
+		var definition: Dictionary = game.effective_card(played_card)
 		if int(definition.get("draw", 0)) > 0:
 			cues.append({"kind":"draw", "to":ship + Vector2(0, 80), "color":GOLD, "delay":command_impact})
 	for event in records:
@@ -2120,7 +2120,7 @@ func _compact_intent(enemy: Dictionary, enemy_index: int) -> String:
 	return str(intent.get("label", "Unknown"))
 
 func _card_art(instance: Dictionary, height: float) -> TextureRect:
-	var definition: Dictionary = game.card(str(instance.id))
+	var definition: Dictionary = game.effective_card(instance)
 	var slot := 0
 	for i in range(game.catalog.cards.size()):
 		if game.catalog.cards[i].id == instance.id:

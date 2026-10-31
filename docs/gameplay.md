@@ -29,7 +29,7 @@ For an unmodified Cartographer, **Needle of Dawn → Lens [Q] → Fork [W] → E
 
 Every turn starts with **3 command points**. Cards cost **1 or 2**, paid once per command regardless of route length. Unspent points do not carry over: End turn refills the meter to 3. Command points and salvage are separate resources.
 
-A fight starts with your shuffled expedition deck and a five-card hand. Second Eyelid adds one card to the opening hand only. Played cards enter the discard pile; draw effects can supply more cards during your turn. Whenever the draw pile runs out, the discard pile is shuffled into it. Your hand holds at most ten cards.
+A fight starts with your shuffled expedition deck and a five-card hand. Second Eyelid adds one card to the opening hand only. Played cards enter the discard pile **before their draw effect**; with no other cards in either pile, a drawing command can redraw itself. Whenever the draw pile runs out, the discard pile is shuffled into it. Your hand holds at most ten cards.
 
 End turn does the following:
 
