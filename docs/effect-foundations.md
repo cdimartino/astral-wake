@@ -2,7 +2,8 @@
 
 The first slice consolidated existing behavior. The second adds dormant combat
 zones, Retain and Install identity storage, but no production cards, branches,
-passives, counters, triggers or selection subsystem. Both issues remain open.
+passives, counters or triggers. The third adds only [atomic known-card selections](known-card-selections.md).
+Both issues remain open; hidden draws, organ choices and active Install are deferred.
 
 `Game.effective_card(instance)` is the authoritative, detached printed definition:
 base catalog fields plus the existing level-1 arithmetic. Every positive damage,
@@ -51,7 +52,8 @@ are omitted from the legacy result fingerprint. The original hashes are unchange
 every gameplay state/RNG field and every pre-existing result/event remain compared.
 The zones slice additionally asserts empty `exhausted`, `installed`,
 `installed_sources`, and `temporary_retain` fields before omitting exactly these
-fields and `schema_revision` from the legacy fingerprint. No RNG is omitted.
+fields and `schema_revision` from the legacy fingerprint. The selections slice also
+asserts empty `pending_selection` before omitting that one additive field. No RNG is omitted.
 `tests/card_piles_test.gd` independently checks the new pile events. This is rules compatibility evidence,
 not a new full-expedition balance population or a human playtest.
 
@@ -84,8 +86,9 @@ source-linked counters, triggers and stacking policies need a separately reviewe
 next slice; there is intentionally no generic effects interpreter here.
 
 `retain_card(uid)` explicitly marks one current hand UID in `temporary_retain`
-for the next end-turn discard. Duplicate marking is idempotent. It has no UI or
-selection command yet and chooses nothing implicitly. The mark expires at that
+for the next end-turn discard. Duplicate marking is idempotent. This direct helper
+chooses nothing implicitly; authored selection now uses the atomic protocol linked above.
+The mark expires at that
 boundary even if the card also has intrinsic Retain. Playing the marked card
 consumes the mark before drawing, so self-redraw cannot revive it. Invalid UID
 requests change nothing. A ten-retained-card hand performs no draw, shuffle, RNG
@@ -94,8 +97,9 @@ ordinary `discard_card`; existing presentation handles both using distinct zones
 
 ### Save revision and inspection
 
-The envelope remains `SaveStore.VERSION = 1`. Nonempty runs now require
-`schema_revision = 2`. After store read and **before** numeric restoration, truly
+The envelope remains `SaveStore.VERSION = 1`. Nonempty runs in the zones slice required
+`schema_revision = 2` (now explicitly migrated to revision 3; see the selections contract).
+After store read and **before** numeric restoration, truly
 unversioned legacy runs gain the revision and four empty combat fields. Legacy
 expansion/CP migration applies only to those unversioned runs. Legacy files with
 any new combat bookkeeping but no revision are rejected rather than repaired.

@@ -4,6 +4,10 @@ This is a **manual rules-engine driver**, not an automated gameplay policy or a
 graphical UX test. It uses the real `Game` and existing practice/legacy seed APIs.
 It never chooses cards, routes, enemies, rewards or destinations for you.
 
+The dormant [known-card selection slice](known-card-selections.md) adds guarded
+`begin_selection`, `select_uid`, `selection_preview`, `confirm_selection` and
+`cancel_selection` commands, with a separate test-only fixture driver/demo.
+
 ## Start, inspect, command, resume, replay
 
 Run from the repository root. Set `GODOT` to your engine executable. Each session

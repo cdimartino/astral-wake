@@ -352,6 +352,7 @@ func _render() -> void:
 		banner.z_index = 80
 		banner.add_theme_stylebox_override("normal", _style(Color(0.03, 0.06, 0.10, 0.95), CORAL, 8, 10))
 	_soundtrack()
+	if not menu and game.selection_pending(): _selection_chooser()
 	_focus_first.call_deferred()
 
 func _focus_first() -> void:
@@ -941,6 +942,7 @@ func _preview() -> void:
 	strip.add_theme_stylebox_override("panel", _style(Color(0.025, 0.07, 0.11, 0.92), Color("577b83"), 12, 0))
 	_at(strip, Rect2(40, 536, 1360, 72))
 	var valid := false
+	var needs_choices := false
 	var heading := "SELECT A COMMAND · TRACE A ROUTE"
 	var summary := "Lit organs connect. Filled cells show strain; gold outlines preview the change."
 	var full_summary := summary
@@ -952,6 +954,7 @@ func _preview() -> void:
 		heading = str(game.effective_card(instance).name) + "  /  " + (" → ".join(names) if not names.is_empty() else "Choose an organ")
 		var result: Dictionary = game.preview_card(selected_card, route, target)
 		valid = result.get("ok", false)
+		needs_choices = result.get("selection_required",false) and not route.is_empty()
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
 		full_summary += _resource_flow_text(result)
 		summary = _command_preview_summary(result) if valid else full_summary
@@ -962,8 +965,8 @@ func _preview() -> void:
 	detail.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	detail.tooltip_text = full_summary
 	detail.mouse_filter = Control.MOUSE_FILTER_STOP
-	var confirm := _button("Confirm [Space]", _confirm, full_summary, true)
-	confirm.disabled = not valid
+	var confirm := _button("Choose cards [Space]" if needs_choices else "Confirm [Space]", _confirm, full_summary, true)
+	confirm.disabled = not (valid or needs_choices)
 	_at(confirm, Rect2(790, 549, 184, 50))
 	_at(_button("Undo", func():
 		if not route.is_empty(): route.pop_back()
@@ -996,7 +999,7 @@ func _command_preview_summary(result: Dictionary) -> String:
 	return text
 
 func _select_card(index: int) -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	var card: Dictionary = game.effective_card(game.run.battle.hand[index])
 	var cost := int(card.get("cost", 1))
 	var remaining := int(game.run.battle.get("command_points", 3))
@@ -1011,7 +1014,7 @@ func _select_card(index: int) -> void:
 	_render()
 
 func _select_organ(index: int) -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	if selected_card < 0:
 		notice = "Choose a command from your hand first."
 	elif route.has(index):
@@ -1030,21 +1033,79 @@ func _select_organ(index: int) -> void:
 	_render()
 
 func _select_target(index: int) -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	target = index
 	notice = ""
 	_render()
 
 func _confirm() -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	if selected_card < 0:
 		return
 	var preview: Dictionary = game.preview_card(selected_card, route, target)
+	if preview.get("selection_required",false):
+		var result: Dictionary = game.begin_selection(game.run.battle.hand[selected_card].uid,route,target,game.run.battle.enemies[target].duplicate(true))
+		notice = "" if result.ok else str(result.error)
+		_render()
+		return
 	if not preview.get("ok", false):
 		notice = str(preview.get("error", "Choose a legal route."))
 		_render()
 		return
 	_perform(func(): return game.play_card(selected_card, route, target), "command")
+
+func _selection_chooser() -> void:
+	var body := _modal("Choose known cards · nothing spent yet")
+	var view: Dictionary = game.selection_view()
+	if not view.ok:
+		body.add_child(_text(str(view.error),18,CORAL))
+	else:
+		var p: Dictionary = view.context
+		var source: Dictionary = game.run.battle.hand[game.Selections.index(game.run.battle.hand,p.source_uid)]
+		body.add_child(_label("%s · UID %d · %d CP on confirm"%[p.definition.name,p.source_uid,p.definition.cost],22))
+		body.add_child(_text(game.card_text(source),18,CREAM))
+		body.add_child(_text("Ordered route: %s · Target: %s\nChoices: %s"%[str(p.route),p.target_guard.name,str(p.choices)],17))
+		if view.complete:
+			var preview: Dictionary = game.preview_selection()
+			body.add_child(_text(_command_preview_summary(preview) if preview.ok else str(preview.error),18,CREAM))
+			var commit := _button("Confirm · spend %d CP"%p.definition.cost,func():
+				selected_card=game.Selections.index(game.run.battle.hand,p.source_uid)
+				route=p.route.duplicate()
+				target=int(p.target_index)
+				_close_overlay()
+				_perform(func(): return game.confirm_selection(),"command"),"Apply all selected effects together.",true)
+			commit.disabled=not preview.ok
+			body.add_child(commit)
+			_focus_control.call_deferred(commit)
+		else:
+			body.add_child(_label("Choice %d: %s"%[view.step+1,view.operation.kind.replace("_"," ")],20))
+			var first: Button = null
+			for uid in view.eligible:
+				var label := "None (authored optional choice)"
+				var detail := "Skip only this authored optional operation."
+				if uid!=null:
+					var zone: String = "discard" if view.operation.kind=="return_discard" else "hand"
+					var instance: Dictionary = game.run.battle[zone][game.Selections.index(game.run.battle[zone],uid)]
+					label="UID %d · %s"%[uid,game.effective_card(instance).name]
+					detail=game.card_text(instance)
+				var choice := _button(label,func():
+					var result: Dictionary = game.select_uid(uid)
+					notice="" if result.ok else str(result.error)
+					_render())
+				body.add_child(choice)
+				body.add_child(_text(detail,16))
+				if first==null: first=choice
+			if first!=null: _focus_control.call_deferred(first)
+	body.add_child(_button("Cancel · spend nothing [Esc]",_cancel_choice))
+
+func _cancel_choice() -> void:
+	game.cancel_selection()
+	_clear_selection()
+	notice="Selection cancelled. No CP spent; no cards drawn."
+	_render()
+
+func _focus_control(control: Control) -> void:
+	if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
 
 func _end_turn() -> void:
 	if presentation_busy(): return
@@ -1274,14 +1335,16 @@ func _modal(title: String) -> VBoxContainer:
 	var heading := _row(stack)
 	heading.add_child(_label(title, 29))
 	_spacer(heading)
-	var close := _button("Close  [Esc]", _close_overlay)
+	var close := _button("Cancel  [Esc]" if game.selection_pending() else "Close  [Esc]", func():
+		if game.selection_pending(): _cancel_choice()
+		else: _close_overlay())
 	heading.add_child(close)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(0, minf(510, get_viewport_rect().size.y - 190))
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	stack.add_child(scroll)
 	var body := _column(scroll)
-	close.grab_focus.call_deferred()
+	_focus_control.call_deferred(close)
 	return body
 
 func _close_overlay() -> void:
@@ -1467,7 +1530,9 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if event.keycode == KEY_ESCAPE:
-		if is_instance_valid(overlay):
+		if game.selection_pending():
+			_cancel_choice()
+		elif is_instance_valid(overlay):
 			_close_overlay()
 		elif choosing_character:
 			choosing_character = false
@@ -1559,7 +1624,7 @@ func _sound(cue: String) -> void:
 
 func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 	var kind := str(cue.get("kind", ""))
-	if kind in ["draw_card", "shuffle"]: kind = "draw"
+	if kind in ["draw_card", "retrieve_card", "shuffle"]: kind = "draw"
 	if kind == "discard_card": kind = "discard"
 	var sound := ""
 	if kind in ["shot", "beam", "enemy_shot"]:
@@ -1856,7 +1921,7 @@ func _feedback(before: Dictionary, result: Dictionary, action_kind: String, play
 					else: _play_cue(cue))
 
 func _static_cue(cue: Dictionary) -> void:
-	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "zone_card", "shuffle"]:
+	if str(cue.get("kind", "")) in ["draw_card", "retrieve_card", "discard_card", "zone_card", "shuffle"]:
 		_card_transition(cue, false)
 		return
 	_combat_sound(cue, true)
@@ -1879,6 +1944,9 @@ func _card_transition(cue: Dictionary, animated: bool) -> void:
 		return
 	var start := Vector2(60, 740)
 	var destination := Vector2(1320, 740)
+	if kind == "retrieve_card":
+		start = Vector2(1320,740)
+		_cue_label("RETRIEVE",start,GOLD,animated)
 	if leaving:
 		if kind == "zone_card":
 			destination = Vector2(60 if cue.zone == "exhausted" else 1320, 816)
@@ -1961,7 +2029,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			signaled_sources.append(source_index)
 			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay})
 		match kind:
-			"discard_card", "zone_card", "draw_card", "shuffle":
+			"discard_card", "zone_card", "draw_card", "retrieve_card", "shuffle":
 				var cue: Dictionary = event.duplicate(true)
 				cue.delay = discard_clock if kind in ["discard_card", "zone_card"] else draw_clock
 				cues.append(cue)
@@ -2033,7 +2101,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	return cues
 
 func _play_cue(cue: Dictionary) -> void:
-	if str(cue.get("kind", "")) in ["draw_card", "discard_card", "zone_card", "shuffle"]:
+	if str(cue.get("kind", "")) in ["draw_card", "retrieve_card", "discard_card", "zone_card", "shuffle"]:
 		_card_transition(cue, not game.profile.get("settings", {}).get("reduced_motion", false))
 		return
 	if game.profile.get("settings", {}).get("reduced_motion", false):
