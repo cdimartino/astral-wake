@@ -51,7 +51,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert'} if group == 'cards' else set()
+            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -87,6 +87,13 @@ def validate(data):
             if resource in c: integer(c[resource], 0, maximum, f'{ident}.{resource}')
         for flag in ('rewrite', 'concert'):
             if flag in c: require(type(c[flag]) is bool, f'{ident}: invalid resource command flag')
+        for flag in ('retain', 'exhaust'):
+            if flag in c: require(type(c[flag]) is bool, f'{ident}: {flag} must be boolean')
+        if 'install' in c:
+            identity = c['install']
+            text(identity, f'{ident}.install')
+            require(identity.replace('_', '').isalnum() and identity.islower(), f'{ident}: invalid Install identity')
+            require(not c.get('exhaust', False), f'{ident}: Install and Exhaust are mutually exclusive')
         require(not any(k in c for k in ('trace', 'rewrite')) or c.get('character') == 'palimpsest', f'{ident}: Trace belongs to Palimpsest')
         require(not any(k in c for k in ('resonance', 'concert')) or c.get('character') == 'hollow_choir', f'{ident}: Resonance belongs to Choir')
         integer(c['cost'], 1, 2, f'{ident}.cost')
@@ -217,6 +224,10 @@ def validate(data):
 
 
 def self_test(data):
+    valid = copy.deepcopy(data)
+    valid['cards'][0].update(retain=True, exhaust=True)
+    valid['cards'][1].update(install='fixture_engine')
+    validate(valid)
     mutations = [
         lambda d: d['cards'].pop(),
         lambda d: d['characters'][1]['starting_deck'].__setitem__(0, 'needle'),
@@ -227,6 +238,12 @@ def self_test(data):
         lambda d: d['starting_deck'].__setitem__(0, 'missing_card'),
         lambda d: d['cards'][0].__setitem__('damage', True),
         lambda d: d['cards'][0].__setitem__('unsupported', 1),
+        lambda d: d['cards'][0].__setitem__('retain', 1),
+        lambda d: d['cards'][0].__setitem__('exhaust', 'yes'),
+        lambda d: d['cards'][0].__setitem__('install', True),
+        lambda d: d['cards'][0].__setitem__('install', ''),
+        lambda d: d['cards'][0].__setitem__('install', 'not an identity'),
+        lambda d: d['cards'][0].update(install='fixture_engine', exhaust=True),
         lambda d: d['powerups'][0].__setitem__('effect', 'teleport'),
         lambda d: d['enemies'][0]['pattern'][0].__setitem__('kind', 'poison'),
         lambda d: d['regions'][0].__setitem__('boss', 'missing_boss'),

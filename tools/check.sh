@@ -9,6 +9,7 @@ python3 tests/check_art.py
 "$engine" --headless --path . --editor --import --quit
 "$engine" --headless --path . --script tests/run_tests.gd
 "$engine" --headless --path . --script tests/effective_card_test.gd
+"$engine" --headless --path . --script tests/card_zones_test.gd
 "$engine" --headless --path . --script tests/seed_tests.gd
 "$engine" --headless --path . --script tests/manual_replay_tests.gd
 python3 tests/manual_replay_cli_test.py "$engine"

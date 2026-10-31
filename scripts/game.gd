@@ -5,6 +5,8 @@ const SaveStore = preload("res://scripts/save_store.gd")
 const SeedEngine = preload("res://scripts/seed_engine.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
+const RUN_SCHEMA = 2
+const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
 const ATTACK_PRESSURE = 1.6
@@ -101,7 +103,23 @@ func card_text(instance: Dictionary) -> String:
 		if int(original.get(field,0))>0:
 			text=text.replace(phrases[field]%int(original[field]),phrases[field]%int(effective[field]))
 	if effective.first_free: text+="\nFirst routed organ gains no strain."
+	if effective.get("retain",false): text+="\nRetain: stays in hand at end of turn."
+	if effective.get("exhaust",false): text+="\nExhaust: leaves circulation for this combat."
+	if effective.has("install"): text+="\nInstall: leaves circulation for this combat (passive activation deferred)."
 	return text
+
+# Explicit UID operation for future selection commands; never a random choice.
+func retain_card(uid: int) -> Dictionary:
+	if not _mode("combat"): return _fail("There is no active battle.")
+	for instance in run.battle.hand:
+		if int(instance.uid)==uid:
+			if not uid in run.battle.temporary_retain: run.battle.temporary_retain.append(uid)
+			save()
+			return _ok()
+	return _fail("Choose a card currently in hand.")
+
+func retained(instance: Dictionary) -> bool:
+	return effective_card(instance).get("retain",false) or instance.get("uid",-1) in run.get("battle",{}).get("temporary_retain",[])
 
 func new_run(seed_value = "", character_id: String = "cartographer") -> Dictionary:
 	var vessel=character(character_id)
@@ -118,6 +136,7 @@ func new_run(seed_value = "", character_id: String = "cartographer") -> Dictiona
 		seed_value=absi(seed_value)%2147483647
 	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
+	run.schema_revision=RUN_SCHEMA
 	if modern:
 		SeedEngine.initialize(run,seed_value)
 		run.seeded=seeded
@@ -270,6 +289,10 @@ func _make_enemy(id: String) -> Dictionary:
 func _start_battle(node: Dictionary) -> void:
 	run.mode = "combat"
 	run.battle = {"enemies":[],"hand":[],"draw":run.deck.duplicate(true),"discard":[],"strain":[0,0,0,0,0,0],"capacity":int(character().capacity)+_effect(run,"capacity"),"edges":character().edges.duplicate(true),"severed":[],"ward":_effect(run,"starting_ward"),"turn":1,"last_route":[],"mark":0,"first_play":true,"emergency_used":false,"kind":node.type,"command_points":3,"max_command_points":3,"trace":0,"last_payload":{},"resonance":0,"last_command_kind":""}
+	run.battle.exhausted=[]
+	run.battle.installed=[]
+	run.battle.installed_sources=[]
+	run.battle.temporary_retain=[]
 	for id in node.enemy_ids: run.battle.enemies.append(_make_enemy(id))
 	if node.type=="boss" and "salvage_parliament" in node.enemy_ids:
 		var ids=[]
@@ -326,6 +349,11 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var incoming_before=_incoming_damage(state)
 	var instance=battle.hand[hand_index]
 	var definition=effective_card(instance)
+	if definition.has("install"):
+		for source in battle.installed_sources:
+			if source.identity==definition.install: return _fail("That Install identity is already installed.")
+		for installed in battle.installed:
+			if effective_card(installed).name==definition.name: return _fail("That named command is already installed.")
 	var cost=int(definition.cost)
 	if cost>int(battle.command_points): return _fail("Not enough command points: this command costs %d, with %d remaining."%[cost,int(battle.command_points)])
 	var trace_before=int(battle.get("trace",0))
@@ -514,9 +542,14 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"link","route":route.duplicate()})
 		if route.size()>1 and not _edge_exists(battle.edges,int(route[0]),int(route[-1])): battle.edges.append([int(route[0]),int(route[-1])])
 		events.append("Connections restored; route endpoints linked for this battle.")
-	# Commit to discard before drawing: an empty deck can redraw this same UID.
-	battle.discard.append(battle.hand.pop_at(hand_index))
-	presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+	# Ordinary cards can self-redraw; dedicated zones must be populated before draw.
+	var destination="installed" if definition.has("install") else "exhausted" if definition.get("exhaust",false) else "discard"
+	battle[destination].append(battle.hand.pop_at(hand_index))
+	battle.temporary_retain.erase(int(instance.uid))
+	if destination=="installed": battle.installed_sources.append({"source_uid":int(instance.uid),"identity":definition.install})
+	var movement={"kind":"discard_card" if destination=="discard" else "zone_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()}
+	if destination!="discard": movement.zone=destination
+	presentation.append(movement)
 	_draw(state,int(definition.get("draw",0)),presentation)
 	if vessel_id=="palimpsest": battle.last_payload=plain_payload
 	if vessel_id=="hollow_choir": battle.last_command_kind=definition.kind
@@ -634,11 +667,17 @@ func end_turn() -> Dictionary:
 	if not _mode("combat"): return _fail("There is no active battle.")
 	var battle=run.battle
 	var presentation=[]
+	var held=[]
 	for i in range(battle.hand.size()):
 		var instance=battle.hand[i]
+		if effective_card(instance).get("retain",false) or int(instance.uid) in battle.temporary_retain:
+			held.append(instance)
+			continue
 		battle.discard.append(instance)
 		presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":i,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
-	battle.hand.clear()
+	battle.hand=held
+	# One upcoming discard, including intrinsic retain; never a persistent skip.
+	battle.temporary_retain.clear()
 	battle.severed.clear()
 	var count=battle.enemies.size()
 	for i in range(count):
@@ -990,8 +1029,19 @@ func load_saved() -> bool:
 	store.primary_verified=false
 	for candidate in store.candidates():
 		var saved=candidate.data
+		# Unversioned runs are the legacy schema. Never repair current-schema data.
+		var legacy_schema=not saved.run.has("schema_revision")
+		if legacy_schema and not saved.run.is_empty():
+			# Additive fields without a revision indicate damaged new data, not legacy.
+			var old_battle=saved.run.get("battle",{})
+			if old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain"].any(func(key): return old_battle.has(key)):
+				store.error="A save contains incomplete game data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=RUN_SCHEMA
+			if old_battle is Dictionary and not old_battle.is_empty():
+				for key in ["exhausted","installed","installed_sources","temporary_retain"]: old_battle[key]=[]
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
-		if not saved.run.is_empty() and legacy_expansion:
+		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
 			saved.run.route_regions=[0,1,2]
 			if saved.run.get("battle") is Dictionary and not saved.run.battle.is_empty():
@@ -1001,7 +1051,7 @@ func load_saved() -> bool:
 				if not battle.has("resonance"): battle.resonance=0
 				if not battle.has("last_command_kind"): battle.last_command_kind=""
 		# Older combat saves prove only whether no card has been played this turn.
-		if saved.run.get("mode","")=="combat" and saved.run.get("battle") is Dictionary:
+		if legacy_schema and saved.run.get("mode","")=="combat" and saved.run.get("battle") is Dictionary:
 			var battle=saved.run.battle
 			if not battle.has("command_points") and not battle.has("max_command_points"):
 				battle.max_command_points=3
@@ -1078,6 +1128,7 @@ func _valid_profile(value) -> bool:
 func _valid_run(value) -> bool:
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
+	if not _number(value.get("schema_revision")) or value.schema_revision!=RUN_SCHEMA: return false
 	if not value.get("character") is String or character(value.character).is_empty(): return false
 	if not _valid_itinerary(value.get("route_regions")): return false
 	if value.get("seed") is String:
@@ -1115,7 +1166,7 @@ func _valid_run(value) -> bool:
 		if not value.get(key) is Dictionary: return false
 	if value.mode=="combat":
 		var battle=value.battle
-		for key in ["hand","draw","discard","enemies","strain","edges","severed","last_route"]:
+		for key in COMBAT_ZONES+["installed_sources","temporary_retain","enemies","strain","edges","severed","last_route"]:
 			if not battle.get(key) is Array: return false
 		if battle.strain.size()!=6 or battle.enemies.is_empty() or battle.enemies.size()>8 or battle.hand.size()>10: return false
 		for key in ["capacity","ward","turn","mark","command_points","max_command_points","trace","resonance"]:
@@ -1133,13 +1184,31 @@ func _valid_run(value) -> bool:
 		for node in battle.last_route:
 			if not _number(node) or node<0 or node>5: return false
 		var piles=[]
-		for key in ["hand","draw","discard"]:
+		for key in COMBAT_ZONES:
 			for instance in battle[key]:
 				if not _valid_instance(instance) or not instance.uid in uids or instance.uid in piles: return false
 				var original=originals[int(instance.uid)]
 				if instance.id!=original.id or int(instance.level)!=int(original.level): return false
 				piles.append(instance.uid)
 		if piles.size()!=uids.size(): return false
+		var retained_uids=[]
+		for uid in battle.temporary_retain:
+			if not _number(uid) or uid in retained_uids or not battle.hand.any(func(instance): return instance.uid==uid): return false
+			retained_uids.append(uid)
+		if battle.installed_sources.size()!=battle.installed.size(): return false
+		var source_uids=[]
+		var identities=[]
+		var names=[]
+		for source in battle.installed_sources:
+			if not source is Dictionary or source.size()!=2 or not _number(source.get("source_uid")) or not source.get("identity") is String or source.identity.is_empty(): return false
+			if source.source_uid in source_uids or source.identity in identities: return false
+			var matches=battle.installed.filter(func(instance): return instance.uid==source.source_uid)
+			if matches.size()!=1: return false
+			var definition=effective_card(matches[0])
+			if definition.get("install","")!=source.identity or definition.name in names: return false
+			source_uids.append(source.source_uid)
+			identities.append(source.identity)
+			names.append(definition.name)
 		for strain in battle.strain:
 			if not _number(strain) or strain<0 or strain>battle.capacity: return false
 		for key in ["edges","severed"]:

@@ -128,6 +128,8 @@ func legacy_save(game) -> void:
 	game.run.map = game._generate_map(game.run)
 	game.choose_node(game.run.map[0][0].id)
 	var expected: Dictionary = game.run.duplicate(true)
+	game.run.erase("schema_revision")
+	for key in ["exhausted","installed","installed_sources","temporary_retain"]: game.run.battle.erase(key)
 	game.run.erase("character")
 	game.run.erase("route_regions")
 	for key in ["trace","resonance","last_payload","last_command_kind"]: game.run.battle.erase(key)
