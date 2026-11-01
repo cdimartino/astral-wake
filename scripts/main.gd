@@ -998,6 +998,7 @@ func _damage_breakdown(result: Dictionary) -> Dictionary:
 func _command_preview_summary(result: Dictionary) -> String:
 	var breakdown := _damage_breakdown(result)
 	var text := "Damage %d" % int(breakdown.primary)
+	if int(result.get("conditional_damage",0))>0: text += " · Bonus +%d"%int(result.conditional_damage)
 	if not breakdown.secondary.is_empty():
 		var amounts: Array[String] = []
 		for hit in breakdown.secondary: amounts.append(str(int(hit.amount)))
@@ -1005,6 +1006,8 @@ func _command_preview_summary(result: Dictionary) -> String:
 		var count := amounts.size()
 		var values := amounts[0] + (" each" if count > 1 else "") if uniform else "/".join(amounts)
 		text += " · Split %s (%d %s)" % [values, count, "foe" if count == 1 else "foes"]
+	if result.has("flat_ward_requested"):
+		text += " · Ward %d/%d · Cool %d" % [result.flat_ward_applied,result.flat_ward_requested,result.command_cooling]
 	text += " · Hull %+d · Disrupt %d · CP %d→%d" % [int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))]
 	return text
 
@@ -2524,7 +2527,7 @@ func _printed_stats(instance: Dictionary, include_cost: bool) -> HFlowContainer:
 		var value := int(definition.get(kind, 0))
 		if value <= 0: continue
 		_stat_token(row, kind, str(value), {"damage":"Damage before organs and powerups.", "heal":"Hull repaired before organs and powerups.", "disrupt":"Reduce the chosen enemy's next attack."}[kind])
-	for field in ["vent", "draw", "trace", "resonance"]:
+	for field in ["ward", "vent", "draw", "trace", "resonance"]:
 		if int(definition.get(field, 0)) > 0:
 			var label := _label("%s %s%d" % [field.capitalize(), "+" if field in ["trace", "resonance"] else "", int(definition[field])], 15, CREAM)
 			row.add_child(label)

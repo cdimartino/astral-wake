@@ -95,6 +95,8 @@ The [Cartographer candidate](cartographer-evolutions.md) includes an actual-prod
 native recovery demo and separate counterfactual driver. Use this document's
 production driver for the primary fresh expedition, not a counterfactual adapter.
 The authoritative evolution module is included in replay source fingerprints.
+The fixture-only route/ward prerequisite also fingerprints `scripts/route_effects.gd`;
+changing it at the same HEAD rejects resume/replay rather than blessing dirty rules.
 
 - The trace records revision, SHA-256 fingerprints of resolver/RNG/save/content
   sources, Godot version, seed, ship, unlocks, and normalized initial state. Each

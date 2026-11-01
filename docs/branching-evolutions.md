@@ -45,15 +45,18 @@ battle snapshots may predate a later deck removal/evolution.
 
 Exactly two distinct non-reserved IDs; exactly `id`, `name`, `description`, `stats`
 per branch. `stats` is a nonempty flat replacement dictionary allowing only
-`cost`, `damage`, `heal`, `vent`, `disrupt`, `draw`, `trace`, `resonance`.
+`cost`, `damage`, `heal`, `vent`, `disrupt`, `draw`, `trace`, `resonance`, `ward`.
 Numeric fields are integers only, 0–99; cost stays 1–2, Trace 0–6 only on Palimpsest, Resonance 0–3
 only on Choir. Attack/repair branches retain positive primary payload. The content
 validator rejects duplicate JSON keys and duplicate/reserved branch IDs.
 The only additional branch fields are strictly boolean `retain`, `exhaust` and
 `first_free`, replacing inherited values (including explicit false), not stacking.
 Effective Install plus Exhaust is rejected. Selections/engines remain inherited.
-No identity/pool/art changes, nested definitions, scripts, conditional route damage,
-ward, refunds or new triggers. Wider authoring requires a separately reviewed
+The [fixture-only route-defense prerequisite](route-defense-primitives.md) adds
+explicit printed ward replacement (0–99), without a generic legacy ward bonus.
+No identity/pool/art changes, nested definitions, scripts, conditional route damage
+overrides, conditional ward overrides, route-cooling overrides, refunds or new
+triggers. Those typed base effects remain inherited. Wider authoring requires a separately reviewed
 supported primitive/schema extension rather than arbitrary data injection.
 
 ## Safe demonstrations

@@ -1,7 +1,7 @@
 extends RefCounted
 ## Printed stat replacements only. No executable effects or nested definitions.
 const LEGACY = "legacy"
-const STATS = ["cost", "damage", "heal", "vent", "disrupt", "draw", "trace", "resonance"]
+const STATS = ["cost", "damage", "heal", "vent", "disrupt", "draw", "trace", "resonance", "ward"]
 const FLAGS = ["retain", "exhaust", "first_free"]
 
 static func valid_definition(definition: Dictionary) -> bool:

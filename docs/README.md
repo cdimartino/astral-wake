@@ -6,6 +6,7 @@
 - [Enemy field guide](enemies.md): repeating patterns, strengths, and counters for every enemy.
 - [Seeds and reproducible practice](seeds.md): replay six-character codes, understand progression restrictions and RNG compatibility.
 - [Effect foundations](effect-foundations.md): developer compatibility contract and regression fixtures for the first #14/#15 slice.
+- [Route-defense primitives](route-defense-primitives.md): fixture-only printed ward, route/strain conditions and post-route cooling; new Install engines deferred (#16 prerequisite).
 - [Branching evolutions](branching-evolutions.md): infrastructure, identity/migration contract and historical fixture tests.
 - [Cartographer evolutions](cartographer-evolutions.md): all 36 production branch pairs, tradeoffs, policy boundary and manual review gates (#15 partial).
 - [Palimpsest evolutions](palimpsest-evolutions.md): all 18 production branch pairs, Trace/copy tradeoffs, named policy and counterfactual tests (#15 candidate).

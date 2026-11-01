@@ -130,7 +130,7 @@ func run_tests() -> void:
 func validation(game) -> void:
 	var definition=game.card("needle")
 	require(Game.Evolutions.valid_definition(definition),"Fixture schema accepted")
-	for field in ["id","uid","art","evolutions","selections","engine","ward","refund","script"]:
+	for field in ["id","uid","art","evolutions","selections","engine","conditional_damage","conditional_ward","route_cooling","refund","script"]:
 		var bad=definition.duplicate(true)
 		bad.evolutions[0].stats[field]=1
 		require(not Game.Evolutions.valid_definition(bad),"Override allowlist rejects "+field)
