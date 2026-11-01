@@ -1,8 +1,10 @@
 # Bounded active Install primitives (#14, fourth slice)
 
 Fixture-only: all 72 production cards and reward pools remain unchanged. #14 is
-**not complete**. There is no generic effects interpreter, triggered damage,
-CP refund, third-kind sequence, production engine card, or balance claim.
+**not complete**. There is no generic effects interpreter, CP refund, third-kind
+sequence, production engine card, or balance claim. The later
+[defense-engine extension](defense-install-engines.md) adds bounded cooling ward
+and same-recipient redirect retaliation, still fixture-only.
 
 ## Typed authoring and timing
 

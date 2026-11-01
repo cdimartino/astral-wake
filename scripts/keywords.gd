@@ -7,7 +7,9 @@ const DEFINITIONS := {
 	"Draw":"Move cards from the draw pile into your hand, up to 10 cards. An empty draw pile reshuffles the discard pile when needed.",
 	"Retain":"Stays in hand through end-turn discard and occupies the ten-card hand cap. Intrinsic Retain repeats; a temporary UID mark expires after one upcoming discard or when played. Draw five subject to room.",
 	"Exhaust":"The played card leaves circulation before drawing and cannot reshuffle this combat. It remains in the expedition deck and returns next combat.",
-	"Install":"Leaves circulation before drawing; same identity or name cannot stack. Typed engines show source-linked capped later-attack bonuses. Novel ordered routes use all commands this turn; Exhaust engines grant flat ward 3 once per turn when another card exhausts. New stacks never buff the earning command. Untyped installs remain dormant; the card returns next combat.",
+	"Install":"Leaves circulation before drawing; same identity or name cannot stack. Typed engines show source-linked rules and counters. Novel ordered routes use all commands this turn; Exhaust engines grant flat ward 3 once per turn when another card exhausts. New stacks never buff the earning command. Cooling and retaliation engines grant no attack stacks. Untyped installs remain dormant; the card returns next combat.",
+	"Cooling ward":"Once per player turn, the first later command meeting the printed actual-cooling threshold grants flat ward. Sum actual vent and post-route removals, not attempted cooling or net change. Own installation and automatic end-turn cooling never trigger it.",
+	"Redirect retaliation":"Once per enemy phase, the first positive resolved redirect deals the printed extra hit to that same recipient after the attack. Armor absorbing the redirect still consumes the latch; armor/exposed apply separately to the extra hit. Dead recipient: no retarget. Player lethal: no passive payout. No copying or organ/powerup amplification.",
 	"Trace":"Palimpsest resource, capped at 6. Card gains happen before routing; organs gain or spend it in route order. Resets each battle.",
 	"Rewrite":"Copies half the previous command's upgraded base damage, repair and disruption, rounded down—not organ, resource or powerup bonuses. The organ spends 2 Trace; Rewrite cards spend all Trace and add their printed bonus if any was spent.",
 	"Resonance":"Choir resource, capped at 3. Changing kind after a previous command gains 1; repeating a kind resets it to 0 before card and organ gains. Resets each battle.",
@@ -25,6 +27,8 @@ static func for_card(definition: Dictionary) -> Array[String]:
 		if definition.get(field, 0): result.append("Disruption" if field == "disrupt" else field.capitalize())
 	result.append("Strain")
 	if definition.has("conditional_ward") and not "Ward" in result: result.append("Ward")
+	if definition.get("engine",{}).get("type","")=="cooling_ward": result.append("Cooling ward")
+	if definition.get("engine",{}).get("type","")=="redirect_retaliation": result.append("Redirect retaliation")
 	return result
 
 static func for_organ(id: String) -> Array[String]:

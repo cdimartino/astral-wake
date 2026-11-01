@@ -1008,6 +1008,8 @@ func _command_preview_summary(result: Dictionary) -> String:
 		text += " · Split %s (%d %s)" % [values, count, "foe" if count == 1 else "foes"]
 	if result.has("flat_ward_requested"):
 		text += " · Ward %d/%d · Cool %d" % [result.flat_ward_applied,result.flat_ward_requested,result.command_cooling]
+	for event in result.get("presentation",[]):
+		if event.kind=="ward" and event.has("source_uid"): text += " · Install UID %d Ward +%d"%[event.source_uid,event.amount]
 	text += " · Hull %+d · Disrupt %d · CP %d→%d" % [int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))]
 	return text
 
@@ -2093,6 +2095,14 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			cues.append({"kind":"ready", "to":ship + Vector2(0, 100), "color":TEAL, "label":"COMMAND POINTS REFILLED", "delay":phase_tail + 0.35})
 	for event in records:
 		var kind := str(event.get("kind", ""))
+		if event.get("engine", "") == "redirect_retaliation":
+			# These are phase-entry snapshot indices, never surviving-array fallbacks.
+			var recipient := int(event.get("target_index", -1))
+			var actor := int(event.get("source_index", -1))
+			if recipient < 0 or recipient >= old_enemies.size() or recipient >= locations.size() or actor < 0 or actor >= old_enemies.size() or actor >= locations.size(): continue
+			if int(event.amount) > 0:
+				cues.append({"kind":"beam", "from":ship, "to":_enemy_effect_point(locations[recipient], old_enemies.size()), "label":"INSTALL UID %d −%d" % [event.source_uid,event.amount], "color":GOLD, "target_index":recipient, "source_index":actor, "source_uid":event.source_uid, "hp_delta":-int(event.amount), "delay":actor * 0.32 + 0.3, "echo":false})
+			continue
 		if event.has("source_index"): phase_source = int(event.source_index)
 		var source_index := int(event.get("source_index", -1))
 		var index := int(event.get("target_index", 0))
@@ -2163,7 +2173,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			"trace", "resonance":
 				cues.append({"kind":"link", "to":Vector2(180, 492), "label":"%s %d → %d" % [kind.to_upper(), int(event.get("before", 0)), int(event.get("after", 0))], "color":TEAL if kind == "trace" else GOLD, "delay":command_impact})
 			"ward":
-				if amount > 0: cues.append({"kind":"shield", "to":ship, "label":"WARD +%d" % amount, "color":TEAL, "player":true, "delay":command_impact})
+				if amount > 0: cues.append({"kind":"shield", "to":ship, "label":("INSTALL UID %d "%event.source_uid if event.has("source_uid") else "")+"WARD +%d" % amount, "color":TEAL, "player":true, "delay":command_impact})
 			"link": cues.append({"kind":"link", "to":ship, "label":"LINKS RESTORED", "color":TEAL, "player":true, "delay":command_impact})
 	if not enemy_phase:
 		var after: Array = result.get("strain", [])

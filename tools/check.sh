@@ -22,6 +22,8 @@ python3 tests/check_art.py
 "$engine" --headless --path . --script tests/card_zones_test.gd
 "$engine" --headless --path . --script tests/known_selections_test.gd
 "$engine" --headless --path . --script tests/install_engines_test.gd
+"$engine" --headless --path . --script tests/defense_engines_test.gd
+"$engine" --headless --path . --script tests/defense_engines_ui_test.gd
 "$engine" --headless --path . --script tests/route_effects_test.gd
 "$engine" --headless --path . --script tests/route_effects_ui_test.gd
 "$engine" --headless --path . --script tests/seed_tests.gd
@@ -35,6 +37,7 @@ python3 tests/evolution_replay_test.py "$engine" --production
 python3 tests/evolution_replay_test.py "$engine" --palimpsest
 python3 tests/evolution_replay_test.py "$engine" --choir
 python3 tests/install_engine_replay_test.py "$engine"
+python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/seed_ui_test.gd
 "$engine" --headless --path . --script tests/balance_tests.gd
 "$engine" --headless --path . --script tests/enemy_tactics_tests.gd
