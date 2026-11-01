@@ -9,6 +9,9 @@ const DEFINITIONS := {
 	"Exhaust":"The played card leaves circulation before drawing and cannot reshuffle this combat. It remains in the expedition deck and returns next combat.",
 	"Install":"Leaves circulation before drawing; same identity or name cannot stack. Typed engines show source-linked rules and counters. Novel ordered routes use all commands this turn; Exhaust engines grant flat ward 3 once per turn when another card exhausts. New stacks never buff the earning command. Cooling and retaliation engines grant no attack stacks. Untyped installs remain dormant; the card returns next combat.",
 	"Cooling ward":"Once per player turn, the first later command meeting the printed actual-cooling threshold grants flat ward. Sum actual vent and post-route removals, not attempted cooling or net change. Own installation and automatic end-turn cooling never trigger it.",
+	"Novel route":"Exact ordered route unused by any committed command this player turn, including utility and Install. Reversing a route is different. Living Atlas gains apply only to later attacks, capped per source for this combat.",
+	"Entry strain":"Check routed organs at command entry, before vent or route strain. Exactly 2 qualifies once, not once per organ. An organ already at capacity still makes the route illegal.",
+	"Route cooling":"With exactly three routed organs, cool the first by 1 after route strain. Counts actual removed strain; never authorizes an initially saturated route.",
 	"Redirect retaliation":"Once per enemy phase, the first positive resolved redirect deals the printed extra hit to that same recipient after the attack. Armor absorbing the redirect still consumes the latch; armor/exposed apply separately to the extra hit. Dead recipient: no retarget. Player lethal: no passive payout. No copying or organ/powerup amplification.",
 	"Trace":"Palimpsest resource, capped at 6. Card gains happen before routing; organs gain or spend it in route order. Resets each battle.",
 	"Rewrite":"Copies half the previous command's upgraded base damage, repair and disruption, rounded down—not organ, resource or powerup bonuses. The organ spends 2 Trace; Rewrite cards spend all Trace and add their printed bonus if any was spent.",
@@ -27,6 +30,9 @@ static func for_card(definition: Dictionary) -> Array[String]:
 		if definition.get(field, 0): result.append("Disruption" if field == "disrupt" else field.capitalize())
 	result.append("Strain")
 	if definition.has("conditional_ward") and not "Ward" in result: result.append("Ward")
+	if definition.get("conditional_damage",{}).get("type","")=="novel_route" or definition.get("engine",{}).get("type","")=="novel_route": result.append("Novel route")
+	if definition.get("conditional_damage",{}).get("type","")=="route_strain_two": result.append("Entry strain")
+	if definition.has("route_cooling"): result.append("Route cooling")
 	if definition.get("engine",{}).get("type","")=="cooling_ward": result.append("Cooling ward")
 	if definition.get("engine",{}).get("type","")=="redirect_retaliation": result.append("Redirect retaliation")
 	return result

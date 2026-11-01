@@ -38,7 +38,7 @@ static func environment() -> Dictionary:
 	var sources = {}
 	for path in ["scripts/game.gd", "scripts/reward_distribution.gd", "scripts/evolutions.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/route_effects.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
 		sources[path] = FileAccess.get_sha256("res://" + path)
-	return {"game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
+	return {"content_pool_revision":Game.CONTENT_POOL_REVISION, "game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
 
 func start(directory: String, seed_value, ship: String, unlocks: int) -> Dictionary:
 	# Even a completed save must be explicitly archived, never silently replaced.
@@ -190,8 +190,8 @@ func read_journal(path: String) -> Dictionary:
 		return failure("Invalid or unsupported journal.")
 	for key in ["seed", "ship", "unlocks", "environment"]:
 		if not parsed.has(key): return failure("Incomplete journal header.")
-	if parsed.environment != environment(): return failure("Revision, source fingerprints or Godot version differ; replay with the recorded environment.")
 	parsed = restore_numbers(parsed)
+	if parsed.environment != environment(): return failure("Revision, source fingerprints or Godot version differ; replay with the recorded environment.")
 	if not parsed.ship is String or not _integer(parsed.unlocks) or parsed.unlocks < 0 or parsed.unlocks > 3: return failure("Invalid journal ship or discovery tier.")
 	for collection in ["entries", "errors"]:
 		for entry in parsed[collection]:

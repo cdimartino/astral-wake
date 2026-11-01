@@ -2499,6 +2499,10 @@ func _card_art(instance: Dictionary, height: float) -> TextureRect:
 		if game.catalog.cards[i].id == instance.id:
 			slot = i
 			break
+	# Expansion prototype coverage explicitly names an ORIGINAL card-atlas slot;
+	# do not clamp every new catalog index to the same last illustration.
+	if game.card(instance.id).get("introduced_revision",0)>0:
+		slot=int(definition.art)
 	var image := TextureRect.new()
 	image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	image.custom_minimum_size.y = height

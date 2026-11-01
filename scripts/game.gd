@@ -10,7 +10,8 @@ const Evolutions = preload("res://scripts/evolutions.gd")
 const Distribution = preload("res://scripts/reward_distribution.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
-const RUN_SCHEMA = 6
+const RUN_SCHEMA = 7
+const CONTENT_POOL_REVISION = 1
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -102,6 +103,7 @@ func effective_card(instance: Dictionary) -> Dictionary:
 	# and pending-selection guards byte-for-byte.
 	definition.erase("roles")
 	definition.erase("primary_role")
+	definition.erase("introduced_revision")
 	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
 		var identity=instance.get("evolution",Evolutions.LEGACY)
@@ -114,7 +116,7 @@ func effective_card(instance: Dictionary) -> Dictionary:
 			return definition
 		definition.first_free=true
 		# Printed ward has no invented legacy increment or free-strain upgrade.
-		if int(definition.get("ward",0))>0: definition.first_free=false
+		if int(definition.get("ward",0))>0 or definition.has("engine"): definition.first_free=false
 		for field in ["damage","heal","vent","disrupt"]:
 			if int(definition.get(field,0))>0:
 				definition[field]+=3 if field=="damage" else 2 if field=="heal" else 1
@@ -165,6 +167,7 @@ func new_run(seed_value = "", character_id: String = "cartographer") -> Dictiona
 	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
 	run.schema_revision=RUN_SCHEMA
+	run.content_pool_revision=CONTENT_POOL_REVISION
 	run.reward_generation=1
 	run.rare_offer_misses=0
 	run.pending_selection={}
@@ -999,8 +1002,11 @@ func _check_battle_end() -> void:
 func _available_cards() -> Array:
 	var result=[]
 	for definition in catalog.cards:
-		if int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
+		if int(definition.get("introduced_revision",0))<=int(run.get("content_pool_revision",0)) and int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
 	return result
+
+func _pool_card(state: Dictionary, id) -> bool:
+	return id is String and _cards.has(id) and card(id).get("character","cartographer")==state.character and card(id).get("introduced_revision",0)<=state.get("content_pool_revision",0)
 
 func _available_powerups() -> Array:
 	var result=[]
@@ -1043,6 +1049,7 @@ func choose_reward(choice_index: int) -> Dictionary:
 	if choice_index < -1 or choice_index>=run.reward.choices.size(): return _fail("Choose a visible reward, or skip.")
 	if choice_index>=0:
 		var reward=run.reward.choices[choice_index]
+		if reward.kind=="card" and not _pool_card(run,reward.id): return _fail("That card is outside this expedition's content pool.")
 		if reward.kind=="card": run.deck.append(_instance(run,reward.id))
 		else: _grant_powerup(reward.id)
 	var boss=run.reward.boss
@@ -1087,6 +1094,7 @@ func buy(index: int) -> Dictionary:
 	if not _mode("shop"): return _fail("You are not at a salvage exchange.")
 	if index<0 or index>=run.shop.items.size(): return _fail("Choose a listed exchange.")
 	var item=run.shop.items[index]
+	if item.kind=="card" and not _pool_card(run,item.id): return _fail("That card is outside this expedition's content pool.")
 	if item.sold: return _fail("That exchange is already complete.")
 	if int(run.salvage)<int(item.cost): return _fail("Not enough salvage.")
 	if item.kind in ["remove","upgrade"]:
@@ -1236,6 +1244,7 @@ func _finish_run(won: bool) -> void:
 	if not run.get("seeded",false): profile.unlocks=mini(3,int(profile.unlocks)+1)
 	profile.history.push_front({"id":run.id,"seed":run.seed,"seeded":run.get("seeded",false),"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
 	profile.history[0].reward_generation=run.reward_generation
+	profile.history[0].content_pool_revision=run.content_pool_revision
 	if profile.history.size()>30: profile.history.resize(30)
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
@@ -1281,7 +1290,7 @@ func load_saved() -> bool:
 		if legacy_schema and not saved.run.is_empty():
 			# Additive fields without a revision indicate damaged new data, not legacy.
 			var old_battle=saved.run.get("battle",{})
-			if saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
+			if saved.run.has("content_pool_revision") or saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
 				store.error="A save contains incomplete game data. Your existing files have been preserved."
 				continue
 			saved.run.schema_revision=4
@@ -1319,9 +1328,18 @@ func load_saved() -> bool:
 			if saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or not pending is Dictionary or (not pending.is_empty() and pending.get("guard")!=Selections.guard(self,saved.run,pending)):
 				store.error="A save contains incomplete distribution data. Your existing files have been preserved."
 				continue
-			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.schema_revision=6
 			saved.run.reward_generation=0
 			saved.run.rare_offer_misses=0
+			if not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
+		if saved.run.get("schema_revision")==6:
+			# Guards cover the complete old state: verify BEFORE adding the pool pin.
+			var pending=saved.run.get("pending_selection",{})
+			if saved.run.has("content_pool_revision") or not pending is Dictionary or (not pending.is_empty() and pending.get("guard")!=Selections.guard(self,saved.run,pending)):
+				store.error="A save contains incomplete content-pool data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.content_pool_revision=0
 			if not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
 		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
@@ -1431,6 +1449,7 @@ func _valid_profile(value) -> bool:
 		if not _number(item.get("seed")) and not (item.get("seed") is String and SeedEngine.valid(item.seed)): return false
 		if item.has("seeded") and not item.seeded is bool: return false
 		if item.has("reward_generation") and (not _number(item.reward_generation) or not int(item.reward_generation) in [0,1]): return false
+		if item.has("content_pool_revision") and (not _number(item.content_pool_revision) or not int(item.content_pool_revision) in [0,CONTENT_POOL_REVISION]): return false
 		for key in ["region","turns","battles","seconds","date","deck_size"]:
 			if not _number(item.get(key)): return false
 		if not item.get("won") is bool: return false
@@ -1446,6 +1465,7 @@ func _valid_run(value) -> bool:
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
 	if not _number(value.get("schema_revision")) or value.schema_revision!=RUN_SCHEMA: return false
+	if not _number(value.get("content_pool_revision")) or not int(value.content_pool_revision) in [0,CONTENT_POOL_REVISION]: return false
 	if not _number(value.get("reward_generation")) or not int(value.reward_generation) in [0,1]: return false
 	if not _number(value.get("rare_offer_misses")) or value.rare_offer_misses<0 or value.rare_offer_misses>Distribution.PITY_LIMIT: return false
 	if value.reward_generation==0 and value.rare_offer_misses!=0: return false
@@ -1470,6 +1490,7 @@ func _valid_run(value) -> bool:
 	for instance in value.deck:
 		if not _valid_instance(instance) or instance.uid in uids: return false
 		if card(instance.id).get("character","cartographer")!=value.character: return false
+		if card(instance.id).get("introduced_revision",0)>value.content_pool_revision: return false
 		uids.append(instance.uid)
 		originals[int(instance.uid)]=instance
 	for id in value.powerups:
@@ -1562,13 +1583,13 @@ func _valid_run(value) -> bool:
 		if not value.reward.get("choices") is Array or not value.reward.get("boss") is bool: return false
 		for choice in value.reward.choices:
 			if not choice is Dictionary or not choice.get("kind","") in ["card","powerup"]: return false
-			if choice.kind=="card" and (not _cards.has(choice.get("id","")) or card(choice.id).get("character","cartographer")!=value.character): return false
+			if choice.kind=="card" and not _pool_card(value,choice.get("id","")): return false
 			if choice.kind=="powerup" and not _powerups.has(choice.get("id","")): return false
 	if value.mode=="shop" or (value.mode=="modify" and value.modify_return=="shop"):
 		if not value.shop.get("items") is Array: return false
 		for item in value.shop.items:
 			if not item is Dictionary or not item.get("kind","") in ["card","powerup","remove","upgrade"] or not _number(item.get("cost")) or not item.get("sold") is bool or not item.get("id") is String: return false
-			if item.kind=="card" and (not _cards.has(item.id) or card(item.id).get("character","cartographer")!=value.character): return false
+			if item.kind=="card" and not _pool_card(value,item.id): return false
 			if item.kind=="powerup" and not _powerups.has(item.id): return false
 	if value.mode=="modify":
 		if not value.modify_return in ["shop","event","recovery"] or not value.modify_kind in ["upgrade","remove"]: return false

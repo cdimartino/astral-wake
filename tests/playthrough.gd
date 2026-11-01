@@ -3,6 +3,7 @@ const Game=preload("res://scripts/game.gd")
 const EVOLUTION_POLICY_VERSION="cartographer-branches-v1"
 const PALIMPSEST_EVOLUTION_POLICY_VERSION="palimpsest-branches-v1"
 const CHOIR_EVOLUTION_POLICY_VERSION="choir-branches-v1"
+const EXPANSION_POLICY_VERSION="cartographer-content1-setup-v1"
 var game
 var cards_played=0
 var cards_this_turn=0
@@ -22,6 +23,7 @@ func _initialize() -> void:
 	var character_id="cartographer"
 	var unlocks=0
 	var save_directory=""
+	var content_pool_revision=Game.CONTENT_POOL_REVISION
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--seed="): seed_value=int(arg.trim_prefix("--seed="))
 		if arg.begins_with("--code="): seed_value=arg.trim_prefix("--code=")
@@ -32,7 +34,8 @@ func _initialize() -> void:
 		if arg=="--allow-defeat": allow_defeat=true
 		if arg.begins_with("--unlocks="): unlocks=int(arg.trim_prefix("--unlocks="))
 		if arg.begins_with("--save-dir="): save_directory=arg.trim_prefix("--save-dir=")
-	if unlocks<0 or unlocks>3 or not policy in ["balanced","aggressive","tactical"]:
+		if arg.begins_with("--content-pool="): content_pool_revision=int(arg.trim_prefix("--content-pool="))
+	if unlocks<0 or unlocks>3 or not content_pool_revision in [0,1] or not policy in ["balanced","aggressive","tactical"]:
 		printerr("Invalid unlock tier or policy")
 		quit(1)
 		return
@@ -41,6 +44,7 @@ func _initialize() -> void:
 	game.profile.unlocks=unlocks
 	for definition in game.catalog.enemies: definition.hp=int(round(definition.hp*hp_scale))
 	var beginning=game.new_run(seed_value,character_id)
+	game.run.content_pool_revision=content_pool_revision
 	if not beginning.ok:
 		printerr(beginning.error)
 		quit(1)
@@ -77,6 +81,7 @@ func _initialize() -> void:
 	result.pool_tier=game.run.get("pool_tier",unlocks)
 	result.rng_version=game.run.get("rng_version",0)
 	result.reward_generation=game.run.reward_generation
+	result.content_pool_revision=game.run.content_pool_revision
 	result.seeded=game.run.get("seeded",false)
 	print("PLAYTHROUGH "+JSON.stringify(result))
 	quit(0 if game.run.mode=="victory" or (allow_defeat and game.run.mode=="defeat") else 2)
@@ -149,6 +154,13 @@ func plan_combat_action() -> Dictionary:
 					score+=(maxi(0,int(forecast.heal))+maxi(0,int(forecast.get("attack_reduction",0))))*urgency
 					score/=float(definition.cost)
 				if policy=="aggressive": score=float(forecast.damage)-net*1.2
+				if expansion_policy() and definition.has("engine"):
+					# Named small setup heuristic, not a future-turn planner. Never
+					# assumes guaranteed triggers; a lone target gives Loom no value.
+					var setup=setup_value(definition)
+					var danger=maxi(0,game._incoming_damage(game.run)-int(battle.ward))
+					if danger>=game.run.hull: setup=0.0
+					score+=setup/float(definition.cost)
 				if score>best_score:
 					best_score=score
 					best={"hand":card_index,"route":route,"target":target}
@@ -179,6 +191,7 @@ func choose_reward() -> Dictionary:
 			var definition=game.effective_card({"id":choice.id})
 			score=float(definition.get("damage",0))+float(definition.get("heal",0))*0.8+float(definition.get("vent",0))*5+float(definition.get("draw",0))*3+float(definition.get("disrupt",0))
 			score-=game.owned_card_count(choice.id)*5
+			if expansion_policy(): score+=expansion_printed_value(definition)
 			if game.run.deck.size()>18: score-=10
 		if score>best_score:
 			best_score=score
@@ -186,8 +199,25 @@ func choose_reward() -> Dictionary:
 	return game.choose_reward(best)
 
 func evolution_policy_version() -> String:
+	if expansion_policy(): return EXPANSION_POLICY_VERSION
 	if game.run.character=="hollow_choir": return CHOIR_EVOLUTION_POLICY_VERSION
 	return PALIMPSEST_EVOLUTION_POLICY_VERSION if game.run.character=="palimpsest" else EVOLUTION_POLICY_VERSION
+
+func expansion_policy() -> bool:
+	return game.run.get("content_pool_revision",0)==1 and game.run.character=="cartographer"
+
+func setup_value(definition: Dictionary) -> float:
+	var kind=definition.get("engine",{}).get("type","")
+	if kind=="novel_route": return 7.0
+	if kind=="cooling_ward": return 5.0
+	if kind=="redirect_retaliation":
+		if game.run.mode=="combat":
+			return 5.0 if game.run.battle.enemies.filter(func(foe): return foe.hp>0).size()>1 else 0.0
+		return 3.0
+	return 0.0
+
+func expansion_printed_value(definition: Dictionary) -> float:
+	return float(definition.get("ward",0))*1.1+setup_value(definition)+float(definition.get("conditional_damage",{}).get("amount",0))*0.5+float(definition.get("conditional_ward",{}).get("amount",0))*0.5
 
 func branch_score(definition: Dictionary) -> float:
 	# Existing goals only; printed output per CP, not a promised optimal strategy.
@@ -197,6 +227,7 @@ func branch_score(definition: Dictionary) -> float:
 	var disrupt=float(definition.get("disrupt",0))*1.6
 	var draw=float(definition.get("draw",0))*2.0
 	var value=damage+heal+vent+disrupt+draw
+	if expansion_policy(): value+=expansion_printed_value(definition)
 	if policy=="aggressive": value=damage
 	if policy=="tactical": value+=heal+disrupt
 	# Same modest printed-resource valuation as combat forecasts. Do not alter

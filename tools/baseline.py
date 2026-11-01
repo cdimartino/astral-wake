@@ -50,6 +50,8 @@ def load_capture(path):
 
 
 def resume_cases(prior, rows, current, allow_compatible_revision=False):
+    if prior.get('content_pool_revision', 0) != current.get('content_pool_revision', 0):
+        raise ValueError('Resume fingerprint mismatch: content_pool_revision')
     for field in ("schema_version", "kind", "engine", "generation_version", "planned", "sha256", "timeout_seconds"):
         if prior.get(field) != current.get(field) or field not in prior:
             raise ValueError("Resume fingerprint mismatch: " + field)
@@ -102,7 +104,8 @@ def run_case(case, args):
     command = [str(args.engine), "--headless", "--path", str(ROOT),
                "--script", "tests/playthrough.gd", "--", "--allow-defeat",
                "--code=" + case["seed"], "--character=" + case["character"],
-               "--unlocks=" + str(case["unlocks"]),
+                "--unlocks=" + str(case["unlocks"]),
+                "--content-pool=" + str(getattr(args, 'content_pool', 1)),
                "--save-dir=" + str(directory / "save")]
     command.append("--no-bonuses" if case["policy"] == "no-bonuses"
                    else "--policy=" + case["policy"])
@@ -131,6 +134,7 @@ def main():
                         help="New isolated directory; never use a player save directory")
     parser.add_argument("--output", type=pathlib.Path, required=True)
     parser.add_argument("--families", type=int, default=30)
+    parser.add_argument("--content-pool", type=int, choices=(0, 1), default=1)
     parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--timeout", type=float, default=180)
     parser.add_argument("--resume-from", type=pathlib.Path,
@@ -152,6 +156,7 @@ def main():
                 "engine": subprocess.check_output([str(args.engine), "--version"], text=True).strip(),
                 "sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
                            for name in SOURCES},
+                "content_pool_revision": args.content_pool,
                 "generation_version": 1, "jobs": args.jobs, "timeout_seconds": args.timeout,
                 "planned": planned}
     inherited = []

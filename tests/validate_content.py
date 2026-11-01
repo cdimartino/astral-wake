@@ -6,7 +6,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-COUNTS = {'organs': 6, 'cards': 72, 'powerups': 18, 'enemies': 36,
+COUNTS = {'organs': 6, 'cards': 81, 'powerups': 18, 'enemies': 36,
           'events': 18, 'regions': 6, 'starting_deck': 10, 'characters': 3}
 FIELDS = {
     'organs': {'id', 'name', 'verb', 'description', 'color'},
@@ -105,7 +105,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions', 'ward', 'conditional_damage', 'conditional_ward', 'route_cooling'} if group == 'cards' else set()
+            optional = {'introduced_revision', 'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions', 'ward', 'conditional_damage', 'conditional_ward', 'route_cooling'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -130,6 +130,7 @@ def validate(data):
             'organ order differs from routing indexes')
     cards = {c['id']: c for c in data['cards']}
     for c in cards.values():
+        integer(c.get('introduced_revision', 0), 0, 1, 'introduced_revision')
         validate_evolutions(c)
         validate_route_effects(c)
         expected_roles = set()
@@ -138,7 +139,10 @@ def validate(data):
         if c.get('heal', 0): expected_roles.add('repair')
         if any(c.get(k) for k in ('vent', 'link', 'trace', 'resonance', 'route_cooling')): expected_roles.add('enabler')
         if c.get('draw', 0) or c.get('selections'): expected_roles.add('selection')
-        if c.get('rewrite') or c.get('concert') or c.get('engine'): expected_roles.add('scaling')
+        engine_type = c.get('engine', {}).get('type')
+        if engine_type == 'cooling_ward': expected_roles.update(('prevention', 'enabler'))
+        if engine_type == 'redirect_retaliation': expected_roles.add('enabler')
+        if c.get('rewrite') or c.get('concert') or engine_type in {'novel_route', 'other_exhaust'}: expected_roles.add('scaling')
         require(isinstance(c['roles'], list) and len(c['roles']) == len(expected_roles)
                 and set(c['roles']) == expected_roles and c['primary_role'] in expected_roles,
                 f'{c["id"]}: roles must describe printed base mechanics, with an explicit primary')
@@ -188,12 +192,12 @@ def validate(data):
         integer(c['cost'], 1, 2, f'{ident}.cost')
         integer(c['rarity'], 0, 2, f'{ident}.rarity')
         integer(c['unlock'], 0, 3, f'{ident}.unlock')
-        integer(c['art'], 0, 19, f'{ident}.art')
+        integer(c['art'], 0, 35 if c.get('introduced_revision', 0) else 19, f'{ident}.art')
         require(type(c['link']) is bool, f'{ident}: link must be boolean')
-        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or any(c.get(k) for k in ('selections', 'ward', 'conditional_ward', 'route_cooling')), f'{ident}: empty card')
+        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or any(c.get(k) for k in ('selections', 'ward', 'conditional_ward', 'route_cooling', 'engine')), f'{ident}: empty card')
         require(c['kind'] != 'attack' or c['damage'] > 0, f'{ident}: attack must deal damage')
         require(c['kind'] != 'repair' or c['heal'] > 0, f'{ident}: repair must heal')
-    require(Counter(c['unlock'] for c in cards.values()) == {0: 66, 1: 2, 2: 2, 3: 2},
+    require(Counter(c['unlock'] for c in cards.values()) == {0: 75, 1: 2, 2: 2, 3: 2},
             'cards: expected six unlocks, two at each level')
     for ident in data['starting_deck']:
         require(ident in cards, f'starting_deck: unknown card {ident}')
@@ -203,7 +207,7 @@ def validate(data):
     require(any(cards[x]['vent'] for x in data['starting_deck']), 'starter deck lacks venting')
 
     require([v['id'] for v in data['characters']] == ['cartographer', 'palimpsest', 'hollow_choir'], 'character registry order differs')
-    require(Counter(c.get('character', 'cartographer') for c in cards.values()) == {'cartographer': 36, 'palimpsest': 18, 'hollow_choir': 18}, 'incorrect isolated card pools')
+    require(Counter(c.get('character', 'cartographer') for c in cards.values()) == {'cartographer': 45, 'palimpsest': 18, 'hollow_choir': 18}, 'incorrect isolated card pools')
     networks = []
     for vessel in data['characters']:
         ident = vessel['id']
@@ -366,7 +370,8 @@ def self_test(data):
     for spec in [{'type': 'cooling_ward', 'threshold': 2, 'ward': 5},
                  {'type': 'redirect_retaliation', 'damage': 6}]:
         engine_valid = copy.deepcopy(data)
-        engine_valid['cards'][0].update(install='fixture_engine', engine=spec, roles=['attack', 'scaling'])
+        roles = ['attack', 'prevention', 'enabler'] if spec['type'] == 'cooling_ward' else ['attack', 'enabler']
+        engine_valid['cards'][0].update(install='fixture_engine', engine=spec, roles=roles)
         validate(engine_valid)
         bad_specs = [{**spec, 'cap': 1}, {**spec, 'type': 'unknown'}]
         for key in set(spec) - {'type'}:
