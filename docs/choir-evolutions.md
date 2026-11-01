@@ -1,5 +1,7 @@
 # Hollow Choir production evolutions — #15 candidate
 
+[Primary manual victory, replay verification and evidence limits](choir-playtest-0093cg.md)
+
 Exactly two named evolutions are now authored for each of Choir's 18 cards: all
 72 production cards have pairs. This candidate adds only Choir evolution data to
 the `f66fe8e` catalog. All base fields, Cartographer/Palimpsest branches and non-card
