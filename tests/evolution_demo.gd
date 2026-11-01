@@ -13,6 +13,9 @@ func _initialize() -> void:
 func show_demo() -> void:
 	var ui=preload("res://scripts/main.gd").new()
 	root.add_child(ui)
-	preload("res://tests/evolution_fixtures.gd").setup(ui.game)
+	ui.game.new_run("0093CG","cartographer")
+	# Labelled workshop counterfactual, not a played expedition or balance capture.
+	ui.game.run.mode="recovery"
+	ui.game.save()
 	ui.menu=false
 	ui._render()

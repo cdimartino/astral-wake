@@ -1,5 +1,6 @@
 extends SceneTree
 const Game=preload("res://scripts/game.gd")
+const EVOLUTION_POLICY_VERSION="cartographer-branches-v1"
 var game
 var cards_played=0
 var cards_this_turn=0
@@ -68,6 +69,7 @@ func _initialize() -> void:
 		if actions%100==0: print("PROGRESS actions=%d region=%d layer=%d hull=%d mode=%s"%[actions,game.run.region+1,game.run.layer+1,game.run.hull,game.run.mode])
 	var result={"seed":seed_value,"character":game.run.character,"route_regions":game.run.route_regions,"mode":game.run.mode,"region":game.run.region+1,"layer":game.run.layer+1,"turns":game.run.turns,"battles":game.run.battles,"cards_played":cards_played,"max_cards_per_turn":max_cards_per_turn,"actions":actions,"hull":game.run.hull,"deck":game.run.deck,"powerups":game.run.powerups,"checkpoints":checkpoints,"wall_seconds":(Time.get_ticks_msec()-started)/1000.0,"save_directory":game.store.directory}
 	result.policy=policy
+	result.evolution_policy_version=EVOLUTION_POLICY_VERSION
 	result.no_bonuses=no_bonuses
 	result.profile_unlocks=unlocks
 	result.pool_tier=game.run.get("pool_tier",unlocks)
@@ -180,6 +182,34 @@ func choose_reward() -> Dictionary:
 			best=i
 	return game.choose_reward(best)
 
+func branch_score(definition: Dictionary) -> float:
+	# Existing goals only; printed output per CP, not a promised optimal strategy.
+	var damage=float(definition.get("damage",0))
+	var heal=float(definition.get("heal",0))*(2.1 if game.run.hull<60 else 1.1)
+	var vent=float(definition.get("vent",0))*5.0
+	var disrupt=float(definition.get("disrupt",0))*1.6
+	var draw=float(definition.get("draw",0))*2.0
+	var value=damage+heal+vent+disrupt+draw
+	if policy=="aggressive": value=damage
+	if policy=="tactical": value+=heal+disrupt
+	return value/float(definition.cost)
+
+func plan_modify_branches() -> Dictionary:
+	var choices={}
+	for instance in game.run.deck:
+		if int(instance.level)>0: continue
+		var best_score=-INF
+		var best_id=""
+		for branch in game.card(instance.id).get("evolutions",[]):
+			var effective=game.effective_card({"id":instance.id,"level":1,"evolution":branch.id})
+			var score=branch_score(effective)
+			# Stable identity tie-break, never branch array order.
+			if score>best_score or (score==best_score and str(branch.id)<best_id):
+				best_score=score
+				best_id=branch.id
+		if not best_id.is_empty(): choices[instance.uid]=best_id
+	return choices
+
 func modify(explicit_branches: Dictionary = {}) -> Dictionary:
 	if no_bonuses: return game.cancel_modify()
 	var best=-1
@@ -198,7 +228,9 @@ func modify(explicit_branches: Dictionary = {}) -> Dictionary:
 	if best<0: return game.cancel_modify()
 	var uid=game.run.deck[best].uid
 	if game.run.modify_kind=="upgrade" and explicit_branches.has(uid): return game.evolve_card(uid,explicit_branches[uid])
-	# Authored cards require a caller-supplied identity, never array-order ranking.
+	if game.run.modify_kind=="upgrade":
+		var choices=plan_modify_branches()
+		if choices.has(uid): return game.evolve_card(uid,choices[uid])
 	return game.modify_card(best)
 
 func shop() -> Dictionary:

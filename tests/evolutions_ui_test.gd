@@ -54,6 +54,35 @@ func run_test() -> void:
 	ui._open_deck()
 	require(all_text(ui.overlay).contains("Fixture Needle · Flow"),"Deck shows actual evolved name")
 	ui._close_overlay()
+	# Repeat the native chooser checks against untouched production definitions.
+	ui.game=preload("res://scripts/game.gd").new(OS.get_environment("ASTRAL_SAVE_DIR").path_join("production"))
+	ui.game.new_run("0093CG","cartographer")
+	ui.game.run.mode="recovery"
+	ui._render()
+	require(all_text(ui.page).contains("permanent branch") and not all_text(ui.page).contains("Damage +3"),"Production recovery explains choice, not generic bonuses")
+	ui.game.recover("upgrade")
+	ui._render()
+	before=Session.snapshot(ui.game.run)
+	ui._choose_modification(0)
+	text=all_text(ui.overlay)
+	require(text.contains("Sunpoint Needle") and text.contains("Held Dawn") and text.contains("Deal 12 damage.") and text.contains("Retain:"),"Actual production branches and timing are visible")
+	button(ui.overlay,"Cancel ·").pressed.emit()
+	require(ui.overlay==null and Session.snapshot(ui.game.run)==before,"Production cancel has no charge or evolution")
+	ui.game.run.modify_return="shop"
+	ui.game.run.modify_shop_index=0
+	ui.game.run.shop={"items":[{"kind":"upgrade","id":"","cost":35,"sold":false}]}
+	ui.game.run.salvage=50
+	ui._choose_modification(0)
+	require(all_text(ui.overlay).contains("35 salvage"),"Production shop cost visible")
+	button(ui.overlay,"Confirm Held Dawn").pressed.emit()
+	require(ui.game.run.deck[0].evolution=="held_dawn" and ui.game.run.salvage==15,"Production explicit confirm pays once")
+	ui.game.run.deck[1].id="whole_horizon"
+	ui.game.run.mode="recovery"
+	ui.game.recover("upgrade")
+	ui._choose_modification(1)
+	text=all_text(ui.overlay)
+	require(text.contains("2 CP") and text.contains("1 CP") and text.contains("Exhaust:"),"Production discount and finite burst show CP and exhaustion")
+	ui._close_overlay()
 	for player in ui.find_children("*","AudioStreamPlayer",true,false):
 		player.stop()
 		player.stream=null

@@ -56,7 +56,8 @@ def validate_evolutions(card):
     branches = card['evolutions']
     require(isinstance(branches, list) and len(branches) == 2, 'expected two evolutions')
     ids = set()
-    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance'}
+    flags = {'retain', 'exhaust', 'first_free'}
+    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance'} | flags
     for branch in branches:
         require(isinstance(branch, dict) and set(branch) == {'id', 'name', 'description', 'stats'}, 'invalid evolution fields')
         ident = branch['id']
@@ -67,11 +68,15 @@ def validate_evolutions(card):
         text(branch['description'], 'evolution.description')
         require(isinstance(branch['stats'], dict) and branch['stats'] and set(branch['stats']) <= stats, 'invalid evolution stats')
         for key, value in branch['stats'].items():
+            if key in flags:
+                require(type(value) is bool, f'{key}: expected boolean')
+                continue
             integer(value, 1 if key == 'cost' else 0, {'cost': 2, 'trace': 6, 'resonance': 3}.get(key, 99), key)
             if key in {'trace', 'resonance'}:
                 require(card.get('character') == {'trace': 'palimpsest', 'resonance': 'hollow_choir'}[key], 'foreign evolution resource')
         for kind, stat in [('attack', 'damage'), ('repair', 'heal')]:
             require(card['kind'] != kind or branch['stats'].get(stat, card[stat]) > 0, 'empty evolution payload')
+        require(not ('install' in card and branch['stats'].get('exhaust', card.get('exhaust', False))), 'Install and Exhaust are mutually exclusive')
 
 
 def validate(data):
@@ -293,7 +298,7 @@ def self_test(data):
         lambda b: b[0]['stats'].update(trace=1),
         lambda b: b[0].update(script='arbitrary'),
     ]
-    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'ward', 'refund', 'retain', 'first_free', 'install', 'engine', 'selections'):
+    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'ward', 'refund', 'install', 'engine', 'selections'):
         branch_mutations.append(lambda b, field=field: b[0]['stats'].update({field: 1}))
     for mutate in branch_mutations:
         broken = copy.deepcopy(authored)

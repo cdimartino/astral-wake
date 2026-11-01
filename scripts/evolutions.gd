@@ -2,6 +2,7 @@ extends RefCounted
 ## Printed stat replacements only. No executable effects or nested definitions.
 const LEGACY = "legacy"
 const STATS = ["cost", "damage", "heal", "vent", "disrupt", "draw", "trace", "resonance"]
+const FLAGS = ["retain", "exhaust", "first_free"]
 
 static func valid_definition(definition: Dictionary) -> bool:
 	if not definition.has("evolutions"): return true
@@ -17,6 +18,9 @@ static func valid_definition(definition: Dictionary) -> bool:
 		if not branch.get("stats") is Dictionary or branch.stats.is_empty(): return false
 		for key in branch.stats:
 			var value=branch.stats[key]
+			if key in FLAGS:
+				if not value is bool: return false
+				continue
 			if not key in STATS or not (value is int or value is float): return false
 			if not is_finite(float(value)) or value!=floor(value) or value<0 or value>99: return false
 			if key=="cost" and not int(value) in [1,2]: return false
@@ -24,6 +28,7 @@ static func valid_definition(definition: Dictionary) -> bool:
 			if key=="resonance" and (definition.get("character","")!="hollow_choir" or value>3): return false
 		if definition.kind=="attack" and branch.stats.get("damage",definition.get("damage",0))<=0: return false
 		if definition.kind=="repair" and branch.stats.get("heal",definition.get("heal",0))<=0: return false
+		if definition.has("install") and branch.stats.get("exhaust",definition.get("exhaust",false)): return false
 		ids.append(branch.id)
 	return true
 

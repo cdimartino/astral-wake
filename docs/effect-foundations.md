@@ -1,8 +1,9 @@
 # Effect foundations (#14 / #15)
 
-Current fifth slice: [branching evolution infrastructure](branching-evolutions.md),
-with test-only stat branches and run schema 5. Production upgrades remain exact
-legacy arithmetic. The fourth slice added [bounded active Install primitives](bounded-install-engines.md).
+Current slice: [Cartographer production evolutions](cartographer-evolutions.md)
+on the [branching infrastructure](branching-evolutions.md), run schema 5.
+Later ships and old upgraded copies retain exact legacy arithmetic. The fourth
+slice added [bounded active Install primitives](bounded-install-engines.md).
 The dormant/selection contracts below describe their historical slices; typed
 engines now activate through the explicitly bounded schema, not generic scripts.
 
@@ -10,6 +11,9 @@ The first slice consolidated existing behavior. The second adds dormant combat
 zones, Retain and Install identity storage, but no production cards, branches,
 passives, counters or triggers. The third adds only [atomic known-card selections](known-card-selections.md).
 Both issues remain open; hidden draws, organ choices and active Install are deferred.
+
+The original legacy contract below is preserved for `legacy` copies and unbranched
+cards. Authored branches replace only allowlisted stats/typed flags, without this bonus.
 
 `Game.effective_card(instance)` is the authoritative, detached printed definition:
 base catalog fields plus the existing level-1 arithmetic. Every positive damage,

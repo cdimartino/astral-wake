@@ -1,8 +1,8 @@
 # Ships and organs
 
-Production ship decks/upgrades are unchanged by the test-only
-[branching evolution infrastructure](branching-evolutions.md). Authored branches
-for the three ships are future content, not available in this slice.
+[Cartographer evolutions](cartographer-evolutions.md) offer two authored choices
+for each of its 36 cards. Base decks are unchanged; Palimpsest and Choir retain
+generic upgrades. Existing legacy copies on every ship keep their exact behavior.
 
 Choose a vessel when you begin a new expedition. Each has its own six-organ network, ten-card starter deck and card pool. The Cartographer shapes damage and healing through order; the Palimpsest saves and spends Trace; the Hollow Choir builds a phrase by changing command kinds.
 
