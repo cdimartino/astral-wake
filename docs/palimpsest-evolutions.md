@@ -1,5 +1,8 @@
 # Palimpsest production evolutions — #15 candidate
 
+This records the original Palimpsest slice. The later [Choir candidate](choir-evolutions.md)
+supersedes the unbranched-Choir status below; Palimpsest definitions and scoring remain unchanged.
+
 [Primary manual defeat, replay verification and evidence limits](palimpsest-playtest-0093cg.md)
 
 This slice adds exactly two named evolutions to each of Palimpsest's 18 cards.

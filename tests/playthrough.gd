@@ -2,6 +2,7 @@ extends SceneTree
 const Game=preload("res://scripts/game.gd")
 const EVOLUTION_POLICY_VERSION="cartographer-branches-v1"
 const PALIMPSEST_EVOLUTION_POLICY_VERSION="palimpsest-branches-v1"
+const CHOIR_EVOLUTION_POLICY_VERSION="choir-branches-v1"
 var game
 var cards_played=0
 var cards_this_turn=0
@@ -184,6 +185,7 @@ func choose_reward() -> Dictionary:
 	return game.choose_reward(best)
 
 func evolution_policy_version() -> String:
+	if game.run.character=="hollow_choir": return CHOIR_EVOLUTION_POLICY_VERSION
 	return PALIMPSEST_EVOLUTION_POLICY_VERSION if game.run.character=="palimpsest" else EVOLUTION_POLICY_VERSION
 
 func branch_score(definition: Dictionary) -> float:
@@ -201,6 +203,13 @@ func branch_score(definition: Dictionary) -> float:
 	if game.run.character=="palimpsest":
 		var stored=int(game.run.battle.get("trace",0)) if game.run.mode=="combat" else 0
 		value+=float(mini(6-stored,int(definition.get("trace",0))))*0.6
+	if game.run.character=="hollow_choir":
+		var stored=0
+		if game.run.mode=="combat":
+			var previous=str(game.run.battle.get("last_command_kind",""))
+			stored=int(game.run.battle.get("resonance",0))
+			if not previous.is_empty(): stored=mini(3,stored+1) if previous!=definition.kind else 0
+		value+=float(mini(3-stored,int(definition.get("resonance",0))))*0.8
 	return value/float(definition.cost)
 
 func plan_modify_branches() -> Dictionary:

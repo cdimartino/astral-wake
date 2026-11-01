@@ -1,9 +1,10 @@
 # Branching evolutions — infrastructure slice (#15)
 
-The [Cartographer production candidate](cartographer-evolutions.md) now authors
-two choices for all 36 Cartographer cards. Palimpsest/Choir remain unbranched.
-All base definitions and existing legacy outcomes remain unchanged. #15 is partial;
-independent balance review and a manual expedition are required before merge.
+All 72 production cards now have two authored choices: [Cartographer](cartographer-evolutions.md),
+[Palimpsest](palimpsest-evolutions.md) and the [Choir candidate](choir-evolutions.md).
+All base definitions and existing legacy outcomes remain unchanged. Authoring
+coverage alone does not complete #15: independent Choir review, native/manual
+evidence and broader counterfactual/playability comparisons remain required.
 
 ## Identity and rules
 
@@ -57,8 +58,9 @@ supported primitive/schema extension rather than arbitrary data injection.
 
 ## Safe demonstrations
 
-The native `tests/evolution_demo.gd` now uses actual production Cartographer cards
-at a labelled recovery counterfactual; see the production document for review and
+The native `tests/evolution_demo.gd` uses actual production cards (Cartographer by
+default, or `-- --ship=palimpsest` / `-- --ship=hollow_choir`) at a labelled recovery
+counterfactual; see each production document for review and
 primary fresh-expedition instructions. The older fixture driver below remains
 available solely for infrastructure regression tests.
 

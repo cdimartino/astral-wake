@@ -1160,6 +1160,10 @@
     },
     {
       "id": "choral_bolt",
+      "evolutions": [
+        {"id":"piercing_chorus","name":"Piercing Chorus","description":"Deal 11 damage.","stats":{"damage":11}},
+        {"id":"gathering_chorus","name":"Gathering Chorus","description":"Deal 7 damage. Gain 1 Resonance, up to 3.","stats":{"damage":7,"resonance":1}}
+      ],
       "name": "Choral Bolt",
       "kind": "attack",
       "damage": 8,
@@ -1177,6 +1181,10 @@
     },
     {
       "id": "warm_refrain",
+      "evolutions": [
+        {"id":"full_refrain","name":"Full Refrain","description":"Restore 8 hull. Gain 1 Resonance, up to 3.","stats":{"heal":8}},
+        {"id":"waiting_refrain","name":"Waiting Refrain","description":"Restore 6 hull. Gain 1 Resonance, up to 3.","stats":{"heal":6,"retain":true}}
+      ],
       "name": "Warm Refrain",
       "kind": "repair",
       "damage": 0,
@@ -1195,6 +1203,10 @@
     },
     {
       "id": "silent_measure",
+      "evolutions": [
+        {"id":"cool_measure","name":"Cool Measure","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"vent":2}},
+        {"id":"gathered_measure","name":"Gathered Measure","description":"Cool every organ by 1 before routing. Gain 2 Resonance, up to 3.","stats":{"draw":0,"resonance":2}}
+      ],
       "name": "Silent Measure",
       "kind": "utility",
       "damage": 0,
@@ -1213,6 +1225,10 @@
     },
     {
       "id": "call_and_response",
+      "evolutions": [
+        {"id":"strong_call","name":"Strong Call","description":"Deal 9 damage. Gain 1 Resonance, up to 3.","stats":{"damage":9,"draw":0}},
+        {"id":"waiting_response","name":"Waiting Response","description":"Deal 6 damage. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"damage":6,"retain":true}}
+      ],
       "name": "Call and Response",
       "kind": "attack",
       "damage": 6,
@@ -1231,6 +1247,10 @@
     },
     {
       "id": "tuning_fork",
+      "evolutions": [
+        {"id":"clear_tuning","name":"Clear Tuning","description":"Apply 5 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":5}},
+        {"id":"gathered_tuning","name":"Gathered Tuning","description":"Apply 3 disruption this enemy phase. Gain 2 Resonance, up to 3.","stats":{"disrupt":3,"resonance":2}}
+      ],
       "name": "Tuning Fork",
       "kind": "utility",
       "damage": 0,
@@ -1249,6 +1269,10 @@
     },
     {
       "id": "bright_canon",
+      "evolutions": [
+        {"id":"blazing_canon","name":"Blazing Canon","description":"Deal 15 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":15}},
+        {"id":"held_canon","name":"Held Canon","description":"Deal 12 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":12,"retain":true}}
+      ],
       "name": "Bright Canon",
       "kind": "attack",
       "damage": 12,
@@ -1267,6 +1291,10 @@
     },
     {
       "id": "breath_between",
+      "evolutions": [
+        {"id":"deep_rest","name":"Deep Rest","description":"Restore 6 hull. Cool every organ by 1 before routing. Gain 1 Resonance, up to 3.","stats":{"heal":6}},
+        {"id":"cool_rest","name":"Cool Rest","description":"Restore 3 hull. Cool every organ by 2 before routing. Gain 1 Resonance, up to 3.","stats":{"heal":3,"vent":2}}
+      ],
       "name": "Breath Between",
       "kind": "repair",
       "damage": 0,
@@ -1285,6 +1313,10 @@
     },
     {
       "id": "dissonant_edge",
+      "evolutions": [
+        {"id":"cutting_dissonance","name":"Cutting Dissonance","description":"Deal 10 damage. Apply 2 disruption this enemy phase.","stats":{"damage":10}},
+        {"id":"silencing_dissonance","name":"Silencing Dissonance","description":"Deal 6 damage. Apply 4 disruption this enemy phase.","stats":{"damage":6,"disrupt":4}}
+      ],
       "name": "Dissonant Edge",
       "kind": "attack",
       "damage": 7,
@@ -1302,6 +1334,10 @@
     },
     {
       "id": "shared_pulse",
+      "evolutions": [
+        {"id":"driving_pulse","name":"Driving Pulse","description":"Deal 9 damage. Restore 3 hull. Gain 1 Resonance, up to 3.","stats":{"damage":9}},
+        {"id":"sustaining_pulse","name":"Sustaining Pulse","description":"Deal 5 damage. Restore 5 hull. Gain 1 Resonance, up to 3.","stats":{"damage":5,"heal":5}}
+      ],
       "name": "Shared Pulse",
       "kind": "attack",
       "damage": 6,
@@ -1320,6 +1356,10 @@
     },
     {
       "id": "counterpoint",
+      "evolutions": [
+        {"id":"light_counterpoint","name":"Light Counterpoint","description":"Draw 2 cards. Gain 1 Resonance, up to 3.","stats":{"draw":2,"first_free":true}},
+        {"id":"gathered_counterpoint","name":"Gathered Counterpoint","description":"Draw 1 card. Gain 2 Resonance, up to 3.","stats":{"draw":1,"resonance":2}}
+      ],
       "name": "Counterpoint",
       "kind": "utility",
       "damage": 0,
@@ -1338,6 +1378,10 @@
     },
     {
       "id": "crescendo",
+      "evolutions": [
+        {"id":"rising_crescendo","name":"Rising Crescendo","description":"Deal 13 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":13}},
+        {"id":"restorative_crescendo","name":"Restorative Crescendo","description":"Deal 10 damage. Restore 3 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":10,"heal":3}}
+      ],
       "name": "Crescendo",
       "kind": "attack",
       "damage": 10,
@@ -1356,6 +1400,10 @@
     },
     {
       "id": "hushed_chord",
+      "evolutions": [
+        {"id":"muted_chord","name":"Muted Chord","description":"Apply 8 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":8,"vent":0}},
+        {"id":"cool_chord","name":"Cool Chord","description":"Cool every organ by 2 before routing. Apply 5 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":5,"vent":2}}
+      ],
       "name": "Hushed Chord",
       "kind": "utility",
       "damage": 0,
@@ -1374,6 +1422,10 @@
     },
     {
       "id": "orbital_round",
+      "evolutions": [
+        {"id":"striking_round","name":"Striking Round","description":"Deal 12 damage.","stats":{"damage":12,"draw":0}},
+        {"id":"waiting_round","name":"Waiting Round","description":"Deal 9 damage. Draw 1 card.","stats":{"damage":9,"retain":true}}
+      ],
       "name": "Orbital Round",
       "kind": "attack",
       "damage": 9,
@@ -1391,6 +1443,10 @@
     },
     {
       "id": "harmonic_bridge",
+      "evolutions": [
+        {"id":"strong_harmony","name":"Strong Harmony","description":"Restore 7 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Resonance, up to 3.","stats":{"heal":7}},
+        {"id":"gathered_harmony","name":"Gathered Harmony","description":"Restore 4 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Resonance, up to 3.","stats":{"heal":4,"resonance":2}}
+      ],
       "name": "Harmonic Bridge",
       "kind": "repair",
       "damage": 0,
@@ -1409,6 +1465,10 @@
     },
     {
       "id": "grand_concert",
+      "evolutions": [
+        {"id":"triumphant_concert","name":"Triumphant Concert","description":"Deal 15 damage. Restore 4 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":15}},
+        {"id":"restorative_concert","name":"Restorative Concert","description":"Deal 12 damage. Restore 7 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"heal":7}}
+      ],
       "name": "Grand Concert",
       "kind": "attack",
       "damage": 12,
@@ -1427,6 +1487,10 @@
     },
     {
       "id": "resonant_shell",
+      "evolutions": [
+        {"id":"full_shell","name":"Full Shell","description":"Restore 10 hull. Gain 2 Resonance, up to 3.","stats":{"heal":10}},
+        {"id":"light_shell","name":"Light Shell","description":"Restore 5 hull. Gain 1 Resonance, up to 3.","stats":{"cost":1,"heal":5,"resonance":1}}
+      ],
       "name": "Resonant Shell",
       "kind": "repair",
       "damage": 0,
@@ -1445,6 +1509,10 @@
     },
     {
       "id": "rest_note",
+      "evolutions": [
+        {"id":"deep_silence","name":"Deep Silence","description":"Cool every organ by 3 before routing. Gain 1 Resonance, up to 3.","stats":{"vent":3,"draw":0}},
+        {"id":"held_silence","name":"Held Silence","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"vent":2,"retain":true}}
+      ],
       "name": "Rest Note",
       "kind": "utility",
       "damage": 0,
@@ -1463,6 +1531,10 @@
     },
     {
       "id": "unison",
+      "evolutions": [
+        {"id":"striking_unison","name":"Striking Unison","description":"Deal 13 damage. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":13}},
+        {"id":"sustaining_unison","name":"Sustaining Unison","description":"Deal 9 damage. Restore 3 hull. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":9,"heal":3}}
+      ],
       "name": "Unison",
       "kind": "attack",
       "damage": 10,

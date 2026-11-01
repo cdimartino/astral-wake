@@ -110,9 +110,13 @@ func run_tests() -> void:
 	pending_migration()
 	var production=Game.new(directory.path_join("production"))
 	production.new_run("A1B2C3","hollow_choir")
+	# All production cards are now authored. Keep the unbranched API compatibility
+	# contract covered by an explicitly test-local unbranched definition.
+	production._cards.choral_bolt=production.card("choral_bolt").duplicate(true)
+	production._cards.choral_bolt.erase("evolutions")
 	workshop(production)
 	require(not production.evolve_card(production.run.deck[0].uid,"").ok,"UID API requires an explicit identity even for legacy cards")
-	require(production.modify_card(0).ok and production.run.deck[0].evolution=="legacy","Unbranched production keeps old one-argument behavior")
+	require(production.modify_card(0).ok and production.run.deck[0].evolution=="legacy","Unbranched fixture keeps old one-argument compatibility behavior")
 	var policy=Policy.new()
 	policy.game=game_at("policy")
 	# Isolate card ranking while checking scored and caller-supplied branch plans.
