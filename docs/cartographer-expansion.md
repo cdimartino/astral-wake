@@ -161,6 +161,41 @@ Choir and reward-distribution UI suites (counts vary). They are not claimed fixe
 or warning-free. New expansion node/rules tests and both native demo launches
 reported no failures. No push, PR, merge or issue closure is part of this candidate.
 
+## Post-review archive eligibility fix
+
+The independent review of `79bed51` found that current-schema completed combat
+snapshots validated card identities but not their content pool. The follow-up
+checks every archived combat-zone instance (including installed source instances)
+and `last_command.card` against the run's ship/content revision. It deliberately
+does **not** require completed records to match the current deck: removal and
+evolution after battle remain legitimate. No resolver, reward, pool generation,
+card definition or migration behavior is changed.
+
+`cartographer_expansion_test.gd` now has **543 checks**, including **20 raw
+current-schema archive records**: 13 invalid records rejected (all five zones,
+foreign ships, last-command-only corruption, and an actual installed engine with
+source/counter metadata) and seven valid records preserved exactly (both pool
+revisions, completed records predating removal/evolution, removed installed source
+and installed source predating evolution). Each raw case uses a fresh save with
+no backup or migration that could conceal rejection. Targeted compatibility still
+passes 2,339 checks / the unchanged 432 fingerprints, plus 12 histories / 96
+future reward/shop/RNG cycles. The existing package/smoke reports above remain
+the **79bed51 historical candidate evidence**; they are not regenerated or
+relabeled for this validation-only fix. Frozen detached manual sessions are not
+touched, and no new manual expedition is required by this fix.
+
+Follow-up `tools/check.sh` completed with exit **0**, using the same absolute
+Godot binary and approved isolated scratch storage. Its log is
+`/private/var/folders/tj/54g2g21d0pd98kcp8btp0s_r0000gn/T/opencode/issue16-archive-fix-check.log`.
+All stages reached UI geometry **PASS / 0 failures**, both intro checks, CoreAudio
+smoke and the existing automated 424242 smoke (victory, hull 76, pool 1). Log
+inspection found no script/parse errors. The full run included the 539-check
+archive suite; the final additional evolved-installed-source case and refinement
+of the removed-source fixture were rerun separately at **543 / 0 failures**.
+Standard rules/raw-save regression also passed **11,579 / 0** independently.
+Existing exit-time ObjectDB/resource diagnostics remain in evolution, Palimpsest,
+Choir, reward-distribution and enemy-tactics UI tests; no warning-free claim.
+
 ## Native test-deck workflow and human acceptance still needed
 
 No image generation was requested or performed. All nine use existing licensed

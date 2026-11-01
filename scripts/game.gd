@@ -1507,13 +1507,15 @@ func _valid_run(value) -> bool:
 		if not value.get(key) is Dictionary: return false
 	if not value.battle.is_empty() and not Engines.valid_state(self,value.battle): return false
 	# Completed battles remain inspectable after rewards/workshops. Their instances
-	# must still be valid, but may predate a later deck removal/evolution.
+	# must still belong to this pool, but may predate deck removal/evolution.
 	if not value.battle.is_empty():
 		for zone in COMBAT_ZONES:
 			if not value.battle.get(zone) is Array: return false
 			for instance in value.battle[zone]:
-				if not _valid_instance(instance): return false
+				if not _valid_instance(instance) or not _pool_card(value,instance.id): return false
 		if not _valid_last_command(value.battle.get("last_command",{})): return false
+		var archived_command=value.battle.get("last_command",{})
+		if not archived_command.is_empty() and not _pool_card(value,archived_command.card.id): return false
 	if value.mode=="combat":
 		var battle=value.battle
 		for key in COMBAT_ZONES+["installed_sources","temporary_retain","enemies","strain","edges","severed","last_route"]:

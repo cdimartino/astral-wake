@@ -98,6 +98,7 @@ func _initialize() -> void:
 			require(Session.snapshot(Game.new(game.store.directory).run)==Session.snapshot(game.run),"branch identity/counters reload "+branch.id)
 	mechanics()
 	pending_migrations()
+	archived_raw_saves()
 	print("CARTOGRAPHER_EXPANSION ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)
 func mechanics() -> void:
@@ -194,3 +195,74 @@ func pending_migrations() -> void:
 			else:
 				require(loaded.run.content_pool_revision==0 and loaded.run.reward_generation==generation and loaded._valid_pending(loaded.run),"verified old chooser rebinds with permanent pool0")
 				require(loaded.run.pending_selection.definition==game._restore_integers(old.pending_selection.definition),"migration never invents new effective payload")
+
+func raw_archive(game, state: Dictionary, accepted: bool, label: String) -> void:
+	require(game._valid_run(state)==accepted,"archived validation: "+label)
+	# Fresh current-schema JSON, no backup/migration that could mask rejection.
+	var path=directory.path_join("archive-raw-%d"%checks)
+	require(state.schema_revision==Game.RUN_SCHEMA and Game.SaveStore.new(path).write(game.profile,state),"write current-schema raw archive: "+label)
+	var loaded=Game.new(path)
+	require((not loaded.run.is_empty())==accepted,"raw archive load: "+label)
+	if accepted:
+		require(Session.snapshot(loaded.run)==Session.snapshot(state),"archive preserved exactly: "+label)
+	else:
+		require(not loaded.save_error.is_empty(),"raw archive rejected explicitly: "+label)
+
+func archived_raw_saves() -> void:
+	# Start with a genuine completed starter-card command and a valid pool-0 deck.
+	var game=fresh()
+	game.run.content_pool_revision=0
+	game.choose_node(game.run.map[0][0].id)
+	require(game.play_card(0,[0],0).ok,"archive source command")
+	game._finish_battle()
+	game.choose_reward(-1)
+	var completed=game.run.duplicate(true)
+	raw_archive(game,completed,true,"pool0 completed record")
+	for zone in Game.COMBAT_ZONES:
+		var state=completed.duplicate(true)
+		state.battle[zone].append({"id":"survey_spike","uid":state.next_uid,"level":0})
+		state.next_uid+=1
+		raw_archive(game,state,false,"pool0 expansion in archived "+zone)
+		state=completed.duplicate(true)
+		state.battle[zone].append({"id":"margin_knife","uid":state.next_uid,"level":0})
+		state.next_uid+=1
+		raw_archive(game,state,false,"foreign ship in archived "+zone)
+	var forged=completed.duplicate(true)
+	forged.battle.last_command={"card":{"id":"survey_spike","uid":forged.next_uid,"level":0},"kind":"attack","base":{"damage":8,"heal":0,"disrupt":0},"resolved":{"damage":13,"heal":0,"disrupt":0}}
+	forged.next_uid+=1
+	raw_archive(game,forged,false,"pool0 expansion only in archived last_command.card")
+	forged.battle.last_command.card.id="margin_knife"
+	forged.battle.last_command.base.damage=game.card("margin_knife").damage
+	raw_archive(game,forged,false,"foreign ship only in archived last_command.card")
+	# An actual source-linked installed engine/counter is valid in archived pool1,
+	# even after its UID is removed from the current deck. Pinning that same archive
+	# to pool0 must fail through the source INSTANCE, not its identity string alone.
+	var installed=battle("living_atlas")
+	require(installed.play_card(0,[4],0).ok,"archive actual installed source")
+	installed._finish_battle()
+	installed.choose_reward(-1)
+	var engine_record=installed.run.duplicate(true)
+	engine_record.deck[0].level=1
+	engine_record.deck[0].evolution="pocket_atlas"
+	raw_archive(installed,engine_record,true,"pool1 installed snapshot predates its owned source evolution")
+	engine_record=installed.run.duplicate(true)
+	engine_record.deck.remove_at(0)
+	raw_archive(installed,engine_record,true,"pool1 removed installed source and last command remain inspectable")
+	engine_record.content_pool_revision=0
+	engine_record.deck=completed.deck.duplicate(true)
+	# Isolate installed/source/counter records from other expansion pile instances.
+	for zone in ["hand","draw","discard","exhausted"]: engine_record.battle[zone]=[]
+	engine_record.battle.last_command={}
+	raw_archive(installed,engine_record,false,"pool0 archived installed source with valid identity/counter")
+	for revision in [0,1]:
+		var state=completed.duplicate(true)
+		state.content_pool_revision=revision
+		var uid=state.battle.last_command.card.uid
+		var index=Game.Selections.index(state.deck,uid)
+		require(index>=0,"completed command originally owned")
+		var removed=state.duplicate(true)
+		removed.deck.remove_at(index)
+		raw_archive(game,removed,true,"pool%d snapshot predates removal"%revision)
+		state.deck[index].level=1
+		state.deck[index].evolution=game.card(state.deck[index].id).evolutions[0].id
+		raw_archive(game,state,true,"pool%d snapshot predates evolution"%revision)
