@@ -13,7 +13,7 @@ const DEFINITIONS := {
 	"Resonance":"Choir resource, capped at 3. Changing kind after a previous command gains 1; repeating a kind resets it to 0 before card and organ gains. Resets each battle.",
 	"Concert":"Spend all Resonance to add 2 damage and 1 repair per point spent, before routing.",
 	"Redirect":"Redirect up to 3 damage from the chosen enemy's next attack into another living foe this phase. Does not stack or work against a lone foe. Combined disruption and redirection prevent at most half an attack.",
-	"Ward":"Absorbs incoming hull damage during the enemy phase. Unused ward expires at the end of that phase.",
+	"Ward":"Absorbs incoming hull damage during the enemy phase. Printed ward is flat, additive, not copied or multiplied by organs. Unused ward expires at the end of that phase.",
 	"Strain":"Each routed organ gains 1 strain. At capacity it cannot accept a route. Turn end cools organs; Vent cools before route strain. Upgraded pure utility cards spare the first routed organ.",
 	"Link":"Restore severed connections, then connect the first and last organs of this route for the battle. The route must still be legal before the command is played.",
 	"Split damage":"Also hit every other living enemy for half the command's damage, rounded down before bonuses and individual defenses. Primary damage is not divided between targets."
@@ -21,9 +21,10 @@ const DEFINITIONS := {
 
 static func for_card(definition: Dictionary) -> Array[String]:
 	var result: Array[String] = ["Command points"]
-	for field in ["disrupt", "vent", "draw", "trace", "rewrite", "resonance", "concert", "link", "retain", "exhaust", "install"]:
+	for field in ["disrupt", "ward", "vent", "draw", "trace", "rewrite", "resonance", "concert", "link", "retain", "exhaust", "install"]:
 		if definition.get(field, 0): result.append("Disruption" if field == "disrupt" else field.capitalize())
 	result.append("Strain")
+	if definition.has("conditional_ward") and not "Ward" in result: result.append("Ward")
 	return result
 
 static func for_organ(id: String) -> Array[String]:

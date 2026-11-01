@@ -57,7 +57,7 @@ def validate_evolutions(card):
     require(isinstance(branches, list) and len(branches) == 2, 'expected two evolutions')
     ids = set()
     flags = {'retain', 'exhaust', 'first_free'}
-    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance'} | flags
+    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance', 'ward'} | flags
     for branch in branches:
         require(isinstance(branch, dict) and set(branch) == {'id', 'name', 'description', 'stats'}, 'invalid evolution fields')
         ident = branch['id']
@@ -79,6 +79,23 @@ def validate_evolutions(card):
         require(not ('install' in card and branch['stats'].get('exhaust', card.get('exhaust', False))), 'Install and Exhaust are mutually exclusive')
 
 
+def validate_route_effects(card):
+    if 'ward' in card:
+        integer(card['ward'], 0, 99, 'ward')
+    for field, types in [('conditional_damage', {'novel_route', 'route_strain_two'}),
+                         ('conditional_ward', {'prism_other_foe'}),
+                         ('route_cooling', {'three_first'})]:
+        if field not in card:
+            continue
+        spec = card[field]
+        require(isinstance(spec, dict) and set(spec) == {'type', 'amount'}, f'invalid {field}')
+        require(isinstance(spec['type'], str) and spec['type'] in types, f'unsupported {field}')
+        integer(spec['amount'], 1, 1 if field == 'route_cooling' else 99, field)
+        if field == 'conditional_damage':
+            require(card['kind'] == 'attack' and type(card['damage']) is int and 1 <= card['damage'] <= 99,
+                    'conditional damage requires positive printed attack damage')
+
+
 def validate(data):
     require(isinstance(data, dict) and set(data) == set(COUNTS), 'catalog keys differ from schema')
     for group, count in COUNTS.items():
@@ -88,7 +105,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions'} if group == 'cards' else set()
+            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions', 'ward', 'conditional_damage', 'conditional_ward', 'route_cooling'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -114,11 +131,12 @@ def validate(data):
     cards = {c['id']: c for c in data['cards']}
     for c in cards.values():
         validate_evolutions(c)
+        validate_route_effects(c)
         expected_roles = set()
         if c.get('damage', 0): expected_roles.add('attack')
-        if c.get('disrupt', 0): expected_roles.add('prevention')
+        if c.get('disrupt', 0) or c.get('ward', 0) or c.get('conditional_ward'): expected_roles.add('prevention')
         if c.get('heal', 0): expected_roles.add('repair')
-        if any(c.get(k) for k in ('vent', 'link', 'trace', 'resonance')): expected_roles.add('enabler')
+        if any(c.get(k) for k in ('vent', 'link', 'trace', 'resonance', 'route_cooling')): expected_roles.add('enabler')
         if c.get('draw', 0) or c.get('selections'): expected_roles.add('selection')
         if c.get('rewrite') or c.get('concert') or c.get('engine'): expected_roles.add('scaling')
         require(isinstance(c['roles'], list) and len(c['roles']) == len(expected_roles)
@@ -163,7 +181,7 @@ def validate(data):
         integer(c['unlock'], 0, 3, f'{ident}.unlock')
         integer(c['art'], 0, 19, f'{ident}.art')
         require(type(c['link']) is bool, f'{ident}: link must be boolean')
-        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or c.get('selections'), f'{ident}: empty card')
+        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or any(c.get(k) for k in ('selections', 'ward', 'conditional_ward', 'route_cooling')), f'{ident}: empty card')
         require(c['kind'] != 'attack' or c['damage'] > 0, f'{ident}: attack must deal damage')
         require(c['kind'] != 'repair' or c['heal'] > 0, f'{ident}: repair must heal')
     require(Counter(c['unlock'] for c in cards.values()) == {0: 66, 1: 2, 2: 2, 3: 2},
@@ -308,7 +326,7 @@ def self_test(data):
         lambda b: b[0]['stats'].update(trace=1),
         lambda b: b[0].update(script='arbitrary'),
     ]
-    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'ward', 'refund', 'install', 'engine', 'selections'):
+    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'conditional_damage', 'conditional_ward', 'route_cooling', 'refund', 'install', 'engine', 'selections'):
         branch_mutations.append(lambda b, field=field: b[0]['stats'].update({field: 1}))
     for mutate in branch_mutations:
         broken = copy.deepcopy(authored)

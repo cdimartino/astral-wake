@@ -5,6 +5,7 @@ const SaveStore = preload("res://scripts/save_store.gd")
 const SeedEngine = preload("res://scripts/seed_engine.gd")
 const Selections = preload("res://scripts/known_selections.gd")
 const Engines = preload("res://scripts/install_engines.gd")
+const RouteEffects = preload("res://scripts/route_effects.gd")
 const Evolutions = preload("res://scripts/evolutions.gd")
 const Distribution = preload("res://scripts/reward_distribution.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
@@ -29,6 +30,7 @@ func _init(save_directory: String = "") -> void:
 	assert(parsed is Dictionary, "Game content missing or invalid")
 	for item in parsed.cards:
 		assert(Evolutions.valid_definition(item), "Invalid raw evolution content")
+		assert(RouteEffects.valid_definition(item), "Invalid raw route effect content")
 		assert(Distribution.valid_card(item), "Invalid raw draft metadata")
 	catalog = _restore_integers(parsed)
 	for item in catalog.cards:
@@ -111,6 +113,8 @@ func effective_card(instance: Dictionary) -> Dictionary:
 			definition.description=choice.description
 			return definition
 		definition.first_free=true
+		# Printed ward has no invented legacy increment or free-strain upgrade.
+		if int(definition.get("ward",0))>0: definition.first_free=false
 		for field in ["damage","heal","vent","disrupt"]:
 			if int(definition.get(field,0))>0:
 				definition[field]+=3 if field=="damage" else 2 if field=="heal" else 1
@@ -121,7 +125,7 @@ func card_text(instance: Dictionary) -> String:
 	var original = card(instance.get("id",""))
 	var effective = effective_card(instance)
 	var text = str(effective.get("description",""))
-	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption"}
+	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption", "ward":"Gain %d flat ward"}
 	for field in phrases:
 		if instance.get("evolution",Evolutions.LEGACY)==Evolutions.LEGACY and int(original.get(field,0))>0:
 			text=text.replace(phrases[field]%int(original[field]),phrases[field]%int(effective[field]))
@@ -380,6 +384,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var instance=battle.hand[hand_index]
 	var definition=effective_card(instance)
 	if not Engines.valid_definition(definition): return _fail("Invalid authored Install engine.")
+	if not RouteEffects.valid_definition(definition): return _fail("Invalid authored route effect.")
 	if definition.has("install"):
 		for source in battle.installed_sources:
 			if source.identity==definition.install: return _fail("That Install identity is already installed.")
@@ -407,6 +412,9 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var disrupt=int(definition.get("disrupt",0))
 	# Snapshot before resource spending/copying, conditional powerups and organs.
 	var plain_payload={"damage":damage,"heal":heal,"disrupt":disrupt}
+	var flat_ward=RouteEffects.ward(self,definition,battle,route,target_index)
+	var conditional_damage=RouteEffects.damage(definition,battle,route)
+	damage+=conditional_damage
 	if vessel_id=="palimpsest":
 		battle.trace=mini(6,int(battle.trace)+int(definition.get("trace",0)))
 		if definition.get("rewrite",false):
@@ -519,6 +527,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var presentation=[]
 	battle.command_points-=cost
 	events.append("Spend %d command point(s); %d remain."%[cost,int(battle.command_points)])
+	if conditional_damage>0: events.append("Conditional damage: +%d before organs."%conditional_damage)
 	if vessel_id=="palimpsest":
 		presentation.append({"kind":"trace","before":trace_before,"after":int(battle.trace),"amount":int(battle.trace)-trace_before})
 		events.append("Trace %d → %d."%[trace_before,int(battle.trace)])
@@ -526,6 +535,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"resonance","before":resonance_before,"after":int(battle.resonance),"amount":int(battle.resonance)-resonance_before})
 		events.append("Resonance %d → %d."%[resonance_before,int(battle.resonance)])
 	var actual_damage=0
+	var applied_flat_ward=0
 	var hull_before=int(state.hull)
 	if int(battle.mark)>0 and battle.last_route==route:
 		var before_mark=int(state.hull)
@@ -557,6 +567,13 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		var gained=mini(ward_gain,maxi(0,3-int(battle.ward)))
 		battle.ward+=gained
 		if gained>0: presentation.append({"kind":"ward","amount":gained})
+	# Cadence's local room-to-three calculation above is unchanged. Printed ward
+	# is additive afterwards, never multiplied or stored in the copyable payload.
+	if flat_ward>0 and int(state.hull)>0:
+		applied_flat_ward=flat_ward
+		battle.ward+=flat_ward
+		presentation.append({"kind":"ward","amount":flat_ward})
+		events.append("Gain %d flat ward."%flat_ward)
 	if int(target.hp)>0:
 		target.disrupt+=disrupt
 		if disrupt>0:
@@ -580,6 +597,10 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	var pure_utility_upgrade=definition.first_free
 	for i in range(route.size()):
 		if not (pure_utility_upgrade and i==0): battle.strain[int(route[i])]+=1
+	var route_cooled=RouteEffects.cool(definition,battle,route)
+	if route_cooled.has(1):
+		presentation.append({"kind":"cooling","amounts":route_cooled})
+		events.append("Three-organ route: cool its first organ by 1 after route strain.")
 	if vent>0: events.append("Cool every organ by %d before route strain."%vent)
 	if definition.get("link",false):
 		battle.severed.clear()
@@ -628,7 +649,15 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"heal","amount":finish_heal,"source":"repair_after"})
 		events.append("After combat: repair %d hull."%finish_heal)
 	_log(state,definition.name+": "+" ".join(events))
-	return {"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
+	var result={"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
+	if ["ward","conditional_ward","conditional_damage","route_cooling"].any(func(key): return definition.has(key)):
+		result.flat_ward_requested=flat_ward
+		result.flat_ward_applied=applied_flat_ward
+		result.conditional_damage=conditional_damage
+		# Count actual removals, not net change: vent before strain and route
+		# cooling after strain are distinct legitimate effects (including re-added strain).
+		result.command_cooling=int(cooled.reduce(func(total, amount): return total+amount,0))+int(route_cooled.reduce(func(total, amount): return total+amount,0))
+	return result
 
 func preview_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
 	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true,choices)
@@ -1330,7 +1359,7 @@ func _restore_integers(value):
 func _number(value) -> bool: return (value is int or value is float) and is_finite(float(value)) and value==floor(value)
 
 func _valid_instance(instance) -> bool:
-	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1] and Evolutions.valid_instance(card(instance.id),instance)
+	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1] and Evolutions.valid_instance(card(instance.id),instance) and RouteEffects.valid_definition(effective_card(instance))
 
 func _migrate_evolutions(state: Dictionary) -> bool:
 	var pending=state.get("pending_selection",{})

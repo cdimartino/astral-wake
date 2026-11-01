@@ -1,5 +1,9 @@
 # Effect foundations (#14 / #15)
 
+Fixture-only #16 prerequisite: [printed ward and typed route effects](route-defense-primitives.md).
+This later slice keeps production content and run schema 6 unchanged; its two new
+Install engine requests remain explicitly deferred.
+
 Current slice: [Cartographer production evolutions](cartographer-evolutions.md)
 on the [branching infrastructure](branching-evolutions.md), run schema 5.
 Later ships and old upgraded copies retain exact legacy arithmetic. The fourth

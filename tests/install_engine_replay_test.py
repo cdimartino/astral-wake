@@ -91,7 +91,7 @@ assert view["state"]["battle"]["engine_routes"] == [[3], [4]]
 trace_path = session / "trace.json"
 journal = json.loads(trace_path.read_text())
 assert journal["environment"]["game_revision"] == head
-for name in ("install_engines.gd", "known_selections.gd"):
+for name in ("install_engines.gd", "known_selections.gd", "route_effects.gd"):
     path = f"scripts/{name}"
     assert journal["environment"]["sources"][path] == hashlib.sha256((project / path).read_bytes()).hexdigest()
 verified = run(f"--replay={trace_path}", target=directory / "replay")
@@ -101,7 +101,7 @@ assert json.loads((directory / "replay" / "trace.json").read_text()) == journal
 
 # Same revision, genuinely different bytes: rejection cannot rely on HEAD alone.
 saved_files = {path.relative_to(session): path.read_bytes() for path in session.rglob("*") if path.is_file()}
-for name in ("install_engines.gd", "known_selections.gd"):
+for name in ("install_engines.gd", "known_selections.gd", "route_effects.gd"):
     source = project / "scripts" / name
     original = source.read_bytes()
     rejected_replay = directory / f"dirty-{name}"

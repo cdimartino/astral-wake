@@ -25,9 +25,9 @@ static func mechanical_roles(card: Dictionary) -> Array:
 	var roles: Array = []
 	if card.get("damage", 0) > 0: roles.append("attack")
 	# Split routing is not printed group damage. Do not label it as such.
-	if card.get("disrupt", 0) > 0: roles.append("prevention")
+	if card.get("disrupt", 0) > 0 or card.get("ward", 0) > 0 or card.has("conditional_ward"): roles.append("prevention")
 	if card.get("heal", 0) > 0: roles.append("repair")
-	if card.get("vent", 0) > 0 or card.get("link", false) or card.get("trace", 0) > 0 or card.get("resonance", 0) > 0: roles.append("enabler")
+	if card.get("vent", 0) > 0 or card.get("link", false) or card.get("trace", 0) > 0 or card.get("resonance", 0) > 0 or card.has("route_cooling"): roles.append("enabler")
 	# Selection includes card access (draw), not a promise of targeted search.
 	if card.get("draw", 0) > 0 or card.has("selections"): roles.append("selection")
 	if card.get("rewrite", false) or card.get("concert", false) or card.has("engine"): roles.append("scaling")
