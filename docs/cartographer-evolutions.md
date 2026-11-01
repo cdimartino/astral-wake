@@ -1,5 +1,7 @@
 # Cartographer production evolutions — #15 partial candidate
 
+[Primary manual test, replay verification and evidence limits](cartographer-playtest-0093cg.md)
+
 All 36 Cartographer commands now offer exactly two permanent, mutually exclusive
 evolutions per owned UID. All 72 base definitions (including rarity, unlocks, art,
 cost and text) are unchanged. Palimpsest's 18 and Choir's 18 remain **unbranched**
@@ -30,7 +32,7 @@ the first routed organ's strain, not CP. Unmarked branches have none of these fl
 | --- | --- | --- | --- |
 | Needle | `sunpoint`: 12 D | `held_dawn`: 9 D, Retain | Kill a 12-hull target now, or hold damage for a later safe route/target window. |
 | Hull Stitch | `deep_stitch`: 9 H | `coolant_stitch`: 5 H, 1 V | Repair a deep wound, or sacrifice repair to reopen hot organs. |
-| Cold Breath | `deep_breath`: 2 V, Draw 1 | `last_breath`: 1 V, Draw 2, Exhaust | Repeatable thermal control versus finite hand burst; draws cannot exceed remaining CP. |
+| Cold Breath | `deep_breath`: 2 V, Draw 1 | `last_breath`: 1 V, Draw 2, Exhaust | Repeatable thermal control versus finite hand burst; draws can exceed remaining CP, but usable plays are CP-limited. |
 | Quiet Pulse | `hard_pulse`: 10 D, 1 I | `still_pulse`: 6 D, 3 I | Kill threshold versus stronger interruption; extra disruption can be wasted at the defense cap. |
 | Graft Wire | `live_wire`: Draw 2 | `reserve_wire`: Draw 1, first-free | Find more commands now versus preserve route capacity; both can self-redraw. |
 | Sun Splinter | `sunburst`: 15 D | `banked_sun`: 12 D, Retain | Frontload damage versus keep an attack through a bad turn. |
