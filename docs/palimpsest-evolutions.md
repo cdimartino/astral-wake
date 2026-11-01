@@ -1,5 +1,7 @@
 # Palimpsest production evolutions — #15 candidate
 
+[Primary manual defeat, replay verification and evidence limits](palimpsest-playtest-0093cg.md)
+
 This slice adds exactly two named evolutions to each of Palimpsest's 18 cards.
 Every base field and non-card catalog group, and all 36 Cartographer pairs, are
 unchanged from `cf175c7`. Choir's 18 remain unbranched. Existing level-one copies
