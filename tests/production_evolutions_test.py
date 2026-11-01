@@ -1,4 +1,4 @@
-"""Production authoring gates; frozen base is infrastructure commit 63fbd24."""
+"""Production gates: frozen base 63fbd24; Cartographer branches pinned at cf175c7."""
 import copy
 import hashlib
 import json
@@ -13,15 +13,46 @@ for card in stripped['cards']:
     card.pop('evolutions', None)
 digest = hashlib.sha256(json.dumps(stripped, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 assert digest == BASE_CATALOG_SHA256, 'Every base field and all other catalog content must remain unchanged'
+previous = copy.deepcopy(data)
+for card in previous['cards']:
+    if card.get('character') == 'palimpsest':
+        card.pop('evolutions', None)
+assert hashlib.sha256(json.dumps(previous, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'ea3c5904215ab7f853c618d7337be2c29fb71cbc65283eed541d9ded5b070a9c', 'Only Palimpsest evolutions may differ from cf175c7, including all Cartographer branches'
 cart = [c for c in data['cards'] if c.get('character', 'cartographer') == 'cartographer']
+pal = [c for c in data['cards'] if c.get('character') == 'palimpsest']
+choir = [c for c in data['cards'] if c.get('character') == 'hollow_choir']
 assert len(cart) == 36
-assert all('evolutions' not in c for c in data['cards'] if c not in cart)
-for card in cart:
+assert len(pal) == len(choir) == 18
+assert all('evolutions' not in c for c in choir)
+PALIMPSEST_OVERRIDES = {
+    'margin_knife': [{'damage': 11}, {'damage': 7, 'trace': 2}],
+    'pale_patch': [{'heal': 8}, {'heal': 5, 'trace': 2}],
+    'carbon_breath': [{'vent': 2}, {'draw': 0, 'trace': 3}],
+    'first_draft': [{'damage': 9}, {'damage': 6, 'trace': 3}],
+    'ghost_line': [{'trace': 2, 'draw': 1}, {'retain': True}],
+    'revision_spike': [{'damage': 15}, {'damage': 12, 'retain': True}],
+    'vellum_shield': [{'heal': 6}, {'heal': 3, 'disrupt': 3}],
+    'cut_sentence': [{'damage': 10}, {'damage': 6, 'disrupt': 4}],
+    'borrowed_dawn': [{'damage': 11}, {'heal': 6}],
+    'ink_well': [{'vent': 3}, {'vent': 1, 'trace': 3}],
+    'overwrite': [{'damage': 9}, {'damage': 6, 'retain': True}],
+    'scar_note': [{'heal': 10}, {'heal': 7, 'vent': 2}],
+    'lost_paragraph': [{'disrupt': 8, 'draw': 0}, {'disrupt': 5, 'retain': True}],
+    'double_exposure': [{'damage': 12, 'draw': 0}, {'damage': 9, 'retain': True}],
+    'final_revision': [{'damage': 15}, {'damage': 12, 'retain': True}],
+    'memory_lattice': [{'heal': 8}, {'heal': 5, 'trace': 3}],
+    'blank_page': [{'vent': 3}, {'cost': 1, 'vent': 1, 'trace': 1}],
+    'second_history': [{'heal': 12}, {'heal': 9, 'retain': True}],
+}
+assert {c['id'] for c in pal} == set(PALIMPSEST_OVERRIDES)
+for card in pal:
+    assert [b['stats'] for b in card['evolutions']] == PALIMPSEST_OVERRIDES[card['id']], card['id']
+for card in cart + pal:
     validate_evolutions(card)
     a, b = [dict(card, **branch['stats']) for branch in card['evolutions']]
     # Necessary authoring gate, NOT proof of encounter/deck-level balance.
     def dimensions(c):
-        return [c.get(k, 0) for k in ('damage', 'heal', 'vent', 'disrupt', 'draw')] + [
+        return [c.get(k, 0) for k in ('damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance')] + [
             int(c.get('retain', False)), int(c.get('first_free', False)),
             -int(c.get('exhaust', False)), -c['cost']]
     pairs = list(zip(dimensions(a), dimensions(b)))
@@ -48,4 +79,4 @@ except ValueError:
     pass
 else:
     raise AssertionError('Install/Exhaust incompatibility')
-print('PRODUCTION_EVOLUTIONS 36 pairs: unchanged catalog bases, typed flags, no scalar dominance')
+print('PRODUCTION_EVOLUTIONS 54 pairs: unchanged bases/Cartographer, Choir unbranched, typed flags, no scalar dominance')

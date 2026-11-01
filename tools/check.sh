@@ -12,7 +12,9 @@ python3 tests/check_art.py
 "$engine" --headless --path . --script tests/effective_card_test.gd
 "$engine" --headless --path . --script tests/evolutions_test.gd
 "$engine" --headless --path . --script tests/production_evolutions_test.gd
+"$engine" --headless --path . --script tests/palimpsest_evolutions_test.gd
 "$engine" --headless --path . --script tests/evolutions_ui_test.gd
+"$engine" --headless --path . --script tests/palimpsest_evolutions_ui_test.gd
 "$engine" --headless --path . --script tests/card_zones_test.gd
 "$engine" --headless --path . --script tests/known_selections_test.gd
 "$engine" --headless --path . --script tests/install_engines_test.gd
@@ -21,6 +23,7 @@ python3 tests/check_art.py
 python3 tests/manual_replay_cli_test.py "$engine"
 python3 tests/evolution_replay_test.py "$engine"
 python3 tests/evolution_replay_test.py "$engine" --production
+python3 tests/evolution_replay_test.py "$engine" --palimpsest
 python3 tests/install_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/seed_ui_test.gd
 "$engine" --headless --path . --script tests/balance_tests.gd

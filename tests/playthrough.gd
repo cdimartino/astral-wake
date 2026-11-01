@@ -1,6 +1,7 @@
 extends SceneTree
 const Game=preload("res://scripts/game.gd")
 const EVOLUTION_POLICY_VERSION="cartographer-branches-v1"
+const PALIMPSEST_EVOLUTION_POLICY_VERSION="palimpsest-branches-v1"
 var game
 var cards_played=0
 var cards_this_turn=0
@@ -69,7 +70,7 @@ func _initialize() -> void:
 		if actions%100==0: print("PROGRESS actions=%d region=%d layer=%d hull=%d mode=%s"%[actions,game.run.region+1,game.run.layer+1,game.run.hull,game.run.mode])
 	var result={"seed":seed_value,"character":game.run.character,"route_regions":game.run.route_regions,"mode":game.run.mode,"region":game.run.region+1,"layer":game.run.layer+1,"turns":game.run.turns,"battles":game.run.battles,"cards_played":cards_played,"max_cards_per_turn":max_cards_per_turn,"actions":actions,"hull":game.run.hull,"deck":game.run.deck,"powerups":game.run.powerups,"checkpoints":checkpoints,"wall_seconds":(Time.get_ticks_msec()-started)/1000.0,"save_directory":game.store.directory}
 	result.policy=policy
-	result.evolution_policy_version=EVOLUTION_POLICY_VERSION
+	result.evolution_policy_version=evolution_policy_version()
 	result.no_bonuses=no_bonuses
 	result.profile_unlocks=unlocks
 	result.pool_tier=game.run.get("pool_tier",unlocks)
@@ -182,6 +183,9 @@ func choose_reward() -> Dictionary:
 			best=i
 	return game.choose_reward(best)
 
+func evolution_policy_version() -> String:
+	return PALIMPSEST_EVOLUTION_POLICY_VERSION if game.run.character=="palimpsest" else EVOLUTION_POLICY_VERSION
+
 func branch_score(definition: Dictionary) -> float:
 	# Existing goals only; printed output per CP, not a promised optimal strategy.
 	var damage=float(definition.get("damage",0))
@@ -192,6 +196,11 @@ func branch_score(definition: Dictionary) -> float:
 	var value=damage+heal+vent+disrupt+draw
 	if policy=="aggressive": value=damage
 	if policy=="tactical": value+=heal+disrupt
+	# Same modest printed-resource valuation as combat forecasts. Do not alter
+	# Cartographer ranking or pretend this models thresholds/retained timing.
+	if game.run.character=="palimpsest":
+		var stored=int(game.run.battle.get("trace",0)) if game.run.mode=="combat" else 0
+		value+=float(mini(6-stored,int(definition.get("trace",0))))*0.6
 	return value/float(definition.cost)
 
 func plan_modify_branches() -> Dictionary:

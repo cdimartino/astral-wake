@@ -13,9 +13,17 @@ func _initialize() -> void:
 func show_demo() -> void:
 	var ui=preload("res://scripts/main.gd").new()
 	root.add_child(ui)
-	ui.game.new_run("0093CG","cartographer")
+	var ship="cartographer"
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--ship="): ship=arg.trim_prefix("--ship=")
+	if not ship in ["cartographer","palimpsest"]:
+		push_error("Demo supports cartographer or palimpsest only.")
+		quit(1)
+		return
+	ui.game.new_run("0093CG",ship)
 	# Labelled workshop counterfactual, not a played expedition or balance capture.
 	ui.game.run.mode="recovery"
 	ui.game.save()
 	ui.menu=false
+	ui.notice="RECOVERY COUNTERFACTUAL · %s · 0093CG · production starters, not a played expedition"%ship
 	ui._render()

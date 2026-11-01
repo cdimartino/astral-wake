@@ -766,6 +766,10 @@
     },
     {
       "id": "margin_knife",
+      "evolutions": [
+        {"id":"keen_margin","name":"Keen Margin","description":"Deal 11 damage. Gain 1 Trace, up to 6.","stats":{"damage":11}},
+        {"id":"inscribed_margin","name":"Inscribed Margin","description":"Deal 7 damage. Gain 2 Trace, up to 6.","stats":{"damage":7,"trace":2}}
+      ],
       "name": "Margin Knife",
       "kind": "attack",
       "damage": 8,
@@ -784,6 +788,10 @@
     },
     {
       "id": "pale_patch",
+      "evolutions": [
+        {"id":"layered_patch","name":"Layered Patch","description":"Restore 8 hull. Gain 1 Trace, up to 6.","stats":{"heal":8}},
+        {"id":"annotated_patch","name":"Annotated Patch","description":"Restore 5 hull. Gain 2 Trace, up to 6.","stats":{"heal":5,"trace":2}}
+      ],
       "name": "Pale Patch",
       "kind": "repair",
       "damage": 0,
@@ -802,6 +810,10 @@
     },
     {
       "id": "carbon_breath",
+      "evolutions": [
+        {"id":"cool_carbon","name":"Cool Carbon","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Trace, up to 6.","stats":{"vent":2}},
+        {"id":"carbon_imprint","name":"Carbon Imprint","description":"Cool every organ by 1 before routing. Gain 3 Trace, up to 6.","stats":{"draw":0,"trace":3}}
+      ],
       "name": "Carbon Breath",
       "kind": "utility",
       "damage": 0,
@@ -820,6 +832,10 @@
     },
     {
       "id": "first_draft",
+      "evolutions": [
+        {"id":"decisive_draft","name":"Decisive Draft","description":"Deal 9 damage. Gain 2 Trace, up to 6.","stats":{"damage":9}},
+        {"id":"working_draft","name":"Working Draft","description":"Deal 6 damage. Gain 3 Trace, up to 6.","stats":{"damage":6,"trace":3}}
+      ],
       "name": "First Draft",
       "kind": "attack",
       "damage": 6,
@@ -838,6 +854,10 @@
     },
     {
       "id": "ghost_line",
+      "evolutions": [
+        {"id":"etched_line","name":"Etched Line","description":"Draw 1 card. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Trace, up to 6.","stats":{"trace":2,"draw":1}},
+        {"id":"waiting_line","name":"Waiting Line","description":"Draw 2 cards. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Trace, up to 6.","stats":{"retain":true}}
+      ],
       "name": "Ghost Line",
       "kind": "utility",
       "damage": 0,
@@ -856,6 +876,10 @@
     },
     {
       "id": "revision_spike",
+      "evolutions": [
+        {"id":"piercing_revision","name":"Piercing Revision","description":"Deal 15 damage.","stats":{"damage":15}},
+        {"id":"pending_revision","name":"Pending Revision","description":"Deal 12 damage.","stats":{"damage":12,"retain":true}}
+      ],
       "name": "Revision Spike",
       "kind": "attack",
       "damage": 12,
@@ -873,6 +897,10 @@
     },
     {
       "id": "vellum_shield",
+      "evolutions": [
+        {"id":"layered_vellum","name":"Layered Vellum","description":"Restore 6 hull. Apply 1 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"heal":6}},
+        {"id":"sealed_vellum","name":"Sealed Vellum","description":"Restore 3 hull. Apply 3 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"heal":3,"disrupt":3}}
+      ],
       "name": "Vellum Shield",
       "kind": "repair",
       "damage": 0,
@@ -891,6 +919,10 @@
     },
     {
       "id": "cut_sentence",
+      "evolutions": [
+        {"id":"sharp_sentence","name":"Sharp Sentence","description":"Deal 10 damage. Apply 2 disruption this enemy phase.","stats":{"damage":10}},
+        {"id":"silencing_sentence","name":"Silencing Sentence","description":"Deal 6 damage. Apply 4 disruption this enemy phase.","stats":{"damage":6,"disrupt":4}}
+      ],
       "name": "Cut Sentence",
       "kind": "attack",
       "damage": 7,
@@ -908,6 +940,10 @@
     },
     {
       "id": "borrowed_dawn",
+      "evolutions": [
+        {"id":"searing_dawn","name":"Searing Dawn","description":"Deal 11 damage. Restore 3 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":11}},
+        {"id":"kindled_dawn","name":"Kindled Dawn","description":"Deal 8 damage. Restore 6 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":6}}
+      ],
       "name": "Borrowed Dawn",
       "kind": "attack",
       "damage": 8,
@@ -926,6 +962,10 @@
     },
     {
       "id": "ink_well",
+      "evolutions": [
+        {"id":"cold_ink","name":"Cold Ink","description":"Cool every organ by 3 before routing. Gain 2 Trace, up to 6.","stats":{"vent":3}},
+        {"id":"dense_ink","name":"Dense Ink","description":"Cool every organ by 1 before routing. Gain 3 Trace, up to 6.","stats":{"vent":1,"trace":3}}
+      ],
       "name": "Ink Well",
       "kind": "utility",
       "damage": 0,
@@ -944,6 +984,10 @@
     },
     {
       "id": "overwrite",
+      "evolutions": [
+        {"id":"forceful_overwrite","name":"Forceful Overwrite","description":"Deal 9 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":9}},
+        {"id":"deferred_overwrite","name":"Deferred Overwrite","description":"Deal 6 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":6,"retain":true}}
+      ],
       "name": "Overwrite",
       "kind": "attack",
       "damage": 6,
@@ -962,6 +1006,10 @@
     },
     {
       "id": "scar_note",
+      "evolutions": [
+        {"id":"restorative_note","name":"Restorative Note","description":"Restore 10 hull. Cool every organ by 1 before routing. Gain 1 Trace, up to 6.","stats":{"heal":10}},
+        {"id":"cooling_note","name":"Cooling Note","description":"Restore 7 hull. Cool every organ by 2 before routing. Gain 1 Trace, up to 6.","stats":{"heal":7,"vent":2}}
+      ],
       "name": "Scar Note",
       "kind": "repair",
       "damage": 0,
@@ -980,6 +1028,10 @@
     },
     {
       "id": "lost_paragraph",
+      "evolutions": [
+        {"id":"struck_paragraph","name":"Struck Paragraph","description":"Apply 8 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"disrupt":8,"draw":0}},
+        {"id":"reserved_paragraph","name":"Reserved Paragraph","description":"Draw 1 card. Apply 5 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"disrupt":5,"retain":true}}
+      ],
       "name": "Lost Paragraph",
       "kind": "utility",
       "damage": 0,
@@ -998,6 +1050,10 @@
     },
     {
       "id": "double_exposure",
+      "evolutions": [
+        {"id":"burned_exposure","name":"Burned Exposure","description":"Deal 12 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":12,"draw":0}},
+        {"id":"latent_exposure","name":"Latent Exposure","description":"Deal 9 damage. Draw 1 card. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":9,"retain":true}}
+      ],
       "name": "Double Exposure",
       "kind": "attack",
       "damage": 9,
@@ -1016,6 +1072,10 @@
     },
     {
       "id": "final_revision",
+      "evolutions": [
+        {"id":"definitive_revision","name":"Definitive Revision","description":"Deal 15 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":15}},
+        {"id":"reserved_revision","name":"Reserved Revision","description":"Deal 12 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":12,"retain":true}}
+      ],
       "name": "Final Revision",
       "kind": "attack",
       "damage": 12,
@@ -1034,6 +1094,10 @@
     },
     {
       "id": "memory_lattice",
+      "evolutions": [
+        {"id":"woven_memory","name":"Woven Memory","description":"Restore 8 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Trace, up to 6.","stats":{"heal":8}},
+        {"id":"inscribed_memory","name":"Inscribed Memory","description":"Restore 5 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 3 Trace, up to 6.","stats":{"heal":5,"trace":3}}
+      ],
       "name": "Memory Lattice",
       "kind": "repair",
       "damage": 0,
@@ -1052,6 +1116,10 @@
     },
     {
       "id": "blank_page",
+      "evolutions": [
+        {"id":"clean_slate","name":"Clean Slate","description":"Cool every organ by 3 before routing. Draw 1 card. Gain 2 Trace, up to 6.","stats":{"vent":3}},
+        {"id":"loose_leaf","name":"Loose Leaf","description":"Cool every organ by 1 before routing. Draw 1 card. Gain 1 Trace, up to 6.","stats":{"cost":1,"vent":1,"trace":1}}
+      ],
       "name": "Blank Page",
       "kind": "utility",
       "damage": 0,
@@ -1070,6 +1138,10 @@
     },
     {
       "id": "second_history",
+      "evolutions": [
+        {"id":"restored_history","name":"Restored History","description":"Restore 12 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":12}},
+        {"id":"unwritten_history","name":"Unwritten History","description":"Restore 9 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":9,"retain":true}}
+      ],
       "name": "Second History",
       "kind": "repair",
       "damage": 0,

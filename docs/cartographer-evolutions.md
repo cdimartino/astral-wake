@@ -1,5 +1,9 @@
 # Cartographer production evolutions — #15 partial candidate
 
+This document records the original Cartographer slice and its evidence. The later
+[Palimpsest candidate](palimpsest-evolutions.md) supersedes the deferred-ship status
+below; Cartographer's authored definitions and policy rankings remain unchanged.
+
 [Primary manual test, replay verification and evidence limits](cartographer-playtest-0093cg.md)
 
 All 36 Cartographer commands now offer exactly two permanent, mutually exclusive
