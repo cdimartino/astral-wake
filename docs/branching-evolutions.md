@@ -1,9 +1,9 @@
 # Branching evolutions — infrastructure slice (#15)
 
-**No production card has authored branches yet.** All 72 retain their exact existing
-upgrade arithmetic and access (repair 30 versus evolve at recovery; shop price 35).
-No starter buffs, permanent progression, new effects or balance claims are added.
-Production authoring is a separate follow-up; #15 remains incomplete.
+The [Cartographer production candidate](cartographer-evolutions.md) now authors
+two choices for all 36 Cartographer cards. Palimpsest/Choir remain unbranched.
+All base definitions and existing legacy outcomes remain unchanged. #15 is partial;
+independent balance review and a manual expedition are required before merge.
 
 ## Identity and rules
 
@@ -45,15 +45,22 @@ battle snapshots may predate a later deck removal/evolution.
 Exactly two distinct non-reserved IDs; exactly `id`, `name`, `description`, `stats`
 per branch. `stats` is a nonempty flat replacement dictionary allowing only
 `cost`, `damage`, `heal`, `vent`, `disrupt`, `draw`, `trace`, `resonance`.
-Integers only, 0–99; cost stays 1–2, Trace 0–6 only on Palimpsest, Resonance 0–3
+Numeric fields are integers only, 0–99; cost stays 1–2, Trace 0–6 only on Palimpsest, Resonance 0–3
 only on Choir. Attack/repair branches retain positive primary payload. The content
 validator rejects duplicate JSON keys and duplicate/reserved branch IDs.
-Base flags/selections/engines remain inherited, not branch-editable in this slice.
+The only additional branch fields are strictly boolean `retain`, `exhaust` and
+`first_free`, replacing inherited values (including explicit false), not stacking.
+Effective Install plus Exhaust is rejected. Selections/engines remain inherited.
 No identity/pool/art changes, nested definitions, scripts, conditional route damage,
 ward, refunds or new triggers. Wider authoring requires a separately reviewed
 supported primitive/schema extension rather than arbitrary data injection.
 
-## Safe fixture demonstrations
+## Safe demonstrations
+
+The native `tests/evolution_demo.gd` now uses actual production Cartographer cards
+at a labelled recovery counterfactual; see the production document for review and
+primary fresh-expedition instructions. The older fixture driver below remains
+available solely for infrastructure regression tests.
 
 From this worktree, always use a **new scratch directory**, never a player save:
 
@@ -63,11 +70,9 @@ DEMO=$(mktemp -d "$TMPDIR/astral-evolution-demo.XXXXXX")
 ASTRAL_SAVE_DIR="$DEMO" "$GODOT" --path . --script tests/evolution_demo.gd
 ```
 
-Choose Needle or Hull Stitch in the recovery workshop. Test-only Needle is base
-10 → Impact 13 versus Flow 10/draw 1; Stitch is heal 9 versus heal 5/vent 1.
-These demonstrate immediate output versus existing draw/cooling at 1 CP, not final
-content, dominance analysis or evidence of ship viability. The demo refuses an
-existing save; fixtures are never registered in production expeditions.
+Choose a production starter card in the recovery workshop. Needle is base 9 →
+Sunpoint 12 versus Held Dawn 9/Retain. The demo refuses an existing save. Fake
+fixture definitions are never registered by this demo or production expeditions.
 
 For guarded manual commands, use the fixture adapter, not the production driver:
 
@@ -99,13 +104,14 @@ CP/preview, cancel/payment and node-level UI. `tests/effective_card_test.gd` ret
 all 432 frozen production outcome cases and exact old arithmetic for all 72 cards.
 The UI test is not graphical readability evidence or an audited player expedition.
 
-Production policy rankings/decisions are unchanged. `Policy.modify(explicit_branches)`
-accepts a UID→branch mapping for fixture simulations; without one authored cards
-fail choice-required, never choose the first branch. Production authoring must
-explicitly design/test branch ranking and publish separately fingerprinted paired
-comparisons. Historical balance results remain historical.
+Intrinsic base-card rankings are unchanged. The named `cartographer-branches-v1`
+policy now explicitly scores effective branches into stable UID mappings; see the
+production document for weights and limitations. `Policy.modify(explicit_branches)`
+still accepts explicit mappings. Public game APIs still fail choice-required on
+missing identities; they never default to the first branch. Historical balance
+results remain historical and were not recomputed for this changed policy/content.
 
-### Candidate validation (2026-10-31)
+### Historical infrastructure validation (2026-10-31, before production authoring)
 
 - Latest bounded rerun: 14 targeted scripts/process suites passed, including rules
   (11,543 checks), effective definitions (2,087 checks / 432 frozen cases), evolution

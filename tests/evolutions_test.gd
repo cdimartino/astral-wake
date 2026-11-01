@@ -109,15 +109,15 @@ func run_tests() -> void:
 	migration()
 	pending_migration()
 	var production=Game.new(directory.path_join("production"))
-	production.new_run("A1B2C3")
+	production.new_run("A1B2C3","palimpsest")
 	workshop(production)
 	require(not production.evolve_card(production.run.deck[0].uid,"").ok,"UID API requires an explicit identity even for legacy cards")
 	require(production.modify_card(0).ok and production.run.deck[0].evolution=="legacy","Unbranched production keeps old one-argument behavior")
 	var policy=Policy.new()
 	policy.game=game_at("policy")
-	# Fix selection ranking to this fixture without adding branch ranking.
+	# Isolate card ranking while checking scored and caller-supplied branch plans.
 	for i in range(1,policy.game.run.deck.size()): policy.game.run.deck[i].level=1
-	require(not policy.modify().ok,"Policy cannot silently choose the first branch")
+	require(policy.plan_modify_branches()[policy.game.run.deck[0].uid]=="impact","Policy explicitly scores the fixture branches")
 	require(policy.modify({policy.game.run.deck[0].uid:"flow"}).ok,"Policy fixture accepts an explicit branch mapping")
 	policy.free()
 	print("EVOLUTIONS_TEST ",checks," checks, ",failures," failures")
@@ -126,7 +126,7 @@ func run_tests() -> void:
 func validation(game) -> void:
 	var definition=game.card("needle")
 	require(Game.Evolutions.valid_definition(definition),"Fixture schema accepted")
-	for field in ["id","uid","art","evolutions","selections","engine","retain","first_free","ward","refund","script"]:
+	for field in ["id","uid","art","evolutions","selections","engine","ward","refund","script"]:
 		var bad=definition.duplicate(true)
 		bad.evolutions[0].stats[field]=1
 		require(not Game.Evolutions.valid_definition(bad),"Override allowlist rejects "+field)

@@ -91,8 +91,9 @@ but only inside the isolated session. All three existing ship IDs are supported.
 
 ## Audit boundaries and limitations
 
-The [branching evolution infrastructure](branching-evolutions.md) includes safe
-test-only native/manual demos; production cards still use legacy upgrades.
+The [Cartographer candidate](cartographer-evolutions.md) includes an actual-production
+native recovery demo and separate counterfactual driver. Use this document's
+production driver for the primary fresh expedition, not a counterfactual adapter.
 The authoritative evolution module is included in replay source fingerprints.
 
 - The trace records revision, SHA-256 fingerprints of resolver/RNG/save/content

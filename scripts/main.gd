@@ -1192,7 +1192,11 @@ func _recovery() -> void:
 	_screen_text("Restore 30 hull, up to your maximum.\nCurrent hull: %d / %d." % [game.run.hull, game.run.max_hull], Rect2(90, 674, 570, 82), 24, CREAM)
 	_at(_button("Repair +30 hull", func(): _perform(func(): return game.recover("repair")), "Repair and return to the chart.", true), Rect2(90, 778, 570, 54))
 	_screen_text("Refine a command", Rect2(780, 614, 570, 48), 34, GOLD)
-	_screen_text("Damage +3. Repair +2. Vent and disrupt +1.\nChoose the exact command to evolve.", Rect2(780, 674, 570, 82), 24, CREAM)
+	var authored=false
+	for instance in game.run.deck:
+		if int(instance.level)==0 and game.card(instance.id).has("evolutions"): authored=true
+	var evolution_hint="Choose a command, then one permanent branch.\nCompare payload, CP and timing before confirming." if authored else "Damage +3. Repair +2. Vent and disrupt +1.\nChoose the exact command to evolve."
+	_screen_text(evolution_hint, Rect2(780, 674, 570, 82), 24, CREAM)
 	_at(_button("Choose an upgrade", func(): _perform(func(): return game.recover("upgrade")), "Inspect commands before choosing.", true), Rect2(780, 778, 570, 54))
 	_at(_button("Leave without resting", func(): _perform(func(): return game.leave_location())), Rect2(550, 845, 340, 44))
 
@@ -1226,7 +1230,7 @@ func _choose_modification(index: int) -> void:
 
 func _modify() -> void:
 	var remove: bool = game.run.get("modify_kind", "upgrade") == "remove"
-	_section("DECK WORKSHOP", "Release a command." if remove else "Make a command your own.", "Choose the exact copy below. " + ("It will leave your deck." if remove else "Evolved commands gain stronger effects."))
+	_section("DECK WORKSHOP", "Release a command." if remove else "Make a command your own.", "Choose the exact copy below. " + ("It will leave your deck." if remove else "Compare available evolutions before committing this copy."))
 	var pages := maxi(1, ceili(game.run.deck.size() / 6.0))
 	modify_page = clampi(modify_page, 0, pages - 1)
 	for slot in range(6):
@@ -1247,7 +1251,7 @@ func _modify() -> void:
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
-		var button := _button("Remove" if remove else "Upgrade", func(): _choose_modification(i), "Select this copy.", true)
+		var button := _button("Remove" if remove else "Choose evolution" if game.card(instance.id).has("evolutions") else "Upgrade", func(): _choose_modification(i), "Select this copy.", true)
 		button.disabled = not remove and instance.get("level", 0) > 0
 		box.add_child(button)
 	_at(_button("Cancel selection", func(): _perform(func(): return game.cancel_modify())), Rect2(64, 814, 270, 52))
@@ -1515,7 +1519,7 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		if selectable:
-			var button := _button("Remove" if game.run.modify_kind == "remove" else "Upgrade", func(): _choose_modification(i), "Select this exact copy of the card.", true)
+			var button := _button("Remove" if game.run.modify_kind == "remove" else "Choose evolution" if game.card(instance.id).has("evolutions") else "Upgrade", func(): _choose_modification(i), "Select this exact copy of the card.", true)
 			button.disabled = game.run.modify_kind == "upgrade" and instance.get("level", 0) > 0
 			box.add_child(button)
 
@@ -2507,7 +2511,7 @@ func _printed_stats(instance: Dictionary, include_cost: bool) -> HFlowContainer:
 			row.add_child(label)
 	for field in ["link", "rewrite", "concert"]:
 		if definition.get(field, false): row.add_child(_label(field.capitalize(), 15, GOLD))
-	_stat_token(row, "strain", "0 / +1" if definition.first_free else "+1", "Each routed organ gains 1 strain; vent cools first. Evolved pure utility commands spare the first organ.")
+	_stat_token(row, "strain", "0 / +1" if definition.first_free else "+1", "Each routed organ gains 1 strain; vent cools first. First-free commands spare the first organ.")
 	return row
 
 func _stat_token(parent: Node, kind: String, value: String, tip: String) -> void:
