@@ -12,6 +12,10 @@ The combat header's **Last command** box shows the previous card, its kind, and 
 
 Card faces show their effective upgraded numbers, including Vent, Draw, and vessel-resource gains. Effect badges wrap rather than disappearing beneath long descriptions. Upgrades do not increase Draw: pure utility upgrades instead spare the first routed organ's strain.
 
+All 72 production cards still use these upgrades. The dormant
+[branching evolution infrastructure](branching-evolutions.md) has test-only choices,
+not new production content; old evolved cards retain their exact legacy behavior.
+
 While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
 
 The **Draw** and **Discard** piles flank your hand. Cards travel into and out of them when played or when a turn ends; reshuffles and pile counts follow the same sequence. Click a pile to inspect its composition (draw order stays hidden). Escape skips the presentation without changing the committed result. Reduced motion shows the same card and count changes without travel animations.

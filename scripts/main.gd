@@ -205,6 +205,8 @@ func _card_tip(instance: Dictionary, rich: bool = false) -> String:
 	var names := Keywords.for_card(game.effective_card(instance))
 	if game.retained(instance) and not names.has("Retain"): names.append("Retain")
 	var duration := _retain_detail(instance)
+	if not instance.get("evolution","") in ["", "legacy"]:
+		duration="Evolution: %s [%s]\n%s" % [game.effective_card(instance).name, instance.evolution, duration]
 	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + Keywords.describe(names, rich)
 
 func _retain_marker(instance: Dictionary) -> String:
@@ -1194,6 +1196,34 @@ func _recovery() -> void:
 	_at(_button("Choose an upgrade", func(): _perform(func(): return game.recover("upgrade")), "Inspect commands before choosing.", true), Rect2(780, 778, 570, 54))
 	_at(_button("Leave without resting", func(): _perform(func(): return game.leave_location())), Rect2(550, 845, 340, 44))
 
+func _choose_modification(index: int) -> void:
+	var instance: Dictionary = game.run.deck[index]
+	if game.run.modify_kind!="upgrade" or game.evolution_choices(instance).is_empty():
+		_perform(func(): return game.modify_card(index))
+		return
+	var uid: int = instance.uid
+	var body := _modal("Choose one evolution · UID %d" % uid)
+	var price := "Recovery evolution · no salvage cost"
+	if game.run.modify_return=="shop": price="Cost: %d salvage · charged only on confirm" % game.run.shop.items[int(game.run.modify_shop_index)].cost
+	body.add_child(_text(price, 20, GOLD))
+	body.add_child(_card_heading(instance, 22))
+	body.add_child(_printed_stats(instance, true))
+	body.add_child(_text("BEFORE\n" + game.card_text(instance), 19))
+	var options := _row(body)
+	for choice in game.evolution_choices(instance):
+		var after := instance.duplicate(true)
+		after.level=1
+		after.evolution=choice.id
+		var box := _panel(options)
+		box.add_child(_card_heading(after, 22))
+		box.add_child(_text("Branch: " + choice.id, 17, GOLD))
+		box.add_child(_printed_stats(after, true))
+		box.add_child(_text("AFTER\n" + game.card_text(after), 19))
+		box.add_child(_button("Confirm " + choice.name, func():
+			_close_overlay()
+			_perform(func(): return game.evolve_card(uid,choice.id))))
+	body.add_child(_button("Cancel · back to deck chooser", _close_overlay))
+
 func _modify() -> void:
 	var remove: bool = game.run.get("modify_kind", "upgrade") == "remove"
 	_section("DECK WORKSHOP", "Release a command." if remove else "Make a command your own.", "Choose the exact copy below. " + ("It will leave your deck." if remove else "Evolved commands gain stronger effects."))
@@ -1217,7 +1247,7 @@ func _modify() -> void:
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
-		var button := _button("Remove" if remove else "Upgrade", func(): _perform(func(): return game.modify_card(i)), "Select this copy.", true)
+		var button := _button("Remove" if remove else "Upgrade", func(): _choose_modification(i), "Select this copy.", true)
 		button.disabled = not remove and instance.get("level", 0) > 0
 		box.add_child(button)
 	_at(_button("Cancel selection", func(): _perform(func(): return game.cancel_modify())), Rect2(64, 814, 270, 52))
@@ -1485,7 +1515,7 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		if selectable:
-			var button := _button("Remove" if game.run.modify_kind == "remove" else "Upgrade", func(): _perform(func(): return game.modify_card(i)), "Select this exact copy of the card.", true)
+			var button := _button("Remove" if game.run.modify_kind == "remove" else "Upgrade", func(): _choose_modification(i), "Select this exact copy of the card.", true)
 			button.disabled = game.run.modify_kind == "upgrade" and instance.get("level", 0) > 0
 			box.add_child(button)
 
