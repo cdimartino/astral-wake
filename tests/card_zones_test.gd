@@ -127,8 +127,11 @@ func check() -> void:
 	for modern in [false,true]:
 		Fixtures.battle(game,modern)
 		var current=game.run.duplicate(true)
+		current.reward_generation=0 # Expected permanent legacy policy, no RNG change.
 		var legacy=current.duplicate(true)
 		legacy.erase("schema_revision")
+		legacy.erase("reward_generation")
+		legacy.erase("rare_offer_misses")
 		legacy.erase("pending_selection")
 		for key in ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"]: legacy.battle.erase(key)
 		write_save(game,legacy)

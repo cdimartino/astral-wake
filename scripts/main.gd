@@ -207,7 +207,16 @@ func _card_tip(instance: Dictionary, rich: bool = false) -> String:
 	var duration := _retain_detail(instance)
 	if not instance.get("evolution","") in ["", "legacy"]:
 		duration="Evolution: %s [%s]\n%s" % [game.effective_card(instance).name, instance.evolution, duration]
-	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + Keywords.describe(names, rich)
+	var alternatives := ""
+	if int(instance.get("level", 0)) == 0:
+		for branch in game.evolution_choices(instance):
+			var evolved := {"id":instance.id, "level":1, "evolution":branch.id}
+			alternatives += "\n\nEvolution option: %s · %d CP\n%s" % [branch.name, game.effective_card(evolved).cost, game.card_text(evolved)]
+	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + _draft_hint(instance.id) + alternatives + "\n\n" + Keywords.describe(names, rich)
+
+func _draft_hint(id: String) -> String:
+	var card: Dictionary = game.card(id)
+	return "%s · Primary: %s\nBase roles: %s" % [["Common", "Uncommon", "Rare"][int(card.rarity)], card.primary_role, ", ".join(card.roles)]
 
 func _retain_marker(instance: Dictionary) -> String:
 	if game.effective_card(instance).get("retain", false): return "[R] EVERY TURN"
@@ -1113,7 +1122,8 @@ func _end_turn() -> void:
 	_perform(func(): return game.end_turn(), "enemy_phase")
 
 func _rewards() -> void:
-	_section("ENCOUNTER COMPLETE", "A signal worth keeping.", "Salvage recovered. Choose one discovery, or keep your deck lean and skip.")
+	_section("ENCOUNTER COMPLETE", "A signal worth keeping.")
+	_screen_text(game.Distribution.policy(game.run), Rect2(64, 216, 1312, 58), 17, TEAL)
 	var choices: Array = game.run.reward.get("choices", [])
 	var width := (1312.0 - 24 * (choices.size() - 1)) / maxf(1, choices.size())
 	for i in range(choices.size()):
@@ -1126,8 +1136,10 @@ func _rewards() -> void:
 		var item_name := _card_title(str(item.get("name", "Discovery")), 24)
 		item_name.max_lines_visible = 2
 		box.add_child(item_name)
+		if choice.kind == "card": box.add_child(_text(_draft_hint(choice.id), 16, TEAL))
 		var description := _text(game.card_text({"id": choice.id, "level": 0}) if choice.kind == "card" else str(item.get("description", "")), 18)
-		description.max_lines_visible = 8
+		description.max_lines_visible = 4 if choices.size() >= 5 else 5 if choices.size() >= 4 else 8
+		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		if choice.kind == "card":
 			description.tooltip_text = _card_tip({"id":choice.id,"level":0})
 			description.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1155,7 +1167,10 @@ func _event() -> void:
 	_at(_button("Leave the signal behind →", func(): _perform(func(): return game.leave_location())), Rect2(1000, 814, 376, 52))
 
 func _shop() -> void:
-	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.", "Purchases last for this expedition. Upgrades and removals let you choose a command before paying.")
+	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.")
+	var policy := "Active reward generation v1 · distinct immediate-use + enabler/scaling stock when feasible; otherwise prefer immediate-use, then pool fill.\nBase prices: common 30 / uncommon 40 / rare 55; Bright Canon 40 (audit floor). Stock never adapts to deck or hull."
+	if game.run.reward_generation == 0: policy = "Active reward generation v0 · legacy uniform stock and 35 / 43 base card prices. No pity.\nAll displayed prices already include your discount; services charge only on confirmation."
+	_screen_text(policy, Rect2(64, 216, 1312, 62), 17, TEAL)
 	var items: Array = game.run.shop.get("items", [])
 	for i in range(items.size()):
 		var item: Dictionary = items[i]
@@ -1166,7 +1181,9 @@ func _shop() -> void:
 		box.add_theme_constant_override("separation", 4)
 		box.add_child(_card_title(str(data.get("name", "Remove a command" if item.kind == "remove" else "Upgrade a command")), 24))
 		var desc := game.card_text({"id": item.id, "level": 0}) if item.kind == "card" else str(data.get("description", "Choose one command from your deck."))
-		if item.kind == "card": box.add_child(_printed_stats({"id": item.id, "level": 0}, true))
+		if item.kind == "card":
+			box.add_child(_printed_stats({"id": item.id, "level": 0}, true))
+			box.add_child(_text(_draft_hint(item.id), 15, TEAL))
 		var description := _text(desc, 19)
 		description.max_lines_visible = 3
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -1485,6 +1502,7 @@ func _open_deck() -> void:
 	if game.run.is_empty():
 		body.add_child(_text("Begin an expedition to inspect your commands."))
 		return
+	body.add_child(_text(game.Distribution.policy(game.run), 17, TEAL))
 	body.add_child(_label("INSTALLED POWERUPS", 14, GOLD))
 	if game.run.powerups.is_empty():
 		body.add_child(_text("No powerups installed yet."))
@@ -1533,6 +1551,7 @@ func _open_history() -> void:
 		var outcome := "Victory" if record.get("won", false) else "Defeat"
 		box.add_child(_label(outcome + "  ·  Seed " + str(record.get("seed", "—")), 22, TEAL if outcome.to_lower() == "victory" else CORAL))
 		if record.get("seeded", false): box.add_child(_text("Seeded practice · no durable progression or unlocks", 17, GOLD))
+		box.add_child(_text("Reward generation v%d" % record.get("reward_generation", 0), 17, TEAL))
 		var seconds := int(record.get("seconds", 0))
 		box.add_child(_text(str(game.character(str(record.get("character", "cartographer"))).name), 18, TEAL))
 		box.add_child(_text("Region %d · %d turns · %d battles · %d:%02d elapsed" % [int(record.get("region", 0)) + 1, int(record.get("turns", 0)), int(record.get("battles", 0)), seconds / 60, seconds % 60], 17))

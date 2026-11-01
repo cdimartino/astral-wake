@@ -46,6 +46,7 @@
   "cards": [
     {
       "id": "needle",
+      "roles": ["attack"], "primary_role": "attack",
       "evolutions": [
         {"id":"sunpoint","name":"Sunpoint Needle","description":"Deal 12 damage.","stats":{"damage":12}},
         {"id":"held_dawn","name":"Held Dawn","description":"Deal 9 damage.","stats":{"damage":9,"retain":true}}
@@ -66,6 +67,7 @@
     },
     {
       "id": "hull_stitch",
+      "roles": ["repair"], "primary_role": "repair",
       "evolutions": [
         {"id":"deep_stitch","name":"Deep Stitch","description":"Restore 9 hull.","stats":{"heal":9}},
         {"id":"coolant_stitch","name":"Coolant Stitch","description":"Restore 5 hull. Cool every organ by 1 before routing.","stats":{"heal":5,"vent":1}}
@@ -86,6 +88,7 @@
     },
     {
       "id": "cold_breath",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"deep_breath","name":"Deep Breath","description":"Cool every organ by 2 before routing. Draw 1 card.","stats":{"vent":2,"draw":1}},
         {"id":"last_breath","name":"Last Breath","description":"Cool every organ by 1 before routing. Draw 2 cards.","stats":{"vent":1,"draw":2,"exhaust":true}}
@@ -106,6 +109,7 @@
     },
     {
       "id": "quiet_pulse",
+      "roles": ["attack", "prevention"], "primary_role": "prevention",
       "evolutions": [
         {"id":"hard_pulse","name":"Hard Pulse","description":"Deal 10 damage. Apply 1 disruption to the chosen enemy.","stats":{"damage":10,"disrupt":1}},
         {"id":"still_pulse","name":"Still Pulse","description":"Deal 6 damage. Apply 3 disruption to the chosen enemy.","stats":{"damage":6,"disrupt":3}}
@@ -126,6 +130,7 @@
     },
     {
       "id": "graft_wire",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"live_wire","name":"Live Wire","description":"Draw 2 cards. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"draw":2}},
         {"id":"reserve_wire","name":"Grounded Wire","description":"Draw 1 card. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"draw":1,"first_free":true}}
@@ -146,6 +151,7 @@
     },
     {
       "id": "sun_splinter",
+      "roles": ["attack"], "primary_role": "attack",
       "evolutions": [
         {"id":"sunburst","name":"Sunburst Splinter","description":"Deal 15 damage.","stats":{"damage":15}},
         {"id":"banked_sun","name":"Banked Sun","description":"Deal 12 damage.","stats":{"damage":12,"retain":true}}
@@ -166,6 +172,7 @@
     },
     {
       "id": "mercy_circuit",
+      "roles": ["attack", "repair"], "primary_role": "attack",
       "evolutions": [
         {"id":"sharp_mercy","name":"Sharp Mercy","description":"Deal 11 damage. Restore 3 hull.","stats":{"damage":11,"heal":3}},
         {"id":"gentle_mercy","name":"Gentle Mercy","description":"Deal 7 damage. Restore 6 hull.","stats":{"damage":7,"heal":6}}
@@ -186,6 +193,7 @@
     },
     {
       "id": "black_suture",
+      "roles": ["repair"], "primary_role": "repair",
       "evolutions": [
         {"id":"closed_wound","name":"Closed Wound","description":"Restore 13 hull.","stats":{"heal":13}},
         {"id":"ready_suture","name":"Ready Suture","description":"Restore 10 hull.","stats":{"heal":10,"retain":true}}
@@ -206,6 +214,7 @@
     },
     {
       "id": "spare_heartbeat",
+      "roles": ["repair", "selection"], "primary_role": "repair",
       "evolutions": [
         {"id":"strong_beat","name":"Strong Beat","description":"Restore 8 hull. Draw 1 card.","stats":{"heal":8,"draw":1}},
         {"id":"racing_beat","name":"Racing Beat","description":"Restore 3 hull. Draw 2 cards.","stats":{"heal":3,"draw":2}}
@@ -226,6 +235,7 @@
     },
     {
       "id": "frost_seam",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"warm_seam","name":"Warm Seam","description":"Restore 9 hull. Cool every organ by 1 before routing.","stats":{"heal":9,"vent":1}},
         {"id":"ice_seam","name":"Ice Seam","description":"Restore 4 hull. Cool every organ by 2 before routing.","stats":{"heal":4,"vent":2}}
@@ -246,6 +256,7 @@
     },
     {
       "id": "red_interval",
+      "roles": ["attack", "enabler"], "primary_role": "attack",
       "evolutions": [
         {"id":"red_peak","name":"Red Peak","description":"Deal 14 damage. Cool every organ by 1 before routing.","stats":{"damage":14,"vent":1}},
         {"id":"blue_interval","name":"Blue Interval","description":"Deal 9 damage. Cool every organ by 2 before routing.","stats":{"damage":9,"vent":2}}
@@ -266,6 +277,7 @@
     },
     {
       "id": "wake_lance",
+      "roles": ["attack"], "primary_role": "attack",
       "evolutions": [
         {"id":"breaking_wake","name":"Breaking Wake","description":"Deal 18 damage.","stats":{"damage":18}},
         {"id":"waiting_lance","name":"Waiting Lance","description":"Deal 14 damage.","stats":{"damage":14,"retain":true}}
@@ -286,6 +298,7 @@
     },
     {
       "id": "glass_murmur",
+      "roles": ["attack", "selection"], "primary_role": "attack",
       "evolutions": [
         {"id":"glass_cry","name":"Glass Cry","description":"Deal 12 damage. Draw 1 card.","stats":{"damage":12,"draw":1}},
         {"id":"glass_echo","name":"Glass Echo","description":"Deal 7 damage. Draw 2 cards.","stats":{"damage":7,"draw":2}}
@@ -306,6 +319,7 @@
     },
     {
       "id": "thread_cannon",
+      "roles": ["attack", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"heavy_thread","name":"Heavy Thread","description":"Deal 12 damage. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"damage":12}},
         {"id":"spooled_thread","name":"Spooled Thread","description":"Deal 8 damage. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"damage":8,"retain":true}}
@@ -326,6 +340,7 @@
     },
     {
       "id": "mute_bell",
+      "roles": ["prevention", "selection"], "primary_role": "prevention",
       "evolutions": [
         {"id":"dead_bell","name":"Dead Bell","description":"Draw 1 card. Apply 9 disruption to the chosen enemy.","stats":{"draw":1,"disrupt":9}},
         {"id":"ringing_bell","name":"Ringing Bell","description":"Draw 2 cards. Apply 4 disruption to the chosen enemy.","stats":{"draw":2,"disrupt":4}}
@@ -346,6 +361,7 @@
     },
     {
       "id": "cold_psalm",
+      "roles": ["enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"winter_psalm","name":"Winter Psalm","description":"Cool every organ by 3 before routing.","stats":{"vent":3}},
         {"id":"remembered_psalm","name":"Remembered Psalm","description":"Cool every organ by 2 before routing.","stats":{"vent":2,"retain":true}}
@@ -366,6 +382,7 @@
     },
     {
       "id": "salvage_hymn",
+      "roles": ["prevention", "repair"], "primary_role": "repair",
       "evolutions": [
         {"id":"mending_hymn","name":"Mending Hymn","description":"Restore 11 hull. Apply 1 disruption to the chosen enemy.","stats":{"heal":11,"disrupt":1}},
         {"id":"silencing_hymn","name":"Silencing Hymn","description":"Restore 6 hull. Apply 4 disruption to the chosen enemy.","stats":{"heal":6,"disrupt":4}}
@@ -386,6 +403,7 @@
     },
     {
       "id": "votive_shard",
+      "roles": ["attack", "prevention"], "primary_role": "attack",
       "evolutions": [
         {"id":"piercing_votive","name":"Piercing Votive","description":"Deal 15 damage. Apply 1 disruption to the chosen enemy.","stats":{"damage":15,"disrupt":1}},
         {"id":"quiet_votive","name":"Quiet Votive","description":"Deal 10 damage. Apply 4 disruption to the chosen enemy.","stats":{"damage":10,"disrupt":4}}
@@ -406,6 +424,7 @@
     },
     {
       "id": "mirror_cut",
+      "roles": ["attack", "repair"], "primary_role": "attack",
       "evolutions": [
         {"id":"cruel_reflection","name":"Cruel Reflection","description":"Deal 14 damage. Restore 2 hull.","stats":{"damage":14,"heal":2}},
         {"id":"kind_reflection","name":"Kind Reflection","description":"Deal 9 damage. Restore 6 hull.","stats":{"damage":9,"heal":6}}
@@ -426,6 +445,7 @@
     },
     {
       "id": "open_channel",
+      "roles": ["selection"], "primary_role": "selection",
       "evolutions": [
         {"id":"flood_channel","name":"Flood Channel","description":"Draw 3 cards.","stats":{"draw":3,"exhaust":true}},
         {"id":"patient_channel","name":"Patient Channel","description":"Draw 2 cards.","stats":{"draw":2,"retain":true}}
@@ -446,6 +466,7 @@
     },
     {
       "id": "scar_bridge",
+      "roles": ["repair", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"broad_bridge","name":"Broad Bridge","description":"Restore 9 hull. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"heal":9}},
         {"id":"reserve_bridge","name":"Reserve Bridge","description":"Restore 6 hull. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"heal":6,"retain":true}}
@@ -466,6 +487,7 @@
     },
     {
       "id": "winter_needle",
+      "roles": ["attack", "enabler"], "primary_role": "attack",
       "evolutions": [
         {"id":"winter_fang","name":"Winter Fang","description":"Deal 12 damage. Cool every organ by 2 before routing.","stats":{"damage":12,"vent":2}},
         {"id":"winter_shelter","name":"Winter Shelter","description":"Deal 6 damage. Cool every organ by 3 before routing.","stats":{"damage":6,"vent":3}}
@@ -486,6 +508,7 @@
     },
     {
       "id": "hollow_chorus",
+      "roles": ["attack", "prevention"], "primary_role": "prevention",
       "evolutions": [
         {"id":"loud_chorus","name":"Loud Chorus","description":"Deal 13 damage. Apply 2 disruption to the chosen enemy.","stats":{"damage":13,"disrupt":2}},
         {"id":"hushed_chorus","name":"Hushed Chorus","description":"Deal 8 damage. Apply 5 disruption to the chosen enemy.","stats":{"damage":8,"disrupt":5}}
@@ -506,6 +529,7 @@
     },
     {
       "id": "seam_of_light",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"radiant_seam","name":"Radiant Seam","description":"Restore 17 hull. Cool every organ by 2 before routing.","stats":{"cost":2,"heal":17,"vent":2}},
         {"id":"narrow_seam","name":"Narrow Seam","description":"Restore 8 hull. Cool every organ by 1 before routing.","stats":{"cost":1,"heal":8,"vent":1}}
@@ -526,6 +550,7 @@
     },
     {
       "id": "pilgrim_signal",
+      "roles": ["prevention", "enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"shelter_signal","name":"Shelter Signal","description":"Cool every organ by 2 before routing. Draw 1 card. Apply 1 disruption to the chosen enemy.","stats":{"vent":2,"draw":1,"disrupt":1}},
         {"id":"warning_signal","name":"Warning Signal","description":"Cool every organ by 1 before routing. Draw 1 card. Apply 4 disruption to the chosen enemy.","stats":{"vent":1,"draw":1,"disrupt":4}}
@@ -546,6 +571,7 @@
     },
     {
       "id": "long_hem",
+      "roles": ["attack", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"cutting_hem","name":"Cutting Hem","description":"Deal 17 damage. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"damage":17}},
         {"id":"folded_hem","name":"Folded Hem","description":"Deal 13 damage. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"damage":13,"retain":true}}
@@ -566,6 +592,7 @@
     },
     {
       "id": "blue_refrain",
+      "roles": ["repair", "enabler", "selection"], "primary_role": "repair",
       "evolutions": [
         {"id":"deep_refrain","name":"Deep Refrain","description":"Restore 7 hull. Cool every organ by 3 before routing. Draw 1 card.","stats":{"cost":2,"heal":7,"vent":3,"draw":1}},
         {"id":"brief_refrain","name":"Brief Refrain","description":"Restore 2 hull. Cool every organ by 1 before routing. Draw 1 card.","stats":{"cost":1,"heal":2,"vent":1,"draw":1}}
@@ -586,6 +613,7 @@
     },
     {
       "id": "last_match",
+      "roles": ["attack", "prevention"], "primary_role": "attack",
       "evolutions": [
         {"id":"bright_match","name":"Bright Match","description":"Deal 18 damage. Apply 1 disruption to the chosen enemy.","stats":{"damage":18,"disrupt":1}},
         {"id":"banked_match","name":"Banked Match","description":"Deal 14 damage. Apply 1 disruption to the chosen enemy.","stats":{"damage":14,"disrupt":1,"retain":true}}
@@ -606,6 +634,7 @@
     },
     {
       "id": "white_noise",
+      "roles": ["prevention", "enabler"], "primary_role": "prevention",
       "evolutions": [
         {"id":"deafening_noise","name":"Deafening Noise","description":"Cool every organ by 1 before routing. Apply 11 disruption to the chosen enemy.","stats":{"vent":1,"disrupt":11}},
         {"id":"cooling_noise","name":"Cooling Noise","description":"Cool every organ by 2 before routing. Apply 6 disruption to the chosen enemy.","stats":{"vent":2,"disrupt":6}}
@@ -626,6 +655,7 @@
     },
     {
       "id": "star_chart",
+      "roles": ["enabler", "selection"], "primary_role": "selection",
       "evolutions": [
         {"id":"flaring_chart","name":"Flaring Chart","description":"Draw 3 cards. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"draw":3,"exhaust":true}},
         {"id":"folded_chart","name":"Folded Chart","description":"Draw 2 cards. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"draw":2,"retain":true}}
@@ -646,6 +676,7 @@
     },
     {
       "id": "ember_abacus",
+      "roles": ["attack", "enabler", "selection"], "primary_role": "attack",
       "evolutions": [
         {"id":"burning_sum","name":"Burning Sum","description":"Deal 18 damage. Cool every organ by 2 before routing. Draw 1 card.","stats":{"cost":2,"damage":18,"vent":2,"draw":1}},
         {"id":"small_sum","name":"Small Sum","description":"Deal 9 damage. Cool every organ by 1 before routing.","stats":{"cost":1,"damage":9,"vent":1,"draw":0}}
@@ -666,6 +697,7 @@
     },
     {
       "id": "kindly_static",
+      "roles": ["prevention", "repair"], "primary_role": "repair",
       "evolutions": [
         {"id":"deep_static","name":"Deep Static","description":"Restore 14 hull. Apply 4 disruption to the chosen enemy.","stats":{"cost":2,"heal":14,"disrupt":4}},
         {"id":"brief_static","name":"Brief Static","description":"Restore 6 hull. Apply 2 disruption to the chosen enemy.","stats":{"cost":1,"heal":6,"disrupt":2}}
@@ -686,6 +718,7 @@
     },
     {
       "id": "afterimage",
+      "roles": ["attack", "selection"], "primary_role": "selection",
       "evolutions": [
         {"id":"vivid_image","name":"Vivid Image","description":"Deal 17 damage. Draw 2 cards.","stats":{"cost":2,"damage":17,"draw":2}},
         {"id":"faint_image","name":"Faint Image","description":"Deal 7 damage. Draw 1 card.","stats":{"cost":1,"damage":7,"draw":1}}
@@ -706,6 +739,7 @@
     },
     {
       "id": "deep_winter",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"winter_storm","name":"Winter Storm","description":"Cool every organ by 4 before routing. Draw 2 cards.","stats":{"cost":2,"vent":4,"draw":2}},
         {"id":"winter_flurry","name":"Winter Flurry","description":"Cool every organ by 2 before routing.","stats":{"cost":1,"vent":2,"draw":0}}
@@ -726,6 +760,7 @@
     },
     {
       "id": "whole_horizon",
+      "roles": ["attack", "repair", "enabler"], "primary_role": "attack",
       "evolutions": [
         {"id":"wide_horizon","name":"Wide Horizon","description":"Deal 21 damage. Restore 6 hull. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"cost":2,"damage":21,"heal":6,"exhaust":true}},
         {"id":"near_horizon","name":"Near Horizon","description":"Deal 9 damage. Restore 2 hull. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"cost":1,"damage":9,"heal":2}}
@@ -746,6 +781,7 @@
     },
     {
       "id": "unbroken_song",
+      "roles": ["repair", "enabler", "selection"], "primary_role": "repair",
       "evolutions": [
         {"id":"full_song","name":"Full Song","description":"Restore 17 hull. Cool every organ by 3 before routing. Draw 1 card. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"cost":2,"heal":17,"vent":3,"draw":1}},
         {"id":"short_song","name":"Short Song","description":"Restore 7 hull. Cool every organ by 1 before routing. Restore all severed links; connect the first and last routed organs for this combat.","stats":{"cost":1,"heal":7,"vent":1,"draw":0}}
@@ -766,6 +802,7 @@
     },
     {
       "id": "margin_knife",
+      "roles": ["attack", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"keen_margin","name":"Keen Margin","description":"Deal 11 damage. Gain 1 Trace, up to 6.","stats":{"damage":11}},
         {"id":"inscribed_margin","name":"Inscribed Margin","description":"Deal 7 damage. Gain 2 Trace, up to 6.","stats":{"damage":7,"trace":2}}
@@ -788,6 +825,7 @@
     },
     {
       "id": "pale_patch",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"layered_patch","name":"Layered Patch","description":"Restore 8 hull. Gain 1 Trace, up to 6.","stats":{"heal":8}},
         {"id":"annotated_patch","name":"Annotated Patch","description":"Restore 5 hull. Gain 2 Trace, up to 6.","stats":{"heal":5,"trace":2}}
@@ -810,6 +848,7 @@
     },
     {
       "id": "carbon_breath",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"cool_carbon","name":"Cool Carbon","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Trace, up to 6.","stats":{"vent":2}},
         {"id":"carbon_imprint","name":"Carbon Imprint","description":"Cool every organ by 1 before routing. Gain 3 Trace, up to 6.","stats":{"draw":0,"trace":3}}
@@ -832,6 +871,7 @@
     },
     {
       "id": "first_draft",
+      "roles": ["attack", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"decisive_draft","name":"Decisive Draft","description":"Deal 9 damage. Gain 2 Trace, up to 6.","stats":{"damage":9}},
         {"id":"working_draft","name":"Working Draft","description":"Deal 6 damage. Gain 3 Trace, up to 6.","stats":{"damage":6,"trace":3}}
@@ -854,6 +894,7 @@
     },
     {
       "id": "ghost_line",
+      "roles": ["enabler", "selection"], "primary_role": "selection",
       "evolutions": [
         {"id":"etched_line","name":"Etched Line","description":"Draw 1 card. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Trace, up to 6.","stats":{"trace":2,"draw":1}},
         {"id":"waiting_line","name":"Waiting Line","description":"Draw 2 cards. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Trace, up to 6.","stats":{"retain":true}}
@@ -876,6 +917,7 @@
     },
     {
       "id": "revision_spike",
+      "roles": ["attack"], "primary_role": "attack",
       "evolutions": [
         {"id":"piercing_revision","name":"Piercing Revision","description":"Deal 15 damage.","stats":{"damage":15}},
         {"id":"pending_revision","name":"Pending Revision","description":"Deal 12 damage.","stats":{"damage":12,"retain":true}}
@@ -897,6 +939,7 @@
     },
     {
       "id": "vellum_shield",
+      "roles": ["prevention", "repair", "enabler"], "primary_role": "prevention",
       "evolutions": [
         {"id":"layered_vellum","name":"Layered Vellum","description":"Restore 6 hull. Apply 1 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"heal":6}},
         {"id":"sealed_vellum","name":"Sealed Vellum","description":"Restore 3 hull. Apply 3 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"heal":3,"disrupt":3}}
@@ -919,6 +962,7 @@
     },
     {
       "id": "cut_sentence",
+      "roles": ["attack", "prevention"], "primary_role": "prevention",
       "evolutions": [
         {"id":"sharp_sentence","name":"Sharp Sentence","description":"Deal 10 damage. Apply 2 disruption this enemy phase.","stats":{"damage":10}},
         {"id":"silencing_sentence","name":"Silencing Sentence","description":"Deal 6 damage. Apply 4 disruption this enemy phase.","stats":{"damage":6,"disrupt":4}}
@@ -940,6 +984,7 @@
     },
     {
       "id": "borrowed_dawn",
+      "roles": ["attack", "repair", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"searing_dawn","name":"Searing Dawn","description":"Deal 11 damage. Restore 3 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":11}},
         {"id":"kindled_dawn","name":"Kindled Dawn","description":"Deal 8 damage. Restore 6 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":6}}
@@ -962,6 +1007,7 @@
     },
     {
       "id": "ink_well",
+      "roles": ["enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"cold_ink","name":"Cold Ink","description":"Cool every organ by 3 before routing. Gain 2 Trace, up to 6.","stats":{"vent":3}},
         {"id":"dense_ink","name":"Dense Ink","description":"Cool every organ by 1 before routing. Gain 3 Trace, up to 6.","stats":{"vent":1,"trace":3}}
@@ -984,6 +1030,7 @@
     },
     {
       "id": "overwrite",
+      "roles": ["attack", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"forceful_overwrite","name":"Forceful Overwrite","description":"Deal 9 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":9}},
         {"id":"deferred_overwrite","name":"Deferred Overwrite","description":"Deal 6 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":6,"retain":true}}
@@ -1006,6 +1053,7 @@
     },
     {
       "id": "scar_note",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"restorative_note","name":"Restorative Note","description":"Restore 10 hull. Cool every organ by 1 before routing. Gain 1 Trace, up to 6.","stats":{"heal":10}},
         {"id":"cooling_note","name":"Cooling Note","description":"Restore 7 hull. Cool every organ by 2 before routing. Gain 1 Trace, up to 6.","stats":{"heal":7,"vent":2}}
@@ -1028,6 +1076,7 @@
     },
     {
       "id": "lost_paragraph",
+      "roles": ["prevention", "enabler", "selection"], "primary_role": "prevention",
       "evolutions": [
         {"id":"struck_paragraph","name":"Struck Paragraph","description":"Apply 8 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"disrupt":8,"draw":0}},
         {"id":"reserved_paragraph","name":"Reserved Paragraph","description":"Draw 1 card. Apply 5 disruption this enemy phase. Gain 1 Trace, up to 6.","stats":{"disrupt":5,"retain":true}}
@@ -1050,6 +1099,7 @@
     },
     {
       "id": "double_exposure",
+      "roles": ["attack", "selection", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"burned_exposure","name":"Burned Exposure","description":"Deal 12 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":12,"draw":0}},
         {"id":"latent_exposure","name":"Latent Exposure","description":"Deal 9 damage. Draw 1 card. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":9,"retain":true}}
@@ -1072,6 +1122,7 @@
     },
     {
       "id": "final_revision",
+      "roles": ["attack", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"definitive_revision","name":"Definitive Revision","description":"Deal 15 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":15}},
         {"id":"reserved_revision","name":"Reserved Revision","description":"Deal 12 damage. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"damage":12,"retain":true}}
@@ -1094,6 +1145,7 @@
     },
     {
       "id": "memory_lattice",
+      "roles": ["repair", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"woven_memory","name":"Woven Memory","description":"Restore 8 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Trace, up to 6.","stats":{"heal":8}},
         {"id":"inscribed_memory","name":"Inscribed Memory","description":"Restore 5 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 3 Trace, up to 6.","stats":{"heal":5,"trace":3}}
@@ -1116,6 +1168,7 @@
     },
     {
       "id": "blank_page",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"clean_slate","name":"Clean Slate","description":"Cool every organ by 3 before routing. Draw 1 card. Gain 2 Trace, up to 6.","stats":{"vent":3}},
         {"id":"loose_leaf","name":"Loose Leaf","description":"Cool every organ by 1 before routing. Draw 1 card. Gain 1 Trace, up to 6.","stats":{"cost":1,"vent":1,"trace":1}}
@@ -1138,6 +1191,7 @@
     },
     {
       "id": "second_history",
+      "roles": ["repair", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"restored_history","name":"Restored History","description":"Restore 12 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":12}},
         {"id":"unwritten_history","name":"Unwritten History","description":"Restore 9 hull. Rewrite: spend all Trace; if any was spent, add 2 damage per point and half the previous command’s base damage, healing and disruption, rounded down.","stats":{"heal":9,"retain":true}}
@@ -1160,6 +1214,7 @@
     },
     {
       "id": "choral_bolt",
+      "roles": ["attack"], "primary_role": "attack",
       "evolutions": [
         {"id":"piercing_chorus","name":"Piercing Chorus","description":"Deal 11 damage.","stats":{"damage":11}},
         {"id":"gathering_chorus","name":"Gathering Chorus","description":"Deal 7 damage. Gain 1 Resonance, up to 3.","stats":{"damage":7,"resonance":1}}
@@ -1181,6 +1236,7 @@
     },
     {
       "id": "warm_refrain",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"full_refrain","name":"Full Refrain","description":"Restore 8 hull. Gain 1 Resonance, up to 3.","stats":{"heal":8}},
         {"id":"waiting_refrain","name":"Waiting Refrain","description":"Restore 6 hull. Gain 1 Resonance, up to 3.","stats":{"heal":6,"retain":true}}
@@ -1203,6 +1259,7 @@
     },
     {
       "id": "silent_measure",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"cool_measure","name":"Cool Measure","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"vent":2}},
         {"id":"gathered_measure","name":"Gathered Measure","description":"Cool every organ by 1 before routing. Gain 2 Resonance, up to 3.","stats":{"draw":0,"resonance":2}}
@@ -1225,6 +1282,7 @@
     },
     {
       "id": "call_and_response",
+      "roles": ["attack", "enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"strong_call","name":"Strong Call","description":"Deal 9 damage. Gain 1 Resonance, up to 3.","stats":{"damage":9,"draw":0}},
         {"id":"waiting_response","name":"Waiting Response","description":"Deal 6 damage. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"damage":6,"retain":true}}
@@ -1247,6 +1305,7 @@
     },
     {
       "id": "tuning_fork",
+      "roles": ["prevention", "enabler"], "primary_role": "prevention",
       "evolutions": [
         {"id":"clear_tuning","name":"Clear Tuning","description":"Apply 5 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":5}},
         {"id":"gathered_tuning","name":"Gathered Tuning","description":"Apply 3 disruption this enemy phase. Gain 2 Resonance, up to 3.","stats":{"disrupt":3,"resonance":2}}
@@ -1269,6 +1328,7 @@
     },
     {
       "id": "bright_canon",
+      "roles": ["attack", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"blazing_canon","name":"Blazing Canon","description":"Deal 15 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":15}},
         {"id":"held_canon","name":"Held Canon","description":"Deal 12 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":12,"retain":true}}
@@ -1291,6 +1351,7 @@
     },
     {
       "id": "breath_between",
+      "roles": ["repair", "enabler"], "primary_role": "repair",
       "evolutions": [
         {"id":"deep_rest","name":"Deep Rest","description":"Restore 6 hull. Cool every organ by 1 before routing. Gain 1 Resonance, up to 3.","stats":{"heal":6}},
         {"id":"cool_rest","name":"Cool Rest","description":"Restore 3 hull. Cool every organ by 2 before routing. Gain 1 Resonance, up to 3.","stats":{"heal":3,"vent":2}}
@@ -1313,6 +1374,7 @@
     },
     {
       "id": "dissonant_edge",
+      "roles": ["attack", "prevention"], "primary_role": "prevention",
       "evolutions": [
         {"id":"cutting_dissonance","name":"Cutting Dissonance","description":"Deal 10 damage. Apply 2 disruption this enemy phase.","stats":{"damage":10}},
         {"id":"silencing_dissonance","name":"Silencing Dissonance","description":"Deal 6 damage. Apply 4 disruption this enemy phase.","stats":{"damage":6,"disrupt":4}}
@@ -1334,6 +1396,7 @@
     },
     {
       "id": "shared_pulse",
+      "roles": ["attack", "repair", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"driving_pulse","name":"Driving Pulse","description":"Deal 9 damage. Restore 3 hull. Gain 1 Resonance, up to 3.","stats":{"damage":9}},
         {"id":"sustaining_pulse","name":"Sustaining Pulse","description":"Deal 5 damage. Restore 5 hull. Gain 1 Resonance, up to 3.","stats":{"damage":5,"heal":5}}
@@ -1356,6 +1419,7 @@
     },
     {
       "id": "counterpoint",
+      "roles": ["enabler", "selection"], "primary_role": "selection",
       "evolutions": [
         {"id":"light_counterpoint","name":"Light Counterpoint","description":"Draw 2 cards. Gain 1 Resonance, up to 3.","stats":{"draw":2,"first_free":true}},
         {"id":"gathered_counterpoint","name":"Gathered Counterpoint","description":"Draw 1 card. Gain 2 Resonance, up to 3.","stats":{"draw":1,"resonance":2}}
@@ -1378,6 +1442,7 @@
     },
     {
       "id": "crescendo",
+      "roles": ["attack", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"rising_crescendo","name":"Rising Crescendo","description":"Deal 13 damage. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":13}},
         {"id":"restorative_crescendo","name":"Restorative Crescendo","description":"Deal 10 damage. Restore 3 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":10,"heal":3}}
@@ -1400,6 +1465,7 @@
     },
     {
       "id": "hushed_chord",
+      "roles": ["prevention", "enabler"], "primary_role": "prevention",
       "evolutions": [
         {"id":"muted_chord","name":"Muted Chord","description":"Apply 8 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":8,"vent":0}},
         {"id":"cool_chord","name":"Cool Chord","description":"Cool every organ by 2 before routing. Apply 5 disruption this enemy phase. Gain 1 Resonance, up to 3.","stats":{"disrupt":5,"vent":2}}
@@ -1422,6 +1488,7 @@
     },
     {
       "id": "orbital_round",
+      "roles": ["attack", "selection"], "primary_role": "attack",
       "evolutions": [
         {"id":"striking_round","name":"Striking Round","description":"Deal 12 damage.","stats":{"damage":12,"draw":0}},
         {"id":"waiting_round","name":"Waiting Round","description":"Deal 9 damage. Draw 1 card.","stats":{"damage":9,"retain":true}}
@@ -1443,6 +1510,7 @@
     },
     {
       "id": "harmonic_bridge",
+      "roles": ["repair", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"strong_harmony","name":"Strong Harmony","description":"Restore 7 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 1 Resonance, up to 3.","stats":{"heal":7}},
         {"id":"gathered_harmony","name":"Gathered Harmony","description":"Restore 4 hull. Restore severed links; connect the first and last routed organs for this combat. Gain 2 Resonance, up to 3.","stats":{"heal":4,"resonance":2}}
@@ -1465,6 +1533,7 @@
     },
     {
       "id": "grand_concert",
+      "roles": ["attack", "repair", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"triumphant_concert","name":"Triumphant Concert","description":"Deal 15 damage. Restore 4 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":15}},
         {"id":"restorative_concert","name":"Restorative Concert","description":"Deal 12 damage. Restore 7 hull. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"heal":7}}
@@ -1487,6 +1556,7 @@
     },
     {
       "id": "resonant_shell",
+      "roles": ["repair", "enabler"], "primary_role": "enabler",
       "evolutions": [
         {"id":"full_shell","name":"Full Shell","description":"Restore 10 hull. Gain 2 Resonance, up to 3.","stats":{"heal":10}},
         {"id":"light_shell","name":"Light Shell","description":"Restore 5 hull. Gain 1 Resonance, up to 3.","stats":{"cost":1,"heal":5,"resonance":1}}
@@ -1509,6 +1579,7 @@
     },
     {
       "id": "rest_note",
+      "roles": ["enabler", "selection"], "primary_role": "enabler",
       "evolutions": [
         {"id":"deep_silence","name":"Deep Silence","description":"Cool every organ by 3 before routing. Gain 1 Resonance, up to 3.","stats":{"vent":3,"draw":0}},
         {"id":"held_silence","name":"Held Silence","description":"Cool every organ by 2 before routing. Draw 1 card. Gain 1 Resonance, up to 3.","stats":{"vent":2,"retain":true}}
@@ -1531,6 +1602,7 @@
     },
     {
       "id": "unison",
+      "roles": ["attack", "enabler", "scaling"], "primary_role": "scaling",
       "evolutions": [
         {"id":"striking_unison","name":"Striking Unison","description":"Deal 13 damage. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":13}},
         {"id":"sustaining_unison","name":"Sustaining Unison","description":"Deal 9 damage. Restore 3 hull. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent.","stats":{"damage":9,"heal":3}}

@@ -10,6 +10,9 @@
 - [Cartographer evolutions](cartographer-evolutions.md): all 36 production branch pairs, tradeoffs, policy boundary and manual review gates (#15 partial).
 - [Palimpsest evolutions](palimpsest-evolutions.md): all 18 production branch pairs, Trace/copy tradeoffs, named policy and counterfactual tests (#15 candidate).
 - [Choir evolutions](choir-evolutions.md): all 18 production branch pairs, Resonance/Concert sequencing, policy and remaining #15 review gates.
+- [Reward distribution](reward-distribution.md): v1 rarity draw weights, primary roles, inspectable pity, deliberate shop stock and permanent v0 save compatibility (#19 partial).
+- [Distribution report](reward-distribution-report.md): raw versus constrained observations across 30 published seed families; offer exposure, not boss-reach or human win rates.
+- [Choir base-dominance follow-up](choir-base-dominance-followup.md): explicit prerequisite before further Choir card additions.
 
 New to the game? Start with [your first encounter](gameplay.md#your-first-encounter). Keep the [controls](gameplay.md#controls) and [glossary](gameplay.md#glossary) nearby while learning.
 

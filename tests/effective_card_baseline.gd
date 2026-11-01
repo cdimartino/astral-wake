@@ -33,6 +33,9 @@ static func capture(game) -> Dictionary:
 					# and every state/RNG field; card_piles_test checks the new records.
 					result.presentation = result.presentation.filter(func(event): return event.kind not in ["discard_card", "draw_card", "shuffle"])
 					# Explicitly additive dormant bookkeeping only; never omit RNG/gameplay.
+					assert(result.next.reward_generation==1 and result.next.rare_offer_misses==0)
+					result.next.erase("reward_generation")
+					result.next.erase("rare_offer_misses")
 					result.next.erase("schema_revision")
 					assert(result.next.pending_selection.is_empty())
 					result.next.erase("pending_selection")
