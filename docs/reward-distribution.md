@@ -1,5 +1,7 @@
 # Reward distribution — #19 first coherent slice
 
+[Primary drafting run, exact replay and evidence limits](reward-playtest-0093cg.md)
+
 **Candidate, not issue closure or balance approval.** [Finite generation report](reward-distribution-report.md).
 All 72 base cards and all 144 evolution branches are unchanged except two additive
 draft fields. No new cards, enemies, powerup stats, starters or resolver effects.
