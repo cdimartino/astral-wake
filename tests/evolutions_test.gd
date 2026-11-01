@@ -109,7 +109,7 @@ func run_tests() -> void:
 	migration()
 	pending_migration()
 	var production=Game.new(directory.path_join("production"))
-	production.new_run("A1B2C3","palimpsest")
+	production.new_run("A1B2C3","hollow_choir")
 	workshop(production)
 	require(not production.evolve_card(production.run.deck[0].uid,"").ok,"UID API requires an explicit identity even for legacy cards")
 	require(production.modify_card(0).ok and production.run.deck[0].evolution=="legacy","Unbranched production keeps old one-argument behavior")

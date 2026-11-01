@@ -127,7 +127,9 @@ func check_noncombat() -> void:
 	state.mode = "recovery"
 	require(session.apply(command(session, "recover", {"choice":"upgrade"})).ok, "Recovery opens evolution")
 	var uid = state.deck[2].uid
-	require(session.apply(command(session, "modify", {"uid":uid})).ok and state.deck[2].level == 1, "Evolution uses stable deck UID")
+	var before = Session.snapshot(state)
+	require(not session.apply(command(session, "modify", {"uid":uid})).ok and Session.snapshot(state)==before, "Authored Palimpsest requires explicit branch without mutation")
+	require(session.apply(command(session, "modify", {"uid":uid,"branch":"inscribed_margin"})).ok and state.deck[2].level == 1 and state.deck[2].evolution=="inscribed_margin", "Evolution uses stable deck UID and named branch")
 	state.mode = "reward"
 	state.reward = {"boss":false, "choices":[{"kind":"card", "id":"needle"}]}
 	require(session.apply(command(session, "reward", {"choice":-1})).ok and state.mode == "map", "Explicit reward skip")
@@ -139,6 +141,7 @@ func check_noncombat() -> void:
 	# Unlike the unmodified seed trace tested earlier, this is not a seed replay.
 	session.journal.initial = Session.snapshot(state)
 	session.journal.entries.clear()
+	session.journal.errors.clear()
 	require(session.apply(command(session, "continue_region")).ok and state.region == 1, "Explicit region transition preserves generated RNG")
 	var path = directory.path_join("noncombat/trace.json")
 	session.write(path)
