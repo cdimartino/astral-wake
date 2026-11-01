@@ -12,10 +12,10 @@ The combat header's **Last command** box shows the previous card, its kind, and 
 
 Card faces show their effective upgraded numbers, including Vent, Draw, and vessel-resource gains. Effect badges wrap rather than disappearing beneath long descriptions.
 
-Cartographer's 36 cards now offer [two authored evolutions](cartographer-evolutions.md)
-per copy: compare output, CP, timing and any Retain/Exhaust flags before confirming.
-Palimpsest and Choir retain generic upgrades (+3 damage, +2 repair, +1 vent/disrupt
-on existing positive stats; pure utility instead spares first-organ strain).
+All 72 cards now offer two authored evolutions per copy: [Cartographer](cartographer-evolutions.md),
+[Palimpsest](palimpsest-evolutions.md), and the [Choir candidate](choir-evolutions.md).
+Compare output, CP, timing, resource gains and any Retain/Exhaust/first-free flags
+before confirming.
 Old evolved copies on all ships keep that exact legacy behavior, including Draw.
 
 While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
@@ -148,11 +148,11 @@ Cards come from the chosen ship's discovery pool, fixed when the expedition star
 
 Shops normally offer two commands priced at 35 and 43 salvage, two distinct unowned powerups for 75 each, removal for 30, and evolution for 35. Old Favour discounts these prices by 20%. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
 
-A command can evolve once. Cartographer copies choose one permanent named branch;
+A command can evolve once. Every ship's copies choose one permanent named branch;
 some exchange output for Retain, cooling, disruption or draw, and some reduce a
 2-CP command to 1 CP with lower payload. Branches replace printed stats, never add
 generic bonuses afterwards. Compare both full definitions before confirming.
-Unbranched Palimpsest/Choir copies and existing `legacy` copies keep **+3 damage,
+Existing `legacy` copies keep **+3 damage,
 +2 repair, +1 Vent and +1 disruption** where the base stat is positive; if none is
 positive, their first routed organ instead gains no strain. Legacy cost and Draw
 are unchanged. Expanded text and CP always reflect the chosen definition.

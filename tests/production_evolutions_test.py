@@ -1,4 +1,4 @@
-"""Production gates: frozen base 63fbd24; Cartographer branches pinned at cf175c7."""
+"""Production gates: frozen bases, Cartographer/Palimpsest pinned before Choir."""
 import copy
 import hashlib
 import json
@@ -15,15 +15,58 @@ digest = hashlib.sha256(json.dumps(stripped, sort_keys=True, separators=(',', ':
 assert digest == BASE_CATALOG_SHA256, 'Every base field and all other catalog content must remain unchanged'
 previous = copy.deepcopy(data)
 for card in previous['cards']:
-    if card.get('character') == 'palimpsest':
+    if card.get('character') in {'palimpsest', 'hollow_choir'}:
         card.pop('evolutions', None)
-assert hashlib.sha256(json.dumps(previous, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'ea3c5904215ab7f853c618d7337be2c29fb71cbc65283eed541d9ded5b070a9c', 'Only Palimpsest evolutions may differ from cf175c7, including all Cartographer branches'
+assert hashlib.sha256(json.dumps(previous, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'ea3c5904215ab7f853c618d7337be2c29fb71cbc65283eed541d9ded5b070a9c', 'Cartographer branches and all bases must match cf175c7'
+previous = copy.deepcopy(data)
+for card in previous['cards']:
+    if card.get('character') == 'hollow_choir':
+        card.pop('evolutions', None)
+assert hashlib.sha256(json.dumps(previous, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '6ec26df183c35d256931376efc0aa76ce4b1ba680be4e910ad1507b715528554', 'Only Choir evolution additions may differ from f66fe8e'
 cart = [c for c in data['cards'] if c.get('character', 'cartographer') == 'cartographer']
 pal = [c for c in data['cards'] if c.get('character') == 'palimpsest']
 choir = [c for c in data['cards'] if c.get('character') == 'hollow_choir']
 assert len(cart) == 36
 assert len(pal) == len(choir) == 18
-assert all('evolutions' not in c for c in choir)
+CHOIR_OVERRIDES = {
+    'choral_bolt': [{'damage': 11}, {'damage': 7, 'resonance': 1}],
+    'warm_refrain': [{'heal': 8}, {'heal': 6, 'retain': True}],
+    'silent_measure': [{'vent': 2}, {'draw': 0, 'resonance': 2}],
+    'call_and_response': [{'damage': 9, 'draw': 0}, {'damage': 6, 'retain': True}],
+    'tuning_fork': [{'disrupt': 5}, {'disrupt': 3, 'resonance': 2}],
+    'bright_canon': [{'damage': 15}, {'damage': 12, 'retain': True}],
+    'breath_between': [{'heal': 6}, {'heal': 3, 'vent': 2}],
+    'dissonant_edge': [{'damage': 10}, {'damage': 6, 'disrupt': 4}],
+    'shared_pulse': [{'damage': 9}, {'damage': 5, 'heal': 5}],
+    'counterpoint': [{'draw': 2, 'first_free': True}, {'draw': 1, 'resonance': 2}],
+    'crescendo': [{'damage': 13}, {'damage': 10, 'heal': 3}],
+    'hushed_chord': [{'disrupt': 8, 'vent': 0}, {'disrupt': 5, 'vent': 2}],
+    'orbital_round': [{'damage': 12, 'draw': 0}, {'damage': 9, 'retain': True}],
+    'harmonic_bridge': [{'heal': 7}, {'heal': 4, 'resonance': 2}],
+    'grand_concert': [{'damage': 15}, {'heal': 7}],
+    'resonant_shell': [{'heal': 10}, {'cost': 1, 'heal': 5, 'resonance': 1}],
+    'rest_note': [{'vent': 3, 'draw': 0}, {'vent': 2, 'retain': True}],
+    'unison': [{'damage': 13}, {'damage': 9, 'heal': 3}],
+}
+assert {c['id'] for c in choir} == set(CHOIR_OVERRIDES)
+for card in choir:
+    assert [b['stats'] for b in card['evolutions']] == CHOIR_OVERRIDES[card['id']], card['id']
+for value in (True, False, 1.5, -1, 4, '2', None, [], {}):
+    bad = copy.deepcopy(choir[0])
+    bad['evolutions'][1]['stats']['resonance'] = value
+    try:
+        validate_evolutions(bad)
+    except ValueError:
+        continue
+    raise AssertionError(('invalid Choir Resonance', value))
+bad = copy.deepcopy(choir[0])
+bad['evolutions'][1]['stats']['trace'] = 1
+try:
+    validate_evolutions(bad)
+except ValueError:
+    pass
+else:
+    raise AssertionError('Choir cannot gain foreign Trace')
 PALIMPSEST_OVERRIDES = {
     'margin_knife': [{'damage': 11}, {'damage': 7, 'trace': 2}],
     'pale_patch': [{'heal': 8}, {'heal': 5, 'trace': 2}],
@@ -47,7 +90,7 @@ PALIMPSEST_OVERRIDES = {
 assert {c['id'] for c in pal} == set(PALIMPSEST_OVERRIDES)
 for card in pal:
     assert [b['stats'] for b in card['evolutions']] == PALIMPSEST_OVERRIDES[card['id']], card['id']
-for card in cart + pal:
+for card in cart + pal + choir:
     validate_evolutions(card)
     a, b = [dict(card, **branch['stats']) for branch in card['evolutions']]
     # Necessary authoring gate, NOT proof of encounter/deck-level balance.
@@ -79,4 +122,4 @@ except ValueError:
     pass
 else:
     raise AssertionError('Install/Exhaust incompatibility')
-print('PRODUCTION_EVOLUTIONS 54 pairs: unchanged bases/Cartographer, Choir unbranched, typed flags, no scalar dominance')
+print('PRODUCTION_EVOLUTIONS 72 pairs: unchanged bases/prior branches, typed flags, no scalar dominance')

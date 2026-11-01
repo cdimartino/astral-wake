@@ -36,8 +36,7 @@ func run_tests() -> void:
 	var count=0
 	for card in catalog.catalog.cards:
 		if card.get("character","cartographer")!="cartographer":
-			if card.character=="hollow_choir": require(not card.has("evolutions"),"Choir remains unbranched")
-			else: require(card.evolutions.size()==2 and Game.Evolutions.valid_definition(card),"Palimpsest has two strict branches")
+			require(card.evolutions.size()==2 and Game.Evolutions.valid_definition(card),"Other ships have two strict branches")
 			continue
 		count+=1
 		require(card.evolutions.size()==2 and Game.Evolutions.valid_definition(card),"Two strict branches: "+card.id)

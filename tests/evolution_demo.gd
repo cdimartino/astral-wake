@@ -16,8 +16,8 @@ func show_demo() -> void:
 	var ship="cartographer"
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--ship="): ship=arg.trim_prefix("--ship=")
-	if not ship in ["cartographer","palimpsest"]:
-		push_error("Demo supports cartographer or palimpsest only.")
+	if not ship in ["cartographer","palimpsest","hollow_choir"]:
+		push_error("Demo supports cartographer, palimpsest or hollow_choir only.")
 		quit(1)
 		return
 	ui.game.new_run("0093CG",ship)
