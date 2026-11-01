@@ -5,10 +5,10 @@
 production pools are unchanged. Six actual prototype definitions live exclusively
 in `tests/route_effect_fixtures.gd`: Survey Spike, Cross Current, Heat Sink,
 Thermal Lance, Parry Filament and Refracted Fang. Living Atlas already has its
-separate existing engine fixture. **Phase Radiator (`cooling_ward`) and Interception
-Loom (`redirect_retaliation`) are deferred**, including their source latches,
-enemy-phase damage/recipient semantics, save validation and native counters. They
-are not registered as dormant placeholders or claimed as implemented cards.
+separate existing engine fixture. Phase Radiator (`cooling_ward`) and Interception
+Loom (`redirect_retaliation`) now have separate **fixture-only** typed engines in
+`tests/defense_engine_fixtures.gd`; see [their timing, counters and native workflow](defense-install-engines.md).
+They are not production cards and do not complete #14/#16.
 
 ## Closed authoring contract
 
@@ -46,7 +46,8 @@ after a lethal route penalty, even if the same command kills the final foe.
 cooling, not attempted cooling or net strain change. A legitimate vent removal
 followed by route strain and another removal counts both effects; a first-free
 route starting at zero removes zero. Automatic end-turn cooling is excluded.
-This value is preview accounting only in this slice: it triggers **no new engine**.
+Entry-active Phase Radiator fixtures now observe this total; the production pool
+still contains no cooling-ward engine.
 
 ## Evolution, persistence, inspection and compatibility
 
@@ -62,9 +63,10 @@ for new-effect cards, and compact native text shows applied/requested ward and
 actual cooling. Legacy result dictionaries receive no additional fields, preserving
 the existing 432 frozen full-result/state comparisons without rebaselining.
 
-There is no new persisted field, source type or latch: run schema remains **6**,
-store envelope **1**. Existing counters, dormant Install definitions and migration
-guards are unchanged. Raw save validation uses the same effective-definition
+The route slice adds no persisted field: run schema remains **6**, store envelope
+**1**. The fixture-only defense extension uses type-discriminated existing source
+counters/latches; dormant Install definitions and migration guards remain valid.
+Raw save validation uses the same effective-definition
 validator as resolution; pending chooser guards already cover the complete
 effective definition. Preview/selected confirmation still run the same copied-state
 resolver. `route_effects.gd` joins manual source fingerprints; same-HEAD dirty-byte

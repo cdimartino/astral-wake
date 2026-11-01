@@ -602,6 +602,9 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"cooling","amounts":route_cooled})
 		events.append("Three-organ route: cool its first organ by 1 after route strain.")
 	if vent>0: events.append("Cool every organ by %d before route strain."%vent)
+	var command_cooling=int(cooled.reduce(func(total, amount): return total+amount,0))+int(route_cooled.reduce(func(total, amount): return total+amount,0))
+	# Before installation: only entry-active sources can observe this command.
+	Engines.cooling(self,state,command_cooling,presentation,events)
 	if definition.get("link",false):
 		battle.severed.clear()
 		presentation.append({"kind":"link","route":route.duplicate()})
@@ -656,7 +659,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		result.conditional_damage=conditional_damage
 		# Count actual removals, not net change: vent before strain and route
 		# cooling after strain are distinct legitimate effects (including re-added strain).
-		result.command_cooling=int(cooled.reduce(func(total, amount): return total+amount,0))+int(route_cooled.reduce(func(total, amount): return total+amount,0))
+		result.command_cooling=command_cooling
 	return result
 
 func preview_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
@@ -879,6 +882,9 @@ func end_turn() -> Dictionary:
 	battle.temporary_retain.clear()
 	battle.severed.clear()
 	var count=battle.enemies.size()
+	# Snapshot source records, not newly created sources; keep enemy indices stable
+	# until the existing phase-end cleanup (including deaths and incubated enemies).
+	var retaliation_sources=battle.engine_counters.filter(func(counter): return counter.type=="redirect_retaliation")
 	for i in range(count):
 		var foe=battle.enemies[i]
 		if int(foe.hp)<=0: continue
@@ -891,6 +897,7 @@ func end_turn() -> Dictionary:
 			foe.redirect=0
 			continue
 		var intent=foe.intent
+		var retaliation_recipient=-1
 		var amount=int(intent.get("amount",0))
 		if int(intent.get("interrupt",0))>0 and int(foe.disrupt)>=int(intent.interrupt):
 			_log(run,"%s: %s interrupted by disruption."%[foe.name,str(intent.label).get_slice(" · ",0)])
@@ -914,6 +921,7 @@ func end_turn() -> Dictionary:
 					if restored>0:
 						presentation.append({"kind":"enemy_heal","source_index":i,"target_index":i,"amount":restored})
 						_log(run,"%s drains %d hull to repair itself."%[foe.name,restored])
+				if attack.redirected>0: retaliation_recipient=int(attack.redirect_target)
 
 			"strain":
 				var indices=_strain_targets(battle.strain)
@@ -958,6 +966,7 @@ func end_turn() -> Dictionary:
 		foe.disrupt=0
 		foe.redirect=0
 		if int(run.hull)<=0: break
+		if retaliation_recipient>=0: Engines.retaliation(self,run,retaliation_sources,retaliation_recipient,i,presentation)
 	_clean_enemies(run,presentation)
 	battle.ward=0
 	var cooled=[]

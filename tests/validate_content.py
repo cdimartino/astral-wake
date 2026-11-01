@@ -171,9 +171,18 @@ def validate(data):
             require(not c.get('exhaust', False), f'{ident}: Install and Exhaust are mutually exclusive')
         if 'engine' in c:
             spec = c['engine']
-            require('install' in c and isinstance(spec, dict) and set(spec) == {'type', 'cap'}, f'{ident}: malformed engine')
-            require(spec['type'] in {'novel_route', 'other_exhaust'}, f'{ident}: unsupported engine')
-            integer(spec['cap'], 1, 6 if spec['type'] == 'novel_route' else 5, f'{ident}.engine.cap')
+            require('install' in c and isinstance(spec, dict) and isinstance(spec.get('type'), str), f'{ident}: malformed engine')
+            kind = spec['type']
+            fields = {'novel_route': {'type', 'cap'}, 'other_exhaust': {'type', 'cap'},
+                      'cooling_ward': {'type', 'threshold', 'ward'}, 'redirect_retaliation': {'type', 'damage'}}
+            require(kind in fields and set(spec) == fields[kind], f'{ident}: unsupported/malformed engine')
+            if kind in {'novel_route', 'other_exhaust'}:
+                integer(spec['cap'], 1, 6 if kind == 'novel_route' else 5, f'{ident}.engine.cap')
+            elif kind == 'cooling_ward':
+                integer(spec['threshold'], 1, 12, f'{ident}.engine.threshold')
+                integer(spec['ward'], 1, 99, f'{ident}.engine.ward')
+            else:
+                integer(spec['damage'], 1, 99, f'{ident}.engine.damage')
         require(not any(k in c for k in ('trace', 'rewrite')) or c.get('character') == 'palimpsest', f'{ident}: Trace belongs to Palimpsest')
         require(not any(k in c for k in ('resonance', 'concert')) or c.get('character') == 'hollow_choir', f'{ident}: Resonance belongs to Choir')
         integer(c['cost'], 1, 2, f'{ident}.cost')
@@ -354,6 +363,25 @@ def self_test(data):
         engine_valid = copy.deepcopy(data)
         engine_valid['cards'][0].update(install='fixture_engine', engine={'type': kind, 'cap': cap}, roles=['attack', 'scaling'])
         validate(engine_valid)
+    for spec in [{'type': 'cooling_ward', 'threshold': 2, 'ward': 5},
+                 {'type': 'redirect_retaliation', 'damage': 6}]:
+        engine_valid = copy.deepcopy(data)
+        engine_valid['cards'][0].update(install='fixture_engine', engine=spec, roles=['attack', 'scaling'])
+        validate(engine_valid)
+        bad_specs = [{**spec, 'cap': 1}, {**spec, 'type': 'unknown'}]
+        for key in set(spec) - {'type'}:
+            for bad in [True, False, None, -1, 0, 0.5, 100, '6']:
+                bad_specs.append({**spec, key: bad})
+            bad_specs.append({k: v for k, v in spec.items() if k != key})
+        for bad in bad_specs:
+            broken = copy.deepcopy(engine_valid)
+            broken['cards'][0]['engine'] = bad
+            try:
+                validate(broken)
+            except (ValueError, AssertionError):
+                pass
+            else:
+                raise AssertionError(f'accepted malformed typed defense engine: {bad}')
     mutations = [
         lambda d: d['cards'][0].pop('roles'),
         lambda d: d['cards'][0].update(roles=[]),
