@@ -16,7 +16,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	var game = Game.new(directory)
-	require(game.catalog.cards.size() == 72, "Three distinct card pools total 72 cards")
+	require(game.catalog.cards.size() == 81, "Three distinct card pools total 81 cards")
 	require(game.catalog.regions.size() == 6, "Six possible areas")
 	require(game.catalog.characters.size() == 3, "Three playable ships")
 	var seen_areas := {}
@@ -130,6 +130,7 @@ func legacy_save(game) -> void:
 	var expected: Dictionary = game.run.duplicate(true)
 	game.run.erase("schema_revision")
 	game.run.erase("reward_generation")
+	game.run.erase("content_pool_revision")
 	game.run.erase("rare_offer_misses")
 	game.run.erase("pending_selection")
 	for key in ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"]: game.run.battle.erase(key)

@@ -8,6 +8,9 @@ from validate_content import validate, validate_evolutions
 data = json.loads(Path('data/catalog.json').read_text())
 # Additive draft metadata is validated separately, never part of combat hashes.
 validate(data)
+expansion = [c for c in data['cards'] if c.get('introduced_revision', 0) == 1]
+assert len(expansion) == 9
+data['cards'] = [c for c in data['cards'] if c.get('introduced_revision', 0) == 0]
 for card in data['cards']:
     card.pop('roles')
     card.pop('primary_role')
@@ -100,7 +103,7 @@ for card in cart + pal + choir:
     a, b = [dict(card, **branch['stats']) for branch in card['evolutions']]
     # Necessary authoring gate, NOT proof of encounter/deck-level balance.
     def dimensions(c):
-        return [c.get(k, 0) for k in ('damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance')] + [
+        return [c.get(k, 0) for k in ('damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance', 'ward')] + [
             int(c.get('retain', False)), int(c.get('first_free', False)),
             -int(c.get('exhaust', False)), -c['cost']]
     pairs = list(zip(dimensions(a), dimensions(b)))
@@ -128,3 +131,17 @@ except ValueError:
 else:
     raise AssertionError('Install/Exhaust incompatibility')
 print('PRODUCTION_EVOLUTIONS 72 pairs: unchanged bases/prior branches, typed flags, no scalar dominance')
+for card in expansion:
+    validate_evolutions(card)
+    a, b = [dict(card, **branch['stats']) for branch in card['evolutions']]
+    pairs = list(zip(dimensions(a), dimensions(b)))
+    assert any(x > y for x, y in pairs) and any(y > x for x, y in pairs), card['id']
+    for value in (True, False, 1.0, 0.5, -1, 2, '1', None):
+        bad = copy.deepcopy(json.loads(Path('data/catalog.json').read_text()))
+        bad['cards'][-1]['introduced_revision'] = value
+        try:
+            validate(bad)
+        except ValueError:
+            continue
+        raise AssertionError(('introduced_revision', value))
+print('EXPANSION 9 bases / 18 typed, scalar-nondominated branches; strict revision validation')

@@ -228,6 +228,7 @@ func check() -> void:
 	var old=game.run.duplicate(true)
 	old.schema_revision=3
 	old.erase("reward_generation")
+	old.erase("content_pool_revision")
 	old.erase("rare_offer_misses")
 	old.battle.erase("engine_counters")
 	old.battle.erase("engine_routes")
@@ -235,6 +236,7 @@ func check() -> void:
 	resumed=Fixtures.FixtureGame.new(directory)
 	var expected_legacy=game.run.duplicate(true)
 	expected_legacy.reward_generation=0
+	expected_legacy.content_pool_revision=0
 	require(resumed.run==expected_legacy,"Revision 3 migration preserves all state with legacy distribution policy")
 	fresh(game)
 	source=game.run.battle.hand[3].uid
@@ -242,6 +244,7 @@ func check() -> void:
 	old=game.run.duplicate(true)
 	old.schema_revision=3
 	old.erase("reward_generation")
+	old.erase("content_pool_revision")
 	old.erase("rare_offer_misses")
 	old.battle.erase("engine_counters")
 	old.battle.erase("engine_routes")

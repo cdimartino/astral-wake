@@ -1,5 +1,9 @@
 # Branching evolutions — infrastructure slice (#15)
 
+Historical 72-card authoring record. The [production expansion candidate](cartographer-expansion.md)
+adds nine cards / eighteen branches using this same stat/flag allowlist, and
+versions the content pool in run schema 7. No original branch is changed.
+
 All 72 production cards now have two authored choices: [Cartographer](cartographer-evolutions.md),
 [Palimpsest](palimpsest-evolutions.md) and the [Choir candidate](choir-evolutions.md).
 All base definitions and existing legacy outcomes remain unchanged. Authoring

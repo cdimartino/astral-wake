@@ -283,6 +283,7 @@ func atomic_and_legacy() -> void:
 	require(not game.evolve_card(uid,"piercing_chorus").ok and game.run.salvage==15,"Second evolution/payment rejected")
 	game.run.schema_revision=4
 	game.run.erase("reward_generation")
+	game.run.erase("content_pool_revision")
 	game.run.erase("rare_offer_misses")
 	game.run.deck[0].erase("evolution")
 	require(game._migrate_evolutions(game.run) and game.run.deck[0].evolution=="legacy","Old level-one Choir stays legacy")
@@ -321,5 +322,6 @@ func policy_checks() -> void:
 	p.game.run.character="palimpsest"
 	require(p.evolution_policy_version()=="palimpsest-branches-v1","Palimpsest version unchanged")
 	p.game.run.character="cartographer"
+	p.game.run.content_pool_revision=0 # Historical Cartographer policy stays versioned.
 	require(p.evolution_policy_version()=="cartographer-branches-v1","Cartographer version unchanged")
 	p.free()

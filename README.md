@@ -57,7 +57,7 @@ A route cannot repeat an organ or cross a severed connection. A saturated organ 
 
 ### Three vessels
 
-- **The Cartographer** starts with 100 hull and draws from the original 36-card pool. Lens, Fork, Echo, Suture, Hush and Prism transform commands in route order.
+- **The Cartographer** starts with 100 hull and draws from 45 cards in fresh expeditions (36 in legacy content-pool revision 0). Lens, Fork, Echo, Suture, Hush and Prism transform commands in route order.
 - **The Palimpsest** starts with 96 hull and has 18 distinct cards. Build up to 6 Trace, then spend it to recall damage, repair, redact or rewrite part of the previous command’s base payload. Its six organs form their own routing network.
 - **The Hollow Choir** starts with 104 hull and has 18 distinct cards. Changing command kinds builds Resonance, up to 3; repeating a kind resets it before card and organ gains. Coordinate the phrase, then spend it on Crescendo, Cadence or Concert commands through a different six-organ network.
 
@@ -86,7 +86,7 @@ Enemy intentions appear as icon-and-number badges. Hover or keyboard-focus a bad
 
 All 36 enemies have distinct repeating tactical profiles: armored and exposed phases, route weaknesses, interruptible support actions, drain, or overload attacks. Hover or focus an intent badge for its cycle and counter. Strain targets the busiest organs; cuts target your last route first, letting you anticipate and bait them. See the [enemy field guide](docs/enemies.md).
 
-The release contains **72 command cards, 18 shared powerups, 24 regular enemy types, 6 elites, 6 bosses and 18 events**.
+The candidate contains **81 command cards, 18 shared powerups, 24 regular enemy types, 6 elites, 6 bosses and 18 events**. The nine Cartographer additions reuse licensed atlas art as prototype coverage, not nine new illustrations; see [expansion acceptance status](docs/cartographer-expansion.md).
 
 ## Saves and settings
 

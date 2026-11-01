@@ -67,7 +67,7 @@ func _run() -> void:
 		for level in [0, 1]:
 			var instance = {"id":original.id, "uid":42, "level":level}
 			var effective = game.effective_card(instance)
-			var first_free = level == 1
+			var first_free = level == 1 and int(original.get("ward",0))==0 and not original.has("engine")
 			for field in ["damage", "heal", "vent", "disrupt"]:
 				var base = int(original.get(field, 0))
 				var bonus = 3 if field == "damage" else 2 if field == "heal" else 1

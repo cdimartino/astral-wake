@@ -30,10 +30,18 @@ static func mechanical_roles(card: Dictionary) -> Array:
 	if card.get("vent", 0) > 0 or card.get("link", false) or card.get("trace", 0) > 0 or card.get("resonance", 0) > 0 or card.has("route_cooling"): roles.append("enabler")
 	# Selection includes card access (draw), not a promise of targeted search.
 	if card.get("draw", 0) > 0 or card.has("selections"): roles.append("selection")
-	if card.get("rewrite", false) or card.get("concert", false) or card.has("engine"): roles.append("scaling")
+	var engine_type=card.get("engine",{}).get("type","")
+	if engine_type=="cooling_ward":
+		if not "prevention" in roles: roles.append("prevention")
+		if not "enabler" in roles: roles.append("enabler")
+	if engine_type=="redirect_retaliation": roles.append("enabler")
+	if card.get("rewrite", false) or card.get("concert", false) or engine_type in ["novel_route","other_exhaust"]: roles.append("scaling")
 	return roles
 
 static func valid_card(card: Dictionary) -> bool:
+	var revision: Variant = card.get("introduced_revision",0)
+	# JSON numbers are floats in Godot; accept integral JSON numbers, never bools.
+	if not (revision is int or revision is float) or revision!=floor(revision) or revision<0 or revision>1: return false
 	var rarity: Variant = card.get("rarity")
 	if not (rarity is int or rarity is float) or not is_finite(float(rarity)) or rarity != floor(rarity) or rarity < 0 or rarity > 2: return false
 	var roles: Variant = card.get("roles")

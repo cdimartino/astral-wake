@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 
 catalog = json.loads(Path('data/catalog.json').read_text())
+assert len(catalog['cards']) == 81
+catalog['cards'] = [c for c in catalog['cards'] if c.get('introduced_revision', 0) == 0]
 assert len(catalog['cards']) == 72
 for card in catalog['cards']:
     assert card.pop('roles') and card.pop('primary_role')

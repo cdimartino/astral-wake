@@ -14,6 +14,8 @@ def report(path):
         raise ValueError("Duplicate or unplanned result")
     counts = collections.Counter(row["status"] for row in rows)
     print(f'Revision: `{metadata["revision"]}`; engine: `{metadata["engine"]}`')
+    if 'content_pool_revision' in metadata:
+        print(f'Content pool revision: {metadata["content_pool_revision"]} (do not mix historical/expanded win rates).')
     print(f"\nRecorded {len(rows)}/{len(planned)} cases; missing {len(planned - set(actual))}.")
     print(f"Statuses: {dict(sorted(counts.items()))}")
     if summary:
