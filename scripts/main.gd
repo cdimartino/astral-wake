@@ -702,7 +702,7 @@ func _last_command() -> void:
 	_at(inspect, Rect2(800, 129, 590, 36))
 
 func _ship_cutaway(battle: Dictionary) -> void:
-	player_art = _float_art(0, Rect2(38, 184, 744, 344), 4.0, 0.35, 4.2)
+	player_art = _float_art(0, Rect2(38, 184, 744, 344), 14.0, 1.0, 1.6)
 	player_art.name = "PlayerShip"
 	player_art.stretch_mode = TextureRect.STRETCH_SCALE
 	player_art.modulate = Color.WHITE
@@ -739,7 +739,7 @@ func _ship_console(battle: Dictionary) -> void:
 		resource_label.name = "CharacterResource"
 	else:
 		_screen_text("Living circuit · 6 organs\nFilled cells show strain", Rect2(48, 488, 266, 43), 14, MUTED)
-	player_art = _float_art(0, PLAYER_COMBAT_RECT, 5.0, 0.5, 3.6)
+	player_art = _float_art(0, PLAYER_COMBAT_RECT, 16.0, 1.5, 1.5)
 	player_art.name = "PlayerShip"
 	_screen_text(str(game.character().name), Rect2(48, 438, 266, 29), 22, TEAL)
 	var player_hull_label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 466, 146, 23), 16, CREAM)
@@ -2334,13 +2334,14 @@ func _enemy_target(index: int, enemy: Dictionary, rect: Rect2, count: int) -> vo
 		title.add_theme_color_override("font_color", TEAL if selected else CREAM))
 	title.max_lines_visible = 2
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-	var art_rect := Rect2(6, 4, 110, 78) if small else Rect2(10, 4, rect.size.x - 20, 194)
+	# Leave room above and below the artwork for visible drift and banking.
+	var art_rect := Rect2(6, 12, 110, 66) if small else Rect2(10, 18, rect.size.x - 20, 174)
 	var image := _enemy_image(str(enemy.id), art_rect.size.y)
 	image.name = "EnemyArt%d" % index
 	image.flip_h = true
 	_at(image, art_rect, button)
 	# Stagger the drift so a group of enemies never breathes in lockstep.
-	_idle_art(image, 3.0, 0.5 if small else 0.3, 3.4 + (index % 4) * 0.22)
+	_idle_art(image, 8.0 if small else 14.0, 1.5 if small else 1.0, 1.4 + (index % 4) * 0.18)
 	enemy_art.append(image)
 	var hp := _hull_bar(enemy.hp, enemy.max_hp, CORAL)
 	hp.name = "EnemyHullBar%d" % index
