@@ -180,7 +180,7 @@ func choose_reward() -> Dictionary:
 			best=i
 	return game.choose_reward(best)
 
-func modify() -> Dictionary:
+func modify(explicit_branches: Dictionary = {}) -> Dictionary:
 	if no_bonuses: return game.cancel_modify()
 	var best=-1
 	var score=-10000.0
@@ -196,6 +196,9 @@ func modify() -> Dictionary:
 			score=current
 			best=i
 	if best<0: return game.cancel_modify()
+	var uid=game.run.deck[best].uid
+	if game.run.modify_kind=="upgrade" and explicit_branches.has(uid): return game.evolve_card(uid,explicit_branches[uid])
+	# Authored cards require a caller-supplied identity, never array-order ranking.
 	return game.modify_card(best)
 
 func shop() -> Dictionary:

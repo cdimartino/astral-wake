@@ -5,9 +5,10 @@ const SaveStore = preload("res://scripts/save_store.gd")
 const SeedEngine = preload("res://scripts/seed_engine.gd")
 const Selections = preload("res://scripts/known_selections.gd")
 const Engines = preload("res://scripts/install_engines.gd")
+const Evolutions = preload("res://scripts/evolutions.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
-const RUN_SCHEMA = 4
+const RUN_SCHEMA = 5
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -25,8 +26,11 @@ var _last_clock = 0
 func _init(save_directory: String = "") -> void:
 	var parsed = JSON.parse_string(FileAccess.get_file_as_string("res://data/catalog.json"))
 	assert(parsed is Dictionary, "Game content missing or invalid")
+	for item in parsed.cards: assert(Evolutions.valid_definition(item), "Invalid raw evolution content")
 	catalog = _restore_integers(parsed)
-	for item in catalog.cards: _cards[item.id] = item
+	for item in catalog.cards:
+		assert(Evolutions.valid_definition(item), "Invalid evolution content")
+		_cards[item.id] = item
 	for item in catalog.enemies: _enemies[item.id] = item
 	for item in catalog.powerups: _powerups[item.id] = item
 	store = SaveStore.new(save_directory)
@@ -88,8 +92,17 @@ func effective_card(instance: Dictionary) -> Dictionary:
 	# Detached printed definition only: never include runtime resources, powerups,
 	# copied payloads or organs. Legacy level 1 retains its exact arithmetic.
 	var definition = card(instance.get("id","")).duplicate(true)
+	definition.erase("evolutions")
 	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
+		var identity=instance.get("evolution",Evolutions.LEGACY)
+		if identity!=Evolutions.LEGACY:
+			var choice=Evolutions.branch(card(instance.id),identity)
+			if choice.is_empty(): return {}
+			definition.merge(choice.stats.duplicate(true),true)
+			definition.name=choice.name
+			definition.description=choice.description
+			return definition
 		definition.first_free=true
 		for field in ["damage","heal","vent","disrupt"]:
 			if int(definition.get(field,0))>0:
@@ -103,7 +116,7 @@ func card_text(instance: Dictionary) -> String:
 	var text = str(effective.get("description",""))
 	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption"}
 	for field in phrases:
-		if int(original.get(field,0))>0:
+		if instance.get("evolution",Evolutions.LEGACY)==Evolutions.LEGACY and int(original.get(field,0))>0:
 			text=text.replace(phrases[field]%int(original[field]),phrases[field]%int(effective[field]))
 	if effective.first_free: text+="\nFirst routed organ gains no strain."
 	if effective.get("retain",false): text+="\nRetain: stays in hand at end of turn."
@@ -1044,17 +1057,47 @@ func _can_upgrade() -> bool:
 	return false
 
 func modify_card(deck_index: int) -> Dictionary:
+	return _modify_card(deck_index, "")
+
+func evolve_card(uid, branch_id: String) -> Dictionary:
+	if not _number(uid) or uid<=0: return _fail("Choose an integral card UID.")
+	if branch_id.is_empty(): return _fail("Choose an explicit evolution identity.")
+	if not _mode("modify") or run.modify_kind!="upgrade": return _fail("No evolution is pending.")
+	var index=-1
+	for i in range(run.deck.size()):
+		if run.deck[i].uid==uid:
+			if index>=0: return _fail("Card UID is not unique in your deck.")
+			index=i
+	if index<0: return _fail("Choose a card in your deck.")
+	return _modify_card(index,branch_id)
+
+func evolution_choices(instance: Dictionary) -> Array:
+	return card(instance.id).get("evolutions",[]).duplicate(true)
+
+func _modify_card(deck_index: int, branch_id: String) -> Dictionary:
 	if not _mode("modify"): return _fail("No deck modification is pending.")
 	if deck_index<0 or deck_index>=run.deck.size(): return _fail("Choose a card in your deck.")
 	if run.modify_kind=="remove" and run.deck.size()<=5: return _fail("Keep at least five cards.")
+	if run.modify_kind=="upgrade" and not _valid_instance(run.deck[deck_index]): return _fail("Invalid command evolution identity.")
 	if run.modify_kind=="upgrade" and int(run.deck[deck_index].level)>0: return _fail("This command is already evolved.")
+	var identity=Evolutions.LEGACY
+	if run.modify_kind=="upgrade":
+		if not Evolutions.valid_definition(card(run.deck[deck_index].id)): return _fail("Invalid authored evolution content.")
+		var choices=evolution_choices(run.deck[deck_index])
+		if not choices.is_empty():
+			if branch_id.is_empty(): return _fail("Evolution choice required.")
+			if Evolutions.branch(card(run.deck[deck_index].id),branch_id).is_empty(): return _fail("Choose an authored evolution.")
+			identity=branch_id
+		elif not branch_id.is_empty() and branch_id!=Evolutions.LEGACY: return _fail("This command has no authored evolutions.")
 	if run.modify_return=="shop":
 		var item=run.shop.items[int(run.modify_shop_index)]
 		if item.sold or int(run.salvage)<int(item.cost): return _fail("That exchange is no longer available.")
 		item.sold=true
 		run.salvage-=int(item.cost)
 	if run.modify_kind=="remove": run.deck.remove_at(deck_index)
-	else: run.deck[deck_index].level=1
+	else:
+		run.deck[deck_index].level=1
+		run.deck[deck_index].evolution=identity
 	run.mode="shop" if run.modify_return=="shop" else "map"
 	run.modify_return=""
 	run.modify_kind=""
@@ -1187,7 +1230,7 @@ func load_saved() -> bool:
 			if saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
 				store.error="A save contains incomplete game data. Your existing files have been preserved."
 				continue
-			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.schema_revision=4
 			saved.run.pending_selection={}
 			if old_battle is Dictionary and not old_battle.is_empty():
 				for key in ["exhausted","installed","installed_sources","temporary_retain"]: old_battle[key]=[]
@@ -1207,11 +1250,15 @@ func load_saved() -> bool:
 				if not pending.get("guard") is String or pending.guard!=Selections.guard(self,saved.run,pending):
 					store.error="A save contains incomplete game data. Your existing files have been preserved."
 					continue
-			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.schema_revision=4
 			if old_battle is Dictionary and not old_battle.is_empty():
 				old_battle.engine_counters=[]
 				old_battle.engine_routes=[]
 			if pending is Dictionary and not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
+		if saved.run.get("schema_revision")==4:
+			if not _migrate_evolutions(saved.run):
+				store.error="A save contains incomplete evolution data. Your existing files have been preserved."
+				continue
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
 		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
@@ -1257,17 +1304,50 @@ func _restore_integers(value):
 func _number(value) -> bool: return (value is int or value is float) and is_finite(float(value)) and value==floor(value)
 
 func _valid_instance(instance) -> bool:
-	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1]
+	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1] and Evolutions.valid_instance(card(instance.id),instance)
+
+func _migrate_evolutions(state: Dictionary) -> bool:
+	var pending=state.get("pending_selection",{})
+	if not pending is Dictionary: return false
+	if not pending.is_empty() and (not pending.get("guard") is String or pending.guard!=Selections.guard(self,state,pending)): return false
+	var instances=[]
+	if not state.get("deck") is Array or not state.get("battle") is Dictionary: return false
+	instances.append_array(state.deck)
+	for zone in COMBAT_ZONES:
+		if state.battle.has(zone):
+			if not state.battle[zone] is Array: return false
+			instances.append_array(state.battle[zone])
+	var memory=state.battle.get("last_command",{})
+	if not memory is Dictionary: return false
+	if not memory.is_empty(): instances.append(memory.get("card"))
+	# Validate raw levels before conversion; old revisions cannot contain new identities.
+	for instance in instances:
+		if not instance is Dictionary or instance.has("evolution") or not _number(instance.get("level")) or not int(instance.level) in [0,1]: return false
+		if not _cards.has(instance.get("id","")) or not _number(instance.get("uid")): return false
+	var pending_index=-1
+	if not pending.is_empty():
+		if not _number(pending.get("source_uid")) or not pending.get("definition") is Dictionary: return false
+		pending_index=Selections.index(state.battle.get("hand",[]),pending.source_uid)
+		if pending_index<0 or not _same_authored(pending.definition,effective_card(state.battle.hand[pending_index])): return false
+	for instance in instances:
+		if instance.level==1: instance.evolution=Evolutions.LEGACY
+	state.schema_revision=RUN_SCHEMA
+	if not pending.is_empty():
+		pending.definition=effective_card(state.battle.hand[pending_index])
+		pending.guard=Selections.guard(self,state,pending)
+	return true
 
 func _valid_last_command(value) -> bool:
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
 	if not _valid_instance(value.get("card")): return false
-	if value.get("kind")!=card(value.card.id).kind: return false
+	var definition=effective_card(value.card)
+	if value.get("kind")!=definition.kind: return false
 	for payload in ["base","resolved"]:
 		if not value.get(payload) is Dictionary: return false
 		for field in ["damage","heal","disrupt"]:
 			if not _number(value[payload].get(field)) or value[payload][field]<0: return false
+			if payload=="base" and value.base[field]!=definition.get(field,0): return false
 	return true
 
 func _valid_itinerary(value) -> bool:
@@ -1337,6 +1417,14 @@ func _valid_run(value) -> bool:
 	for key in ["battle","reward","shop"]:
 		if not value.get(key) is Dictionary: return false
 	if not value.battle.is_empty() and not Engines.valid_state(self,value.battle): return false
+	# Completed battles remain inspectable after rewards/workshops. Their instances
+	# must still be valid, but may predate a later deck removal/evolution.
+	if not value.battle.is_empty():
+		for zone in COMBAT_ZONES:
+			if not value.battle.get(zone) is Array: return false
+			for instance in value.battle[zone]:
+				if not _valid_instance(instance): return false
+		if not _valid_last_command(value.battle.get("last_command",{})): return false
 	if value.mode=="combat":
 		var battle=value.battle
 		for key in COMBAT_ZONES+["installed_sources","temporary_retain","enemies","strain","edges","severed","last_route"]:
@@ -1361,9 +1449,13 @@ func _valid_run(value) -> bool:
 			for instance in battle[key]:
 				if not _valid_instance(instance) or not instance.uid in uids or instance.uid in piles: return false
 				var original=originals[int(instance.uid)]
-				if instance.id!=original.id or int(instance.level)!=int(original.level): return false
+				if instance.id!=original.id or int(instance.level)!=int(original.level) or instance.get("evolution","")!=original.get("evolution",""): return false
 				piles.append(instance.uid)
 		if piles.size()!=uids.size(): return false
+		var memory=battle.get("last_command",{})
+		if not memory.is_empty():
+			var source=originals.get(int(memory.card.uid),{})
+			if source.is_empty() or memory.card!=source: return false
 		var retained_uids=[]
 		for uid in battle.temporary_retain:
 			if not _number(uid) or uid in retained_uids or not battle.hand.any(func(instance): return instance.uid==uid): return false

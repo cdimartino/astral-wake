@@ -27,8 +27,11 @@ func run_checks() -> void:
 		for enemy in game.run.battle.enemies: enemy.hp = 999
 		game.run.hull -= 10
 		instance.level = 1
+		instance.evolution = "legacy"
 		for card in game.run.deck:
-			if card.uid == instance.uid: card.level = 1
+			if card.uid == instance.uid:
+				card.level = 1
+				card.evolution = "legacy"
 		var before = game.run.duplicate(true)
 		game.preview_card(0, [0], 0)
 		require(game.run == before, "Preview changes memory")

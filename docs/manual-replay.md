@@ -60,7 +60,7 @@ Successful and failed previews change neither game/RNG nor trace/guard. Other op
 
 | op | Additional fields |
 | --- | --- |
-| `modify` | `uid` (stable deck instance ID) |
+| `modify` | `uid` (stable deck instance ID), explicit `branch` for authored evolutions; optional only for unbranched compatibility |
 | `reward` | `choice` (displayed index, `-1` explicitly skips) |
 | `buy`, `event` | `choice` (displayed index) |
 | `recover` | `choice`: `"repair"` or `"upgrade"` |
@@ -90,6 +90,10 @@ through `3`. Legacy numeric seeds retain their original progression semantics,
 but only inside the isolated session. All three existing ship IDs are supported.
 
 ## Audit boundaries and limitations
+
+The [branching evolution infrastructure](branching-evolutions.md) includes safe
+test-only native/manual demos; production cards still use legacy upgrades.
+The authoritative evolution module is included in replay source fingerprints.
 
 - The trace records revision, SHA-256 fingerprints of resolver/RNG/save/content
   sources, Godot version, seed, ship, unlocks, and normalized initial state. Each

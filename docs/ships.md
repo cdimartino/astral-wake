@@ -1,5 +1,9 @@
 # Ships and organs
 
+Production ship decks/upgrades are unchanged by the test-only
+[branching evolution infrastructure](branching-evolutions.md). Authored branches
+for the three ships are future content, not available in this slice.
+
 Choose a vessel when you begin a new expedition. Each has its own six-organ network, ten-card starter deck and card pool. The Cartographer shapes damage and healing through order; the Palimpsest saves and spends Trace; the Hollow Choir builds a phrase by changing command kinds.
 
 | Vessel | Starting hull | Card pool | Main decision |

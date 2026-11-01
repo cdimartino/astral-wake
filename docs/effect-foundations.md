@@ -1,6 +1,8 @@
 # Effect foundations (#14 / #15)
 
-Current fourth slice: [bounded active Install primitives](bounded-install-engines.md).
+Current fifth slice: [branching evolution infrastructure](branching-evolutions.md),
+with test-only stat branches and run schema 5. Production upgrades remain exact
+legacy arithmetic. The fourth slice added [bounded active Install primitives](bounded-install-engines.md).
 The dormant/selection contracts below describe their historical slices; typed
 engines now activate through the explicitly bounded schema, not generic scripts.
 

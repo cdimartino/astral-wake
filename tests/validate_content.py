@@ -42,6 +42,38 @@ def text(value, label):
     require(isinstance(value, str) and value.strip(), f'{label}: missing text')
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, f'duplicate JSON key: {key}')
+        result[key] = value
+    return result
+
+
+def validate_evolutions(card):
+    if 'evolutions' not in card:
+        return
+    branches = card['evolutions']
+    require(isinstance(branches, list) and len(branches) == 2, 'expected two evolutions')
+    ids = set()
+    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance'}
+    for branch in branches:
+        require(isinstance(branch, dict) and set(branch) == {'id', 'name', 'description', 'stats'}, 'invalid evolution fields')
+        ident = branch['id']
+        text(ident, 'evolution.id')
+        require(ident.isidentifier() and ident.isascii() and ident.islower() and ident != 'legacy' and ident not in ids, 'invalid/duplicate evolution identity')
+        ids.add(ident)
+        text(branch['name'], 'evolution.name')
+        text(branch['description'], 'evolution.description')
+        require(isinstance(branch['stats'], dict) and branch['stats'] and set(branch['stats']) <= stats, 'invalid evolution stats')
+        for key, value in branch['stats'].items():
+            integer(value, 1 if key == 'cost' else 0, {'cost': 2, 'trace': 6, 'resonance': 3}.get(key, 99), key)
+            if key in {'trace', 'resonance'}:
+                require(card.get('character') == {'trace': 'palimpsest', 'resonance': 'hollow_choir'}[key], 'foreign evolution resource')
+        for kind, stat in [('attack', 'damage'), ('repair', 'heal')]:
+            require(card['kind'] != kind or branch['stats'].get(stat, card[stat]) > 0, 'empty evolution payload')
+
+
 def validate(data):
     require(isinstance(data, dict) and set(data) == set(COUNTS), 'catalog keys differ from schema')
     for group, count in COUNTS.items():
@@ -51,7 +83,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine'} if group == 'cards' else set()
+            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -76,6 +108,7 @@ def validate(data):
             'organ order differs from routing indexes')
     cards = {c['id']: c for c in data['cards']}
     for c in cards.values():
+        validate_evolutions(c)
         ident = c['id']
         require(c['kind'] in {'attack', 'repair', 'utility'}, f'{ident}: invalid card kind')
         for field in ('damage', 'heal', 'vent', 'draw', 'disrupt'):
@@ -238,6 +271,44 @@ def validate(data):
 
 
 def self_test(data):
+    branches = [
+        {'id': 'impact', 'name': 'Fixture Impact', 'description': 'Deal 13 damage.', 'stats': {'damage': 13}},
+        {'id': 'flow', 'name': 'Fixture Flow', 'description': 'Deal 10 damage. Draw 1.', 'stats': {'damage': 10, 'draw': 1}},
+    ]
+    authored = copy.deepcopy(data)
+    authored['cards'][0]['evolutions'] = copy.deepcopy(branches)
+    validate(authored)
+    branch_mutations = [
+        lambda b: b.pop(),
+        lambda b: b[0].update(id='legacy'),
+        lambda b: b[0].update(id='flow'),
+        lambda b: b[0].update(id='not an id'),
+        lambda b: b[0].update(name=''),
+        lambda b: b[0].update(description=''),
+        lambda b: b[0].update(stats={}),
+        lambda b: b[0]['stats'].update(damage=13.5),
+        lambda b: b[0]['stats'].update(damage=True),
+        lambda b: b[0]['stats'].update(damage=0),
+        lambda b: b[0]['stats'].update(cost=0),
+        lambda b: b[0]['stats'].update(trace=1),
+        lambda b: b[0].update(script='arbitrary'),
+    ]
+    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'ward', 'refund', 'retain', 'first_free', 'install', 'engine', 'selections'):
+        branch_mutations.append(lambda b, field=field: b[0]['stats'].update({field: 1}))
+    for mutate in branch_mutations:
+        broken = copy.deepcopy(authored)
+        mutate(broken['cards'][0]['evolutions'])
+        try:
+            validate(broken)
+        except ValueError:
+            continue
+        raise ValueError('self-test accepted invalid evolution')
+    try:
+        json.loads('{"stats":{"damage":13,"damage":10}}', object_pairs_hook=unique_object)
+    except ValueError:
+        pass
+    else:
+        raise ValueError('self-test accepted duplicate JSON keys')
     valid = copy.deepcopy(data)
     valid['cards'][0].update(retain=True, exhaust=True)
     valid['cards'][1].update(install='fixture_engine')
@@ -299,7 +370,7 @@ def self_test(data):
         except ValueError:
             continue
         raise ValueError(f'self-test {index}: accepted invalid catalog')
-    return len(mutations)
+    return len(mutations) + len(branch_mutations) + 1
 
 
 def main():
@@ -308,7 +379,7 @@ def main():
     parser.add_argument('--self-test', action='store_true', help='also prove rejection of malformed catalogs')
     args = parser.parse_args()
     try:
-        data = json.loads(args.catalog.read_text())
+        data = json.loads(args.catalog.read_text(), object_pairs_hook=unique_object)
         counts = validate(data)
         print('PASS: ' + ', '.join(f'{n} {k}' for k, n in counts.items()))
         if args.self_test:

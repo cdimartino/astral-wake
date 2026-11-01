@@ -36,7 +36,7 @@ static func environment() -> Dictionary:
 	var output = []
 	var status = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"), "rev-parse", "HEAD"], output)
 	var sources = {}
-	for path in ["scripts/game.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
+	for path in ["scripts/game.gd", "scripts/evolutions.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
 		sources[path] = FileAccess.get_sha256("res://" + path)
 	return {"game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
 
@@ -66,6 +66,17 @@ func inspect() -> Dictionary:
 	var foes = game.run.get("battle", {}).get("enemies", [])
 	for i in range(foes.size()): enemies.append({"slot":i, "id":foes[i].id, "hp":foes[i].hp})
 	var view={"ok":true, "expect":guard(), "state":snapshot(game.run), "hand":hand, "targets":enemies}
+	if game.run.get("mode","")=="modify" and game.run.modify_kind=="upgrade":
+		view.evolutions=[]
+		for instance in game.run.deck:
+			if instance.level!=0: continue
+			var choices=[]
+			for branch in game.evolution_choices(instance):
+				var after=instance.duplicate(true)
+				after.level=1
+				after.evolution=branch.id
+				choices.append({"branch":branch.id,"effective_card":game.effective_card(after),"text":game.card_text(after)})
+			if not choices.is_empty(): view.evolutions.append({"uid":instance.uid,"before":game.effective_card(instance),"choices":choices})
 	if game.selection_pending(): view.selection=game.selection_view()
 	return view
 
@@ -86,14 +97,16 @@ func _validate(command: Dictionary) -> String:
 		"play":["uid", "route", "target"], "preview":["uid", "route", "target"],
 		"begin_selection":["uid", "route", "target"], "select_uid":["choice_uid"],
 		"confirm_selection":[], "cancel_selection":[], "selection_preview":[],
-		"modify":["uid"], "choose_node":["node"], "reward":["choice"],
+		"modify":["uid", "branch"], "choose_node":["node"], "reward":["choice"],
 		"buy":["choice"], "event":["choice"], "recover":["choice"],
 		"end_turn":[], "continue_region":[], "cancel_modify":[], "leave":[], "abandon":[]}
 	if not fields.has(command.op): return "Unknown manual operation."
 	for key in command:
 		if key not in ["op", "expect"] and key not in fields[command.op]: return "Unexpected command field: " + str(key)
 	for key in fields[command.op]:
+		if key=="branch": continue # Optional only for unbranched legacy compatibility.
 		if not command.has(key): return "Missing command field: " + key
+	if command.has("branch") and (not command.branch is String or command.branch.is_empty()): return "branch must be an explicit evolution ID."
 	if not command.get("expect") is Dictionary or command.expect != guard(): return "Stale or missing expected state; inspect before selecting again."
 	if command.has("uid") and (not _integer(command.uid) or command.uid <= 0): return "uid must be a positive integer."
 	if command.has("choice_uid") and command.choice_uid!=null and (not _integer(command.choice_uid) or command.choice_uid<=0): return "choice_uid must be a positive integer or authored optional null."
@@ -141,7 +154,8 @@ func apply(command: Dictionary) -> Dictionary:
 				if index < 0: result = failure("Card UID is not uniquely present in the deck.")
 				else:
 					effective = game.effective_card(game.run.deck[index])
-					result = game.modify_card(index)
+					result = game.evolve_card(uid,command.branch) if command.has("branch") else game.modify_card(index)
+					if result.ok and _index(game.run.deck,uid)>=0: effective=game.effective_card(game.run.deck[_index(game.run.deck,uid)])
 			"choose_node": result = game.choose_node(command.node)
 			"reward": result = game.choose_reward(int(command.choice))
 			"buy": result = game.buy(int(command.choice))

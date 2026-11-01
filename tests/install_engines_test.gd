@@ -242,7 +242,7 @@ func check() -> void:
 	old.pending_selection.guard=Game.Selections.guard(game,old,old.pending_selection)
 	game.store.write(game.profile,old)
 	resumed=Fixtures.FixtureGame.new(directory)
-	require(resumed._valid_pending(resumed.run) and resumed.run.schema_revision==4 and resumed.run.battle.engine_routes.is_empty(),"Verified old pending guard rebinds to revision 4 empty ledger")
+	require(resumed._valid_pending(resumed.run) and resumed.run.schema_revision==Game.RUN_SCHEMA and resumed.run.battle.engine_routes.is_empty(),"Verified old pending guard rebinds to current revision empty ledger")
 	require(resumed.select_uid(resumed.run.battle.hand[2].uid).ok and resumed.confirm_selection().ok,"Migrated pending chooser can commit")
 	game.cancel_selection()
 	# Inspect actual active counters alongside a legacy dormant install at both sizes.
