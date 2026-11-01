@@ -1,5 +1,11 @@
 # Cartographer expansion candidate (#16; NOT ready to close)
 
+Manual evidence: [Attempt A — labelled recovery continuation](cartographer-expansion-attempt-a.md)
+and [Attempt B — Interception](cartographer-expansion-attempt-b.md). Both exact
+replays and independent evidence assessments passed within their documented limits.
+The user authorized provisional shared-art shipping; new-artwork acceptance and
+remaining #16 criteria stay open.
+
 Nine production cards / eighteen authored branches, with no new resolver effect.
 Existing 72 bases, 144 branches, starters, enemies, powerups, nominal rarity
 weights, pity, prices and metaprogression are unchanged. New cards require no
