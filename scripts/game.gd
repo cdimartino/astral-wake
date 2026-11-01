@@ -6,9 +6,10 @@ const SeedEngine = preload("res://scripts/seed_engine.gd")
 const Selections = preload("res://scripts/known_selections.gd")
 const Engines = preload("res://scripts/install_engines.gd")
 const Evolutions = preload("res://scripts/evolutions.gd")
+const Distribution = preload("res://scripts/reward_distribution.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
-const RUN_SCHEMA = 5
+const RUN_SCHEMA = 6
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -26,7 +27,9 @@ var _last_clock = 0
 func _init(save_directory: String = "") -> void:
 	var parsed = JSON.parse_string(FileAccess.get_file_as_string("res://data/catalog.json"))
 	assert(parsed is Dictionary, "Game content missing or invalid")
-	for item in parsed.cards: assert(Evolutions.valid_definition(item), "Invalid raw evolution content")
+	for item in parsed.cards:
+		assert(Evolutions.valid_definition(item), "Invalid raw evolution content")
+		assert(Distribution.valid_card(item), "Invalid raw draft metadata")
 	catalog = _restore_integers(parsed)
 	for item in catalog.cards:
 		assert(Evolutions.valid_definition(item), "Invalid evolution content")
@@ -93,6 +96,10 @@ func effective_card(instance: Dictionary) -> Dictionary:
 	# copied payloads or organs. Legacy level 1 retains its exact arithmetic.
 	var definition = card(instance.get("id","")).duplicate(true)
 	definition.erase("evolutions")
+	# Draft metadata is not a combat payload. Preserve legacy effective definitions
+	# and pending-selection guards byte-for-byte.
+	definition.erase("roles")
+	definition.erase("primary_role")
 	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
 		var identity=instance.get("evolution",Evolutions.LEGACY)
@@ -154,6 +161,8 @@ func new_run(seed_value = "", character_id: String = "cartographer") -> Dictiona
 	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
 	run.schema_revision=RUN_SCHEMA
+	run.reward_generation=1
+	run.rare_offer_misses=0
 	run.pending_selection={}
 	if modern:
 		SeedEngine.initialize(run,seed_value)
@@ -973,8 +982,11 @@ func _finish_battle() -> void:
 	_log(run,"Recovered %d salvage."%salvage)
 	var choices=[]
 	var pool=_available_cards()
-	_shuffle(run,pool,"rewards")
 	var card_choices=(2 if kind in ["elite","boss"] else 3)+_effect(run,"reward_choices")
+	if run.reward_generation==0:
+		_shuffle(run,pool,"rewards")
+	else:
+		pool=Distribution.reward(self,pool,card_choices,kind)
 	for i in range(mini(card_choices,pool.size())): choices.append({"kind":"card","id":pool[i]})
 	if kind in ["elite","boss"]:
 		var powers=_available_powerups()
@@ -1020,8 +1032,11 @@ func _make_shop() -> void:
 	run.mode="shop"
 	var items=[]
 	var cards=_available_cards()
-	_shuffle(run,cards,"shop")
-	for i in range(2): items.append({"kind":"card","id":cards[i],"cost":35+i*8,"sold":false})
+	if run.reward_generation==0: _shuffle(run,cards,"shop")
+	else: cards=Distribution.shop(self,cards)
+	for i in range(mini(2,cards.size())):
+		var price=35+i*8 if run.reward_generation==0 else Distribution.price(card(cards[i]))
+		items.append({"kind":"card","id":cards[i],"cost":price,"sold":false})
 	var powers=_available_powerups()
 	_shuffle(run,powers,"shop")
 	for i in range(mini(2,powers.size())): items.append({"kind":"powerup","id":powers[i],"cost":75,"sold":false})
@@ -1182,6 +1197,7 @@ func _finish_run(won: bool) -> void:
 	run.mode="victory" if won else "defeat"
 	if not run.get("seeded",false): profile.unlocks=mini(3,int(profile.unlocks)+1)
 	profile.history.push_front({"id":run.id,"seed":run.seed,"seeded":run.get("seeded",false),"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
+	profile.history[0].reward_generation=run.reward_generation
 	if profile.history.size()>30: profile.history.resize(30)
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
@@ -1227,7 +1243,7 @@ func load_saved() -> bool:
 		if legacy_schema and not saved.run.is_empty():
 			# Additive fields without a revision indicate damaged new data, not legacy.
 			var old_battle=saved.run.get("battle",{})
-			if saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
+			if saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
 				store.error="A save contains incomplete game data. Your existing files have been preserved."
 				continue
 			saved.run.schema_revision=4
@@ -1259,6 +1275,16 @@ func load_saved() -> bool:
 			if not _migrate_evolutions(saved.run):
 				store.error="A save contains incomplete evolution data. Your existing files have been preserved."
 				continue
+		if saved.run.get("schema_revision")==5:
+			# Validate old pending guards before adding fields covered by that guard.
+			var pending=saved.run.get("pending_selection",{})
+			if saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or not pending is Dictionary or (not pending.is_empty() and pending.get("guard")!=Selections.guard(self,saved.run,pending)):
+				store.error="A save contains incomplete distribution data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.reward_generation=0
+			saved.run.rare_offer_misses=0
+			if not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
 		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
@@ -1331,7 +1357,7 @@ func _migrate_evolutions(state: Dictionary) -> bool:
 		if pending_index<0 or not _same_authored(pending.definition,effective_card(state.battle.hand[pending_index])): return false
 	for instance in instances:
 		if instance.level==1: instance.evolution=Evolutions.LEGACY
-	state.schema_revision=RUN_SCHEMA
+	state.schema_revision=5
 	if not pending.is_empty():
 		pending.definition=effective_card(state.battle.hand[pending_index])
 		pending.guard=Selections.guard(self,state,pending)
@@ -1366,6 +1392,7 @@ func _valid_profile(value) -> bool:
 		if not item is Dictionary: return false
 		if not _number(item.get("seed")) and not (item.get("seed") is String and SeedEngine.valid(item.seed)): return false
 		if item.has("seeded") and not item.seeded is bool: return false
+		if item.has("reward_generation") and (not _number(item.reward_generation) or not int(item.reward_generation) in [0,1]): return false
 		for key in ["region","turns","battles","seconds","date","deck_size"]:
 			if not _number(item.get(key)): return false
 		if not item.get("won") is bool: return false
@@ -1381,6 +1408,9 @@ func _valid_run(value) -> bool:
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
 	if not _number(value.get("schema_revision")) or value.schema_revision!=RUN_SCHEMA: return false
+	if not _number(value.get("reward_generation")) or not int(value.reward_generation) in [0,1]: return false
+	if not _number(value.get("rare_offer_misses")) or value.rare_offer_misses<0 or value.rare_offer_misses>Distribution.PITY_LIMIT: return false
+	if value.reward_generation==0 and value.rare_offer_misses!=0: return false
 	if not value.get("character") is String or character(value.character).is_empty(): return false
 	if not _valid_itinerary(value.get("route_regions")): return false
 	if value.get("seed") is String:

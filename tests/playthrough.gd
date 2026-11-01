@@ -76,6 +76,7 @@ func _initialize() -> void:
 	result.profile_unlocks=unlocks
 	result.pool_tier=game.run.get("pool_tier",unlocks)
 	result.rng_version=game.run.get("rng_version",0)
+	result.reward_generation=game.run.reward_generation
 	result.seeded=game.run.get("seeded",false)
 	print("PLAYTHROUGH "+JSON.stringify(result))
 	quit(0 if game.run.mode=="victory" or (allow_defeat and game.run.mode=="defeat") else 2)

@@ -181,6 +181,8 @@ func validation(game) -> void:
 func migration() -> void:
 	var authored=game_at("old-authored")
 	authored.run.schema_revision=4
+	authored.run.erase("reward_generation")
+	authored.run.erase("rare_offer_misses")
 	authored.run.deck[0].level=1
 	require(authored._migrate_evolutions(authored.run) and authored.run.deck[0].evolution=="legacy", "Authoring branches never reassigns an old level-1 card to a sibling")
 	require(authored.run.deck[1].level==0 and authored.evolution_choices(authored.run.deck[1]).size()==2,"Old level-0 cards stay eligible for authored choices")
@@ -191,12 +193,14 @@ func migration() -> void:
 	game.play_card(0,[0],0)
 	var old=game.run.duplicate(true)
 	old.schema_revision=4
+	old.erase("reward_generation")
+	old.erase("rare_offer_misses")
 	var payload=old.battle.last_command.duplicate(true)
 	write_raw(game,old)
 	var restored=Game.new(game.store.directory)
 	require(not restored.run.is_empty(),"Migration reload must succeed")
 	if restored.run.is_empty(): return
-	require(restored.run.schema_revision==5 and restored.run.deck[0].evolution=="legacy","Revision 4 missing level-1 identity migrates to reserved legacy")
+	require(restored.run.schema_revision==Game.RUN_SCHEMA and restored.run.reward_generation==0 and restored.run.deck[0].evolution=="legacy","Revision 4 missing level-1 identity migrates to reserved legacy with uniform generation")
 	require(restored.run.battle.last_command.card.evolution=="legacy" and restored.run.battle.last_command.base==payload.base and restored.run.battle.last_command.resolved==payload.resolved,"Migration preserves recorded payloads")
 	for zone in Game.COMBAT_ZONES:
 		var state=old.duplicate(true)
@@ -212,6 +216,8 @@ func pending_migration() -> void:
 	require(game.begin_selection(game.run.deck[0].uid,[0],0,game.run.battle.enemies[0].duplicate(true)).ok,"Old pending fixture begins")
 	var old=game.run.duplicate(true)
 	old.schema_revision=4
+	old.erase("reward_generation")
+	old.erase("rare_offer_misses")
 	old.pending_selection.guard=Selections.guard(game,old,old.pending_selection)
 	var damaged=old.duplicate(true)
 	damaged.pending_selection.guard="wrong"

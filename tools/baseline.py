@@ -13,7 +13,7 @@ import time
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SHIPS = ("cartographer", "palimpsest", "hollow_choir")
 POLICIES = ("balanced", "aggressive", "tactical", "no-bonuses")
-SOURCES = ("scripts/game.gd", "scripts/seed_engine.gd", "data/catalog.json", "tests/playthrough.gd")
+SOURCES = ("scripts/game.gd", "scripts/reward_distribution.gd", "scripts/seed_engine.gd", "data/catalog.json", "tests/playthrough.gd")
 STATUSES = {"victory", "defeat", "error", "unfinished", "timeout"}
 
 

@@ -12,7 +12,7 @@ FIELDS = {
     'organs': {'id', 'name', 'verb', 'description', 'color'},
     'characters': {'id', 'name', 'description', 'max_hull', 'capacity', 'cooling', 'starting_deck', 'organs', 'edges'},
     'cards': {'id', 'name', 'kind', 'description', 'damage', 'heal', 'vent', 'draw',
-              'disrupt', 'link', 'rarity', 'unlock', 'art', 'cost'},
+              'disrupt', 'link', 'rarity', 'unlock', 'art', 'cost', 'roles', 'primary_role'},
     'powerups': {'id', 'name', 'description', 'effect', 'value', 'unlock'},
     'enemies': {'id', 'name', 'region', 'role', 'hp', 'art', 'description', 'pattern', 'tactics'},
     'events': {'id', 'name', 'region', 'text', 'choices'},
@@ -114,6 +114,16 @@ def validate(data):
     cards = {c['id']: c for c in data['cards']}
     for c in cards.values():
         validate_evolutions(c)
+        expected_roles = set()
+        if c.get('damage', 0): expected_roles.add('attack')
+        if c.get('disrupt', 0): expected_roles.add('prevention')
+        if c.get('heal', 0): expected_roles.add('repair')
+        if any(c.get(k) for k in ('vent', 'link', 'trace', 'resonance')): expected_roles.add('enabler')
+        if c.get('draw', 0) or c.get('selections'): expected_roles.add('selection')
+        if c.get('rewrite') or c.get('concert') or c.get('engine'): expected_roles.add('scaling')
+        require(isinstance(c['roles'], list) and len(c['roles']) == len(expected_roles)
+                and set(c['roles']) == expected_roles and c['primary_role'] in expected_roles,
+                f'{c["id"]}: roles must describe printed base mechanics, with an explicit primary')
         ident = c['id']
         require(c['kind'] in {'attack', 'repair', 'utility'}, f'{ident}: invalid card kind')
         for field in ('damage', 'heal', 'vent', 'draw', 'disrupt'):
@@ -318,14 +328,22 @@ def self_test(data):
     valid['cards'][0].update(retain=True, exhaust=True)
     valid['cards'][1].update(install='fixture_engine')
     valid['cards'][4].update(damage=0, heal=0, vent=0, draw=0, disrupt=0, link=False,
+                            roles=['selection'], primary_role='selection',
                             selections=[{'kind': 'exhaust_hand'}, {'kind': 'retain_hand'},
                                         {'kind': 'return_discard', 'optional': True, 'kind_filter': 'repair'}])
     validate(valid)
     for kind, cap in [('novel_route', 6), ('other_exhaust', 5)]:
         engine_valid = copy.deepcopy(data)
-        engine_valid['cards'][0].update(install='fixture_engine', engine={'type': kind, 'cap': cap})
+        engine_valid['cards'][0].update(install='fixture_engine', engine={'type': kind, 'cap': cap}, roles=['attack', 'scaling'])
         validate(engine_valid)
     mutations = [
+        lambda d: d['cards'][0].pop('roles'),
+        lambda d: d['cards'][0].update(roles=[]),
+        lambda d: d['cards'][0].update(roles=['attack', 'attack']),
+        lambda d: d['cards'][0].update(roles=['group']),
+        lambda d: d['cards'][0].update(primary_role='scaling'),
+        lambda d: d['cards'][0].update(rarity=True),
+        lambda d: d['cards'][0].update(rarity=1.5),
         lambda d: d['cards'][0].update(engine={'type': 'novel_route', 'cap': 6}),
         lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'script', 'cap': 1}),
         lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 6.5}),

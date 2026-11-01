@@ -42,9 +42,10 @@ func run_tests() -> void:
 		for branch in card.evolutions:
 			var game=battle(card.id,branch.id)
 			var effective=game.effective_card(game.run.deck[0])
+			require(Game.Distribution.valid_card(card) and not effective.has("roles") and not effective.has("primary_role"),"Validated draft metadata is not a combat payload")
 			for key in branch.stats: require(effective[key]==branch.stats[key],"Exact replacement: "+card.id+"/"+key)
 			for key in card:
-				if key in ["evolutions","name","description"] or key in branch.stats: continue
+				if key in ["evolutions","name","description","roles","primary_role"] or key in branch.stats: continue
 				require(effective[key]==card[key],"Inherited field: "+card.id+"/"+key)
 			game.run.battle.resonance=1
 			game.run.battle.strain=[2,2,2,2,2,2]
@@ -281,6 +282,8 @@ func atomic_and_legacy() -> void:
 	require(game.evolve_card(uid,"gathering_chorus").ok and game.run.salvage==15,"Paid explicit branch charges once")
 	require(not game.evolve_card(uid,"piercing_chorus").ok and game.run.salvage==15,"Second evolution/payment rejected")
 	game.run.schema_revision=4
+	game.run.erase("reward_generation")
+	game.run.erase("rare_offer_misses")
 	game.run.deck[0].erase("evolution")
 	require(game._migrate_evolutions(game.run) and game.run.deck[0].evolution=="legacy","Old level-one Choir stays legacy")
 	var legacy=game.effective_card(game.run.deck[0])

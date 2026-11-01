@@ -36,7 +36,7 @@ static func environment() -> Dictionary:
 	var output = []
 	var status = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"), "rev-parse", "HEAD"], output)
 	var sources = {}
-	for path in ["scripts/game.gd", "scripts/evolutions.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
+	for path in ["scripts/game.gd", "scripts/reward_distribution.gd", "scripts/evolutions.gd", "scripts/known_selections.gd", "scripts/install_engines.gd", "scripts/seed_engine.gd", "scripts/save_store.gd", "data/catalog.json"]:
 		sources[path] = FileAccess.get_sha256("res://" + path)
 	return {"game_revision":str(output[0]).strip_edges() if status == 0 and not output.is_empty() else "unknown", "sources":sources, "godot":Engine.get_version_info().string}
 
@@ -65,7 +65,7 @@ func inspect() -> Dictionary:
 	var enemies = []
 	var foes = game.run.get("battle", {}).get("enemies", [])
 	for i in range(foes.size()): enemies.append({"slot":i, "id":foes[i].id, "hp":foes[i].hp})
-	var view={"ok":true, "expect":guard(), "state":snapshot(game.run), "hand":hand, "targets":enemies}
+	var view={"ok":true, "expect":guard(), "state":snapshot(game.run), "hand":hand, "targets":enemies, "reward_policy":Game.Distribution.policy(game.run) if not game.run.is_empty() else ""}
 	if game.run.get("mode","")=="modify" and game.run.modify_kind=="upgrade":
 		view.evolutions=[]
 		for instance in game.run.deck:

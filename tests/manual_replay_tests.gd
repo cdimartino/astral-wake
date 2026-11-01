@@ -134,7 +134,11 @@ func check_noncombat() -> void:
 	state.reward = {"boss":false, "choices":[{"kind":"card", "id":"needle"}]}
 	require(session.apply(command(session, "reward", {"choice":-1})).ok and state.mode == "map", "Explicit reward skip")
 	session.game._make_shop()
-	require(session.apply(command(session, "buy", {"choice":0})).ok, "Explicit shop choice")
+	# This adapter fixture is not a played route. New rarity prices may exceed
+	# starting salvage; provision the exact visible cost rather than assuming 35.
+	var price: int = state.shop.items[0].cost
+	state.salvage = price
+	require(session.apply(command(session, "buy", {"choice":0})).ok and state.salvage == 0 and state.shop.items[0].sold, "Explicit shop choice pays the actual v1 price exactly once")
 	require(session.apply(command(session, "leave")).ok, "Explicit leave")
 	state.mode = "transition"
 	# Begin a new authored fixture chain after the direct state setup above.

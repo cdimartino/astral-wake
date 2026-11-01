@@ -3,9 +3,14 @@ import copy
 import hashlib
 import json
 from pathlib import Path
-from validate_content import validate_evolutions
+from validate_content import validate, validate_evolutions
 
 data = json.loads(Path('data/catalog.json').read_text())
+# Additive draft metadata is validated separately, never part of combat hashes.
+validate(data)
+for card in data['cards']:
+    card.pop('roles')
+    card.pop('primary_role')
 # Canonical catalog at 63fbd24, pinned once; works in shallow CI/source exports too.
 BASE_CATALOG_SHA256 = '452f8b67171790200bec1a05ebf5ffc83e3aac53b3e3cce9668aa8c082a47988'
 stripped = copy.deepcopy(data)

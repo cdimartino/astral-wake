@@ -227,16 +227,22 @@ func check() -> void:
 	Zones.battle(game)
 	var old=game.run.duplicate(true)
 	old.schema_revision=3
+	old.erase("reward_generation")
+	old.erase("rare_offer_misses")
 	old.battle.erase("engine_counters")
 	old.battle.erase("engine_routes")
 	game.store.write(game.profile,old)
 	resumed=Fixtures.FixtureGame.new(directory)
-	require(resumed.run==game.run,"Revision 3 migration adds only empty fields and revision")
+	var expected_legacy=game.run.duplicate(true)
+	expected_legacy.reward_generation=0
+	require(resumed.run==expected_legacy,"Revision 3 migration preserves all state with legacy distribution policy")
 	fresh(game)
 	source=game.run.battle.hand[3].uid
 	require(game.begin_selection(source,[4],0,game.run.battle.enemies[0].duplicate(true)).ok,"Old pending migration fixture opens")
 	old=game.run.duplicate(true)
 	old.schema_revision=3
+	old.erase("reward_generation")
+	old.erase("rare_offer_misses")
 	old.battle.erase("engine_counters")
 	old.battle.erase("engine_routes")
 	old.pending_selection.guard=Game.Selections.guard(game,old,old.pending_selection)
