@@ -1,5 +1,9 @@
 # Route and flat-defense primitives (#16 prerequisite, first slice)
 
+Historical prerequisite record. The subsequent [production expansion candidate](cartographer-expansion.md)
+adds nine cards in content-pool revision 1 / schema 7; the original fixture scope
+and frozen compatibility assertions below describe the prerequisite commit.
+
 **Fixture only. Neither #14 nor #16 is complete.** The 72 production base cards,
 144 authored branches, existing role assignments, reward generation 0/1 and
 production pools are unchanged. Six actual prototype definitions live exclusively

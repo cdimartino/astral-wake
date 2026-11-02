@@ -16,6 +16,7 @@ func require(condition: bool, message: String) -> void:
 func make_game(seed_value = "A1B2C3", ship: String = "cartographer"):
 	var game = Game.new(directory.path_join(str(Time.get_ticks_usec())))
 	game.new_run(seed_value, ship)
+	game.run.content_pool_revision=0 # Historical distribution calibration, not expansion data.
 	return game
 
 func _initialize() -> void:
@@ -49,7 +50,7 @@ func check() -> void:
 	for weights in [D.NORMAL, D.ELITE, [100,0,0]]: require(D.valid_weights(weights), "bounded valid weights")
 	for weights in [[65.1,27.9,7], [true,92,7], [101,-8,7], [65,28], [0,0,0], [NAN,0,100]]: require(not D.valid_weights(weights), "reject malformed weights before conversion")
 	var game = make_game()
-	require(game.run.schema_revision == 6 and game.run.reward_generation == 1, "fresh schema6 generation1")
+	require(game.run.schema_revision == 7 and game.run.reward_generation == 1, "schema7 generation1, explicit historical pool0")
 	for card in game.catalog.cards:
 		require(D.valid_card(card), "72 meaningful role definitions")
 		var malformed: Dictionary = card.duplicate(true)
@@ -139,7 +140,7 @@ func check() -> void:
 	legacy_checks()
 	pending_migration()
 	sampling()
-	report.metadata = {"generation":1,"schema":6,"normal_draw_weights":D.NORMAL,"elite_draw_weights":D.ELITE,"pity_limit":6,"comparison_base":"7382d3d","godot":Engine.get_version_info().string,"scope":"fast offer generation, NOT actual area-1 boss reach; same 72-card catalog, NOT a card-pool expansion comparison","sources":{}}
+	report.metadata = {"content_pool_revision":0,"generation":1,"schema":7,"normal_draw_weights":D.NORMAL,"elite_draw_weights":D.ELITE,"pity_limit":6,"comparison_base":"7382d3d","godot":Engine.get_version_info().string,"scope":"historical pool0 fast offer generation, NOT actual area-1 boss reach; original 72-card pool, NOT an expansion comparison","sources":{}}
 	for path in ["scripts/game.gd", "scripts/reward_distribution.gd", "scripts/seed_engine.gd", "data/catalog.json", "tests/reward_distribution_test.gd"]:
 		report.metadata.sources[path] = FileAccess.get_sha256("res://" + path)
 	for argument in OS.get_cmdline_user_args():
@@ -206,6 +207,7 @@ func legacy_checks() -> void:
 			migrated.schema_revision = 5
 			migrated.erase("reward_generation")
 			migrated.erase("rare_offer_misses")
+			migrated.erase("content_pool_revision")
 			require(migrated == game._restore_integers(old), "all pending reward/shop state and legacy streams unchanged")
 			require(JSON.stringify(resumed.run[mode], "", true) == JSON.stringify(game._restore_integers(old[mode]), "", true), "pending reward/shop canonical JSON bytes unchanged after existing integral-number restoration")
 			if mode == "reward":
@@ -226,6 +228,7 @@ func pending_migration() -> void:
 	old.schema_revision = 5
 	old.erase("reward_generation")
 	old.erase("rare_offer_misses")
+	old.erase("content_pool_revision")
 	old.pending_selection.guard = Game.Selections.guard(game, old, old.pending_selection)
 	for damaged in [false,true]:
 		var target: String = directory.path_join("old-pending-%s" % damaged)

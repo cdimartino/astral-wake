@@ -182,6 +182,7 @@ func migration() -> void:
 	var authored=game_at("old-authored")
 	authored.run.schema_revision=4
 	authored.run.erase("reward_generation")
+	authored.run.erase("content_pool_revision")
 	authored.run.erase("rare_offer_misses")
 	authored.run.deck[0].level=1
 	require(authored._migrate_evolutions(authored.run) and authored.run.deck[0].evolution=="legacy", "Authoring branches never reassigns an old level-1 card to a sibling")
@@ -194,6 +195,7 @@ func migration() -> void:
 	var old=game.run.duplicate(true)
 	old.schema_revision=4
 	old.erase("reward_generation")
+	old.erase("content_pool_revision")
 	old.erase("rare_offer_misses")
 	var payload=old.battle.last_command.duplicate(true)
 	write_raw(game,old)
@@ -217,6 +219,7 @@ func pending_migration() -> void:
 	var old=game.run.duplicate(true)
 	old.schema_revision=4
 	old.erase("reward_generation")
+	old.erase("content_pool_revision")
 	old.erase("rare_offer_misses")
 	old.pending_selection.guard=Selections.guard(game,old,old.pending_selection)
 	var damaged=old.duplicate(true)

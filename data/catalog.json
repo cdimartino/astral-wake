@@ -1622,6 +1622,112 @@
       "character": "hollow_choir",
       "concert": true,
       "description": "Deal 10 damage. Restore severed links; connect the first and last routed organs for this combat. Concert: spend all Resonance; add 2 damage and 1 healing per point spent."
+    },
+    {
+      "id":"survey_spike", "name":"Survey Spike", "introduced_revision":1,
+      "kind":"attack", "damage":8, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":1, "rarity":0, "unlock":0, "art":0,
+      "roles":["attack"], "primary_role":"attack",
+      "conditional_damage":{"type":"novel_route","amount":5},
+      "description":"Deal 8 damage. An ordered route unused by any command this turn adds 5 before organs.",
+      "evolutions":[
+        {"id":"deep_survey","name":"Deep Survey","description":"Deal 11 damage. An ordered route unused by any command this turn adds 5 before organs.","stats":{"damage":11}},
+        {"id":"patient_survey","name":"Patient Survey","description":"Deal 8 damage. An ordered route unused by any command this turn adds 5 before organs.","stats":{"retain":true}}
+      ]
+    },
+    {
+      "id":"cross_current", "name":"Cross Current", "introduced_revision":1,
+      "kind":"attack", "damage":7, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":1, "rarity":1, "unlock":0, "art":21,
+      "roles":["attack","enabler"], "primary_role":"enabler",
+      "route_cooling":{"type":"three_first","amount":1},
+      "description":"Deal 7 damage. After exactly three organs, cool the first by 1 after route strain.",
+      "evolutions":[
+        {"id":"cutting_current","name":"Cutting Current","description":"Deal 10 damage. After exactly three organs, cool the first by 1 after route strain.","stats":{"damage":10}},
+        {"id":"sheltered_current","name":"Sheltered Current","description":"Deal 7 damage. Gain 4 flat ward. After exactly three organs, cool the first by 1 after route strain.","stats":{"ward":4}}
+      ]
+    },
+    {
+      "id":"living_atlas", "name":"Living Atlas", "introduced_revision":1,
+      "kind":"utility", "damage":0, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":2, "rarity":2, "unlock":0, "art":29,
+      "roles":["scaling"], "primary_role":"scaling",
+      "install":"living_atlas", "engine":{"type":"novel_route","cap":6},
+      "description":"Install: after each damaging attack on an ordered route unused by any command this turn, gain +1 base damage for later attacks this combat, max +6. Installation uses its route too.",
+      "evolutions":[
+        {"id":"pocket_atlas","name":"Pocket Atlas","description":"Install for 1 CP: after each damaging attack on an ordered route unused by any command this turn, gain +1 base damage for later attacks this combat, max +6. Installation uses its route too.","stats":{"cost":1}},
+        {"id":"sheltering_atlas","name":"Sheltering Atlas","description":"Gain 5 flat ward. Install: after each damaging attack on an ordered route unused by any command this turn, gain +1 base damage for later attacks this combat, max +6. Installation uses its route too.","stats":{"ward":5}}
+      ]
+    },
+    {
+      "id":"heat_sink", "name":"Heat Sink", "introduced_revision":1,
+      "kind":"utility", "damage":0, "heal":0, "vent":1, "draw":0, "disrupt":0, "link":false, "ward":5,
+      "cost":1, "rarity":0, "unlock":0, "art":2,
+      "roles":["prevention","enabler"], "primary_role":"prevention",
+      "description":"Cool every organ by 1. Gain 5 flat ward.",
+      "evolutions":[
+        {"id":"deep_sink","name":"Deep Sink","description":"Cool every organ by 2. Gain 5 flat ward.","stats":{"vent":2}},
+        {"id":"sheltering_sink","name":"Sheltering Sink","description":"Cool every organ by 1. Gain 8 flat ward.","stats":{"ward":8}}
+      ]
+    },
+    {
+      "id":"thermal_lance", "name":"Thermal Lance", "introduced_revision":1,
+      "kind":"attack", "damage":9, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":1, "rarity":1, "unlock":0, "art":11,
+      "roles":["attack"], "primary_role":"attack",
+      "conditional_damage":{"type":"route_strain_two","amount":6},
+      "description":"Deal 9 damage. If any routed organ had exactly 2 strain at command entry, add 6 before organs (once).",
+      "evolutions":[
+        {"id":"molten_lance","name":"Molten Lance","description":"Deal 12 damage. If any routed organ had exactly 2 strain at command entry, add 6 before organs (once).","stats":{"damage":12}},
+        {"id":"tempered_lance","name":"Tempered Lance","description":"Deal 9 damage. Cool every organ by 1. If any routed organ had exactly 2 strain at command entry, add 6 before organs (once); check before vent.","stats":{"vent":1}}
+      ]
+    },
+    {
+      "id":"phase_radiator", "name":"Phase Radiator", "introduced_revision":1,
+      "kind":"utility", "damage":0, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":2, "rarity":2, "unlock":0, "art":33,
+      "roles":["prevention","enabler"], "primary_role":"prevention",
+      "install":"phase_radiator", "engine":{"type":"cooling_ward","threshold":2,"ward":5},
+      "description":"Install: first later command each player turn actually cooling at least 2 total strain grants 5 flat ward. Automatic end-turn cooling does not count.",
+      "evolutions":[
+        {"id":"compact_radiator","name":"Compact Radiator","description":"Install for 1 CP: first later command each player turn actually cooling at least 2 total strain grants 5 flat ward. Automatic end-turn cooling does not count.","stats":{"cost":1}},
+        {"id":"shielded_radiator","name":"Shielded Radiator","description":"Gain 5 flat ward. Install: first later command each player turn actually cooling at least 2 total strain grants 5 flat ward. Automatic end-turn cooling does not count.","stats":{"ward":5}}
+      ]
+    },
+    {
+      "id":"parry_filament", "name":"Parry Filament", "introduced_revision":1,
+      "kind":"utility", "damage":0, "heal":0, "vent":0, "draw":0, "disrupt":3, "link":false, "ward":5,
+      "cost":1, "rarity":0, "unlock":0, "art":3,
+      "roles":["prevention"], "primary_role":"prevention",
+      "description":"Apply 3 disruption. Gain 5 flat ward.",
+      "evolutions":[
+        {"id":"barbed_filament","name":"Barbed Filament","description":"Apply 6 disruption. Gain 3 flat ward.","stats":{"disrupt":6,"ward":3}},
+        {"id":"woven_filament","name":"Woven Filament","description":"Apply 3 disruption. Gain 8 flat ward.","stats":{"ward":8}}
+      ]
+    },
+    {
+      "id":"refracted_fang", "name":"Refracted Fang", "introduced_revision":1,
+      "kind":"attack", "damage":9, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":1, "rarity":1, "unlock":0, "art":18,
+      "roles":["attack","prevention"], "primary_role":"attack",
+      "conditional_ward":{"type":"prism_other_foe","amount":4},
+      "description":"Deal 9 damage. Gain 4 flat ward if the route contains Prism and another foe lived at command entry.",
+      "evolutions":[
+        {"id":"razor_fang","name":"Razor Fang","description":"Deal 12 damage. Gain 4 flat ward if the route contains Prism and another foe lived at command entry.","stats":{"damage":12}},
+        {"id":"guarded_fang","name":"Guarded Fang","description":"Deal 9 damage. Gain 3 flat ward, plus 4 if the route contains Prism and another foe lived at command entry (7 total; 3 against a lone foe).","stats":{"ward":3}}
+      ]
+    },
+    {
+      "id":"interception_loom", "name":"Interception Loom", "introduced_revision":1,
+      "kind":"utility", "damage":0, "heal":0, "vent":0, "draw":0, "disrupt":0, "link":false,
+      "cost":2, "rarity":2, "unlock":0, "art":18,
+      "roles":["enabler"], "primary_role":"enabler",
+      "install":"interception_loom", "engine":{"type":"redirect_retaliation","damage":6},
+      "description":"Install: once per enemy phase, after an attack is actually redirected, deal 6 additional damage to that same recipient. Cannot redirect or retrigger itself; no other living foe means no payoff.",
+      "evolutions":[
+        {"id":"swift_loom","name":"Swift Loom","description":"Install for 1 CP: once per enemy phase, after an attack is actually redirected, deal 6 additional damage to that same recipient. Cannot redirect or retrigger itself; no other living foe means no payoff.","stats":{"cost":1}},
+        {"id":"sheltering_loom","name":"Sheltering Loom","description":"Gain 5 flat ward. Install: once per enemy phase, after an attack is actually redirected, deal 6 additional damage to that same recipient. Cannot redirect or retrigger itself; no other living foe means no payoff.","stats":{"ward":5}}
+      ]
     }
   ],
   "powerups": [

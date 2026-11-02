@@ -1,0 +1,6854 @@
+[
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "mirror_cut",
+              "kind": "card"
+            },
+            {
+              "id": "white_noise",
+              "kind": "card"
+            },
+            {
+              "id": "mercy_circuit",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-7597455167300051197",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "graft_wire",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "hollow_chorus",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "star_chart",
+              "kind": "card"
+            },
+            {
+              "id": "open_channel",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "carrion_grace",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "8715507179034851425",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "wake_lance",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "frost_seam",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hull_stitch",
+              "kind": "card"
+            },
+            {
+              "id": "votive_shard",
+              "kind": "card"
+            },
+            {
+              "id": "mirror_cut",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "5777083174966157801",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "hull_stitch",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "mute_bell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hollow_chorus",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "8302711020615318167",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "hollow_chorus",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "cold_breath",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "needle",
+              "kind": "card"
+            },
+            {
+              "id": "mute_bell",
+              "kind": "card"
+            },
+            {
+              "id": "white_noise",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-963151761893814561",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "last_match",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "cold_psalm",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "star_chart",
+              "kind": "card"
+            },
+            {
+              "id": "open_channel",
+              "kind": "card"
+            },
+            {
+              "id": "forked_rib",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "5428160377644061277",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "seam_of_light",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            },
+            {
+              "id": "long_hem",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "957739715494191973",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "cold_psalm",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hull_stitch",
+              "kind": "card"
+            },
+            {
+              "id": "scar_bridge",
+              "kind": "card"
+            },
+            {
+              "id": "soft_copper",
+              "kind": "powerup"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "5736871232588886323",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "pilgrim_signal",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "votive_shard",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "needle",
+      "hull_stitch",
+      "cold_breath",
+      "quiet_pulse",
+      "graft_wire",
+      "sun_splinter",
+      "mercy_circuit",
+      "black_suture",
+      "spare_heartbeat",
+      "frost_seam",
+      "red_interval",
+      "wake_lance",
+      "glass_murmur",
+      "thread_cannon",
+      "mute_bell",
+      "cold_psalm",
+      "salvage_hymn",
+      "votive_shard",
+      "mirror_cut",
+      "open_channel",
+      "scar_bridge",
+      "winter_needle",
+      "hollow_chorus",
+      "seam_of_light",
+      "pilgrim_signal",
+      "long_hem",
+      "blue_refrain",
+      "last_match",
+      "white_noise",
+      "star_chart"
+    ],
+    "seed": 424242,
+    "ship": "cartographer"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "winter_needle",
+              "kind": "card"
+            },
+            {
+              "id": "needle",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-648873266200770782",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "mute_bell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "white_noise",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            },
+            {
+              "id": "thread_cannon",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "carrion_grace",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "7066245630639730873",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "white_noise",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "scar_bridge",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "votive_shard",
+              "kind": "card"
+            },
+            {
+              "id": "mute_bell",
+              "kind": "card"
+            },
+            {
+              "id": "winter_needle",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-9012881277802375896",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "seam_of_light",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "cold_psalm",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "star_chart",
+              "kind": "card"
+            },
+            {
+              "id": "mirror_cut",
+              "kind": "card"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            },
+            {
+              "id": "wide_lung",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "5334266152366149831",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "mute_bell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "graft_wire",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hollow_chorus",
+              "kind": "card"
+            },
+            {
+              "id": "graft_wire",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-8269694200202867074",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blue_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "frost_seam",
+              "kind": "card"
+            },
+            {
+              "id": "cold_psalm",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "8479614043163084261",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "seam_of_light",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "scar_bridge",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "votive_shard",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-6892864506792223580",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "pilgrim_signal",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "long_hem",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "frost_seam",
+              "kind": "card"
+            },
+            {
+              "id": "star_chart",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-5616072585612911725",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "spare_heartbeat",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "needle",
+      "hull_stitch",
+      "cold_breath",
+      "quiet_pulse",
+      "graft_wire",
+      "sun_splinter",
+      "mercy_circuit",
+      "black_suture",
+      "spare_heartbeat",
+      "frost_seam",
+      "red_interval",
+      "wake_lance",
+      "glass_murmur",
+      "thread_cannon",
+      "mute_bell",
+      "cold_psalm",
+      "salvage_hymn",
+      "votive_shard",
+      "mirror_cut",
+      "open_channel",
+      "scar_bridge",
+      "winter_needle",
+      "hollow_chorus",
+      "seam_of_light",
+      "pilgrim_signal",
+      "long_hem",
+      "blue_refrain",
+      "last_match",
+      "white_noise",
+      "star_chart"
+    ],
+    "seed": 424242,
+    "ship": "cartographer"
+  },
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "second_history",
+              "kind": "card"
+            },
+            {
+              "id": "carbon_breath",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "1267804820924999787",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "revision_spike",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "first_draft",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "6720362325000952241",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "vellum_shield",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "ink_well",
+              "kind": "card"
+            },
+            {
+              "id": "carbon_breath",
+              "kind": "card"
+            },
+            {
+              "id": "scar_note",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "8715507179034851425",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "scar_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "ink_well",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            },
+            {
+              "id": "overwrite",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-6413865398136080329",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "vellum_shield",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "carbon_breath",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "ink_well",
+              "kind": "card"
+            },
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            },
+            {
+              "id": "second_history",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "4557460604703078247",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "ink_well",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "second_history",
+              "kind": "card"
+            },
+            {
+              "id": "blank_page",
+              "kind": "card"
+            },
+            {
+              "id": "echo_pearl",
+              "kind": "powerup"
+            },
+            {
+              "id": "velvet_tongue",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-1055348025802300595",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "borrowed_dawn",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "overwrite",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "overwrite",
+              "kind": "card"
+            },
+            {
+              "id": "first_draft",
+              "kind": "card"
+            },
+            {
+              "id": "lost_paragraph",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "4887818854826659581",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "carbon_breath",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "double_exposure",
+              "kind": "card"
+            },
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            },
+            {
+              "id": "soft_copper",
+              "kind": "powerup"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-9130588067405232013",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "overwrite",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "margin_knife",
+      "pale_patch",
+      "carbon_breath",
+      "first_draft",
+      "ghost_line",
+      "revision_spike",
+      "vellum_shield",
+      "cut_sentence",
+      "borrowed_dawn",
+      "ink_well",
+      "overwrite",
+      "scar_note",
+      "lost_paragraph",
+      "double_exposure",
+      "final_revision",
+      "memory_lattice",
+      "blank_page",
+      "second_history"
+    ],
+    "seed": 424242,
+    "ship": "palimpsest"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "lost_paragraph",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-648873266200770782",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "double_exposure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "scar_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "overwrite",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "carrion_grace",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "7066245630639730873",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "scar_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "borrowed_dawn",
+              "kind": "card"
+            },
+            {
+              "id": "scar_note",
+              "kind": "card"
+            },
+            {
+              "id": "memory_lattice",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-9012881277802375896",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "double_exposure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "final_revision",
+              "kind": "card"
+            },
+            {
+              "id": "cut_sentence",
+              "kind": "card"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            },
+            {
+              "id": "wide_lung",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "5334266152366149831",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "vellum_shield",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blank_page",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "double_exposure",
+              "kind": "card"
+            },
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-8269694200202867074",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "memory_lattice",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "carbon_breath",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "borrowed_dawn",
+              "kind": "card"
+            },
+            {
+              "id": "cut_sentence",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "8479614043163084261",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "double_exposure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "ghost_line",
+              "kind": "card"
+            },
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            },
+            {
+              "id": "overwrite",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-6892864506792223580",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blank_page",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "overwrite",
+              "kind": "card"
+            },
+            {
+              "id": "final_revision",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-5616072585612911725",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "double_exposure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "margin_knife",
+      "pale_patch",
+      "carbon_breath",
+      "first_draft",
+      "ghost_line",
+      "revision_spike",
+      "vellum_shield",
+      "cut_sentence",
+      "borrowed_dawn",
+      "ink_well",
+      "overwrite",
+      "scar_note",
+      "lost_paragraph",
+      "double_exposure",
+      "final_revision",
+      "memory_lattice",
+      "blank_page",
+      "second_history"
+    ],
+    "seed": 424242,
+    "ship": "palimpsest"
+  },
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "unison",
+              "kind": "card"
+            },
+            {
+              "id": "silent_measure",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "1267804820924999787",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "bright_canon",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "call_and_response",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "6720362325000952241",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "unison",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "breath_between",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "counterpoint",
+              "kind": "card"
+            },
+            {
+              "id": "silent_measure",
+              "kind": "card"
+            },
+            {
+              "id": "hushed_chord",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "8715507179034851425",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "hushed_chord",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "counterpoint",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "bright_canon",
+              "kind": "card"
+            },
+            {
+              "id": "crescendo",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-6413865398136080329",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "breath_between",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "silent_measure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "counterpoint",
+              "kind": "card"
+            },
+            {
+              "id": "breath_between",
+              "kind": "card"
+            },
+            {
+              "id": "unison",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "4557460604703078247",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "dissonant_edge",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "counterpoint",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "unison",
+              "kind": "card"
+            },
+            {
+              "id": "rest_note",
+              "kind": "card"
+            },
+            {
+              "id": "echo_pearl",
+              "kind": "powerup"
+            },
+            {
+              "id": "velvet_tongue",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-1055348025802300595",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "shared_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "crescendo",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "crescendo",
+              "kind": "card"
+            },
+            {
+              "id": "call_and_response",
+              "kind": "card"
+            },
+            {
+              "id": "orbital_round",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "4887818854826659581",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "silent_measure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "harmonic_bridge",
+              "kind": "card"
+            },
+            {
+              "id": "breath_between",
+              "kind": "card"
+            },
+            {
+              "id": "soft_copper",
+              "kind": "powerup"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-9130588067405232013",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "crescendo",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "choral_bolt",
+      "warm_refrain",
+      "silent_measure",
+      "call_and_response",
+      "tuning_fork",
+      "bright_canon",
+      "breath_between",
+      "dissonant_edge",
+      "shared_pulse",
+      "counterpoint",
+      "crescendo",
+      "hushed_chord",
+      "orbital_round",
+      "harmonic_bridge",
+      "grand_concert",
+      "resonant_shell",
+      "rest_note",
+      "unison"
+    ],
+    "seed": 424242,
+    "ship": "hollow_choir"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "orbital_round",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-648873266200770782",
+        "shop": {
+          "items": [
+            {
+              "cost": 30,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "shared_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "crescendo",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "carrion_grace",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "7066245630639730873",
+        "shop": {
+          "items": [
+            {
+              "cost": 30,
+              "id": "warm_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "shared_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "hushed_chord",
+              "kind": "card"
+            },
+            {
+              "id": "resonant_shell",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-9012881277802375896",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "resonant_shell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "counterpoint",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            },
+            {
+              "id": "dissonant_edge",
+              "kind": "card"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            },
+            {
+              "id": "wide_lung",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "5334266152366149831",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "breath_between",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "unison",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "harmonic_bridge",
+              "kind": "card"
+            },
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-8269694200202867074",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "hushed_chord",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "warm_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "shared_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "dissonant_edge",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "8479614043163084261",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "resonant_shell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "breath_between",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "tuning_fork",
+              "kind": "card"
+            },
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            },
+            {
+              "id": "crescendo",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "-6892864506792223580",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "crescendo",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "crescendo",
+              "kind": "card"
+            },
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "-5616072585612911725",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "unison",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "harmonic_bridge",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {}
+      }
+    ],
+    "pool": [
+      "choral_bolt",
+      "warm_refrain",
+      "silent_measure",
+      "call_and_response",
+      "tuning_fork",
+      "bright_canon",
+      "breath_between",
+      "dissonant_edge",
+      "shared_pulse",
+      "counterpoint",
+      "crescendo",
+      "hushed_chord",
+      "orbital_round",
+      "harmonic_bridge",
+      "grand_concert",
+      "resonant_shell",
+      "rest_note",
+      "unison"
+    ],
+    "seed": 424242,
+    "ship": "hollow_choir"
+  },
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "spare_heartbeat",
+              "kind": "card"
+            },
+            {
+              "id": "mute_bell",
+              "kind": "card"
+            },
+            {
+              "id": "open_channel",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "open_channel",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 699505295,
+          "shop": 1718722268,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "black_suture",
+              "kind": "card"
+            },
+            {
+              "id": "mirror_cut",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "hollow_chorus",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "sun_splinter",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1355466772,
+          "shop": 918559864,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "votive_shard",
+              "kind": "card"
+            },
+            {
+              "id": "hull_stitch",
+              "kind": "card"
+            },
+            {
+              "id": "mute_bell",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "mercy_circuit",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "sun_splinter",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 89297128,
+          "shop": 353100216,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "scar_bridge",
+              "kind": "card"
+            },
+            {
+              "id": "wake_lance",
+              "kind": "card"
+            },
+            {
+              "id": "winter_gland",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "mercy_circuit",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "frost_seam",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1757840359,
+          "shop": 456849128,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "winter_needle",
+              "kind": "card"
+            },
+            {
+              "id": "needle",
+              "kind": "card"
+            },
+            {
+              "id": "mute_bell",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "quiet_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "long_hem",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "amber_sight",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1619432653,
+          "shop": 455223509,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "black_suture",
+              "kind": "card"
+            },
+            {
+              "id": "needle",
+              "kind": "card"
+            },
+            {
+              "id": "velvet_tongue",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "quiet_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "votive_shard",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1900453046,
+          "shop": 979244149,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "black_suture",
+              "kind": "card"
+            },
+            {
+              "id": "blue_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "hull_stitch",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "red_interval",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "mercy_circuit",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 2031266398,
+          "shop": 1279630124,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "salvage_hymn",
+              "kind": "card"
+            },
+            {
+              "id": "frost_seam",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "amber_sight",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "thread_cannon",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "white_noise",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 231760481,
+          "shop": 1693253814,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "needle",
+      "hull_stitch",
+      "cold_breath",
+      "quiet_pulse",
+      "graft_wire",
+      "sun_splinter",
+      "mercy_circuit",
+      "black_suture",
+      "spare_heartbeat",
+      "frost_seam",
+      "red_interval",
+      "wake_lance",
+      "glass_murmur",
+      "thread_cannon",
+      "mute_bell",
+      "cold_psalm",
+      "salvage_hymn",
+      "votive_shard",
+      "mirror_cut",
+      "open_channel",
+      "scar_bridge",
+      "winter_needle",
+      "hollow_chorus",
+      "seam_of_light",
+      "pilgrim_signal",
+      "long_hem",
+      "blue_refrain",
+      "last_match",
+      "white_noise",
+      "star_chart"
+    ],
+    "seed": "0093CG",
+    "ship": "cartographer"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "mercy_circuit",
+              "kind": "card"
+            },
+            {
+              "id": "quiet_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "wake_lance",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "wake_lance",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "winter_needle",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 920239423,
+          "shop": 128104847,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "frost_seam",
+              "kind": "card"
+            },
+            {
+              "id": "white_noise",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "last_match",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "long_hem",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 422461452,
+          "shop": 1073376056,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "wake_lance",
+              "kind": "card"
+            },
+            {
+              "id": "sun_splinter",
+              "kind": "card"
+            },
+            {
+              "id": "star_chart",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "spare_heartbeat",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "frost_seam",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 934713164,
+          "shop": 1815677331,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "wake_lance",
+              "kind": "card"
+            },
+            {
+              "id": "seam_of_light",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "hermit_knot",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "mute_bell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blue_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 464171194,
+          "shop": 623857116,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "sun_splinter",
+              "kind": "card"
+            },
+            {
+              "id": "graft_wire",
+              "kind": "card"
+            },
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 30,
+              "id": "sun_splinter",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "white_noise",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1885857533,
+          "shop": 1410422246,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            },
+            {
+              "id": "glass_murmur",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "thread_cannon",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "star_chart",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1355466772,
+          "shop": 882952917,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hull_stitch",
+              "kind": "card"
+            },
+            {
+              "id": "sun_splinter",
+              "kind": "card"
+            },
+            {
+              "id": "cold_breath",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "pilgrim_signal",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blue_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1500495522,
+          "shop": 1305151775,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "votive_shard",
+              "kind": "card"
+            },
+            {
+              "id": "needle",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "salvage_hymn",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "scar_bridge",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 294193992,
+          "shop": 62840037,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "needle",
+      "hull_stitch",
+      "cold_breath",
+      "quiet_pulse",
+      "graft_wire",
+      "sun_splinter",
+      "mercy_circuit",
+      "black_suture",
+      "spare_heartbeat",
+      "frost_seam",
+      "red_interval",
+      "wake_lance",
+      "glass_murmur",
+      "thread_cannon",
+      "mute_bell",
+      "cold_psalm",
+      "salvage_hymn",
+      "votive_shard",
+      "mirror_cut",
+      "open_channel",
+      "scar_bridge",
+      "winter_needle",
+      "hollow_chorus",
+      "seam_of_light",
+      "pilgrim_signal",
+      "long_hem",
+      "blue_refrain",
+      "last_match",
+      "white_noise",
+      "star_chart"
+    ],
+    "seed": "0093CG",
+    "ship": "cartographer"
+  },
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "final_revision",
+              "kind": "card"
+            },
+            {
+              "id": "borrowed_dawn",
+              "kind": "card"
+            },
+            {
+              "id": "memory_lattice",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "borrowed_dawn",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "pale_patch",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1923365544,
+          "shop": 597648007,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "carbon_breath",
+              "kind": "card"
+            },
+            {
+              "id": "ghost_line",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "hermit_knot",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "final_revision",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "vellum_shield",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 464171194,
+          "shop": 1050276698,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            },
+            {
+              "id": "ink_well",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "revision_spike",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 6127351,
+          "shop": 22685523,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "scar_note",
+              "kind": "card"
+            },
+            {
+              "id": "borrowed_dawn",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "borrowed_dawn",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 294193992,
+          "shop": 1376599974,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "ghost_line",
+              "kind": "card"
+            },
+            {
+              "id": "cut_sentence",
+              "kind": "card"
+            },
+            {
+              "id": "ink_well",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "blank_page",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "final_revision",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 340712979,
+          "shop": 1160614092,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "lost_paragraph",
+              "kind": "card"
+            },
+            {
+              "id": "scar_note",
+              "kind": "card"
+            },
+            {
+              "id": "winter_gland",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "blank_page",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1757840359,
+          "shop": 1273078179,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            },
+            {
+              "id": "second_history",
+              "kind": "card"
+            },
+            {
+              "id": "final_revision",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "first_draft",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "pale_patch",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 93465780,
+          "shop": 1885410603,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "ghost_line",
+              "kind": "card"
+            },
+            {
+              "id": "final_revision",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "lost_paragraph",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "final_revision",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 27625654,
+          "shop": 1612741098,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "margin_knife",
+      "pale_patch",
+      "carbon_breath",
+      "first_draft",
+      "ghost_line",
+      "revision_spike",
+      "vellum_shield",
+      "cut_sentence",
+      "borrowed_dawn",
+      "ink_well",
+      "overwrite",
+      "scar_note",
+      "lost_paragraph",
+      "double_exposure",
+      "final_revision",
+      "memory_lattice",
+      "blank_page",
+      "second_history"
+    ],
+    "seed": "0093CG",
+    "ship": "palimpsest"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            },
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            },
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "first_draft",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 920239423,
+          "shop": 128104847,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            },
+            {
+              "id": "double_exposure",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "scar_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "blank_page",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 422461452,
+          "shop": 1073376056,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "overwrite",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "double_exposure",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "cut_sentence",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "carbon_breath",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 934713164,
+          "shop": 1815677331,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            },
+            {
+              "id": "final_revision",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "hermit_knot",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "overwrite",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "pale_patch",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 464171194,
+          "shop": 623857116,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "carbon_breath",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "memory_lattice",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "ghost_line",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1885857533,
+          "shop": 1410422246,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            },
+            {
+              "id": "scar_note",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "memory_lattice",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1355466772,
+          "shop": 882952917,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "carbon_breath",
+              "kind": "card"
+            },
+            {
+              "id": "margin_knife",
+              "kind": "card"
+            },
+            {
+              "id": "revision_spike",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "second_history",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "double_exposure",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1500495522,
+          "shop": 1305151775,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "vellum_shield",
+              "kind": "card"
+            },
+            {
+              "id": "pale_patch",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "vellum_shield",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "margin_knife",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 294193992,
+          "shop": 62840037,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "margin_knife",
+      "pale_patch",
+      "carbon_breath",
+      "first_draft",
+      "ghost_line",
+      "revision_spike",
+      "vellum_shield",
+      "cut_sentence",
+      "borrowed_dawn",
+      "ink_well",
+      "overwrite",
+      "scar_note",
+      "lost_paragraph",
+      "double_exposure",
+      "final_revision",
+      "memory_lattice",
+      "blank_page",
+      "second_history"
+    ],
+    "seed": "0093CG",
+    "ship": "palimpsest"
+  },
+  {
+    "generation": 0,
+    "offers": [
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            },
+            {
+              "id": "shared_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "resonant_shell",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "shared_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "warm_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1923365544,
+          "shop": 597648007,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "silent_measure",
+              "kind": "card"
+            },
+            {
+              "id": "tuning_fork",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "hermit_knot",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "breath_between",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 464171194,
+          "shop": 1050276698,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "bright_canon",
+              "kind": "card"
+            },
+            {
+              "id": "counterpoint",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "bright_canon",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "unison",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 6127351,
+          "shop": 22685523,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "hushed_chord",
+              "kind": "card"
+            },
+            {
+              "id": "shared_pulse",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "shared_pulse",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "soft_copper",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 294193992,
+          "shop": 1376599974,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "tuning_fork",
+              "kind": "card"
+            },
+            {
+              "id": "dissonant_edge",
+              "kind": "card"
+            },
+            {
+              "id": "counterpoint",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "rest_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 340712979,
+          "shop": 1160614092,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "orbital_round",
+              "kind": "card"
+            },
+            {
+              "id": "hushed_chord",
+              "kind": "card"
+            },
+            {
+              "id": "winter_gland",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "tuning_fork",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "rest_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "pilgrim_spine",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1757840359,
+          "shop": 1273078179,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "bright_canon",
+              "kind": "card"
+            },
+            {
+              "id": "unison",
+              "kind": "card"
+            },
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "call_and_response",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "warm_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "second_eyelid",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 93465780,
+          "shop": 1885410603,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "tuning_fork",
+              "kind": "card"
+            },
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            },
+            {
+              "id": "brass_tithe",
+              "kind": "powerup"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 35,
+              "id": "orbital_round",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 43,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "carrion_grace",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 27625654,
+          "shop": 1612741098,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "choral_bolt",
+      "warm_refrain",
+      "silent_measure",
+      "call_and_response",
+      "tuning_fork",
+      "bright_canon",
+      "breath_between",
+      "dissonant_edge",
+      "shared_pulse",
+      "counterpoint",
+      "crescendo",
+      "hushed_chord",
+      "orbital_round",
+      "harmonic_bridge",
+      "grand_concert",
+      "resonant_shell",
+      "rest_note",
+      "unison"
+    ],
+    "seed": "0093CG",
+    "ship": "hollow_choir"
+  },
+  {
+    "generation": 1,
+    "offers": [
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "bright_canon",
+              "kind": "card"
+            },
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            },
+            {
+              "id": "breath_between",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 40,
+              "id": "hushed_chord",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "crescendo",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 920239423,
+          "shop": 128104847,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "breath_between",
+              "kind": "card"
+            },
+            {
+              "id": "harmonic_bridge",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "unison",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "rest_note",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "brass_tithe",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 422461452,
+          "shop": 1073376056,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "crescendo",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "harmonic_bridge",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 30,
+              "id": "call_and_response",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 934713164,
+          "shop": 1815677331,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 0,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "breath_between",
+              "kind": "card"
+            },
+            {
+              "id": "grand_concert",
+              "kind": "card"
+            },
+            {
+              "id": "patient_heart",
+              "kind": "powerup"
+            },
+            {
+              "id": "hermit_knot",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "resonant_shell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "hushed_chord",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "wide_lung",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "hermit_knot",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 464171194,
+          "shop": 623857116,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "silent_measure",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "resonant_shell",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "crescendo",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "forked_rib",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "first_light",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1885857533,
+          "shop": 1410422246,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 1,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "bright_canon",
+              "kind": "card"
+            },
+            {
+              "id": "hushed_chord",
+              "kind": "card"
+            },
+            {
+              "id": "first_light",
+              "kind": "powerup"
+            },
+            {
+              "id": "second_eyelid",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 30,
+              "id": "choral_bolt",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 55,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "velvet_tongue",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1355466772,
+          "shop": 882952917,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "silent_measure",
+              "kind": "card"
+            },
+            {
+              "id": "choral_bolt",
+              "kind": "card"
+            },
+            {
+              "id": "call_and_response",
+              "kind": "card"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "grand_concert",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 40,
+              "id": "bright_canon",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "patient_heart",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "mourning_veil",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 1500495522,
+          "shop": 1305151775,
+          "world": 1720050509
+        }
+      },
+      {
+        "pity": 2,
+        "reward": {
+          "boss": false,
+          "choices": [
+            {
+              "id": "breath_between",
+              "kind": "card"
+            },
+            {
+              "id": "warm_refrain",
+              "kind": "card"
+            },
+            {
+              "id": "mourning_veil",
+              "kind": "powerup"
+            },
+            {
+              "id": "pilgrim_spine",
+              "kind": "powerup"
+            }
+          ]
+        },
+        "rng_state": "",
+        "shop": {
+          "items": [
+            {
+              "cost": 55,
+              "id": "orbital_round",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "warm_refrain",
+              "kind": "card",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "winter_gland",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 75,
+              "id": "echo_pearl",
+              "kind": "powerup",
+              "sold": false
+            },
+            {
+              "cost": 30,
+              "id": "",
+              "kind": "remove",
+              "sold": false
+            },
+            {
+              "cost": 35,
+              "id": "",
+              "kind": "upgrade",
+              "sold": false
+            }
+          ]
+        },
+        "streams": {
+          "cards": 1368045559,
+          "enemies": 1052616,
+          "events": 947887,
+          "rewards": 294193992,
+          "shop": 62840037,
+          "world": 1720050509
+        }
+      }
+    ],
+    "pool": [
+      "choral_bolt",
+      "warm_refrain",
+      "silent_measure",
+      "call_and_response",
+      "tuning_fork",
+      "bright_canon",
+      "breath_between",
+      "dissonant_edge",
+      "shared_pulse",
+      "counterpoint",
+      "crescendo",
+      "hushed_chord",
+      "orbital_round",
+      "harmonic_bridge",
+      "grand_concert",
+      "resonant_shell",
+      "rest_note",
+      "unison"
+    ],
+    "seed": "0093CG",
+    "ship": "hollow_choir"
+  }
+]

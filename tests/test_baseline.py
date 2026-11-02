@@ -33,7 +33,12 @@ class BaselineTests(unittest.TestCase):
         self.assertEqual(metadata["resume"]["capture_sha256"],
                          baseline.hashlib.sha256(prior_path.read_bytes()).hexdigest())
         self.assertEqual(metadata["resume"]["revision_relationship"], "explicit-compatible-fingerprints")
-        missing = baseline.resume_cases(prior, inherited, metadata, True)
+        # Historical captures have their original source set; never claim those
+        # fingerprints suffice to resume under today's additional resolver files.
+        with self.assertRaisesRegex(ValueError, 'all recorded source fingerprints'):
+            baseline.resume_cases(prior, inherited, metadata, True)
+        with mock.patch.object(baseline, 'SOURCES', tuple(prior['sha256'])):
+            missing = baseline.resume_cases(prior, inherited, metadata, True)
         self.assertEqual({baseline.case_key(c) for c in missing},
                          {baseline.case_key(r) for r in rows[354:]})
         self.assertEqual(len(missing), 366)
@@ -85,6 +90,10 @@ class BaselineTests(unittest.TestCase):
 
     def test_resume_rejects_mismatches_even_with_revision_permission(self):
         prior, rows = self.fixture()
+        current = copy.deepcopy(prior)
+        current['content_pool_revision'] = 1
+        with self.assertRaisesRegex(ValueError, 'content_pool_revision'):
+            baseline.resume_cases(prior, rows, current, True)
         for field in ("planned", "sha256", "engine", "generation_version", "timeout_seconds"):
             current = copy.deepcopy(prior)
             current[field] = [] if field == "planned" else "different"
@@ -126,7 +135,7 @@ class BaselineTests(unittest.TestCase):
             original = source.read_bytes()
             output, scratch = root / "resumed.jsonl", root / "new-scratch"
             argv = ["baseline", "--engine", "unused", "--resume-from", str(source),
-                    "--scratch", str(scratch), "--output", str(output), "--families", "1"]
+                    "--scratch", str(scratch), "--output", str(output), "--families", "1", "--content-pool", "0"]
             def fake_run(case, args):
                 return {**case, "status": "defeat", "result": None}
             with mock.patch("sys.argv", argv), mock.patch.object(baseline.subprocess, "check_output", side_effect=["new\n", "", "engine-1\n"]), mock.patch.object(baseline, "run_case", side_effect=fake_run) as run, contextlib.redirect_stdout(io.StringIO()):

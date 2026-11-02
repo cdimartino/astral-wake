@@ -120,10 +120,12 @@ func check():
   var region=image.texture.region
   require(image.texture.filter_clip,"Atlas filtering can bleed adjacent illustrations")
   var identity=str(image.texture.atlas.resource_path)+str(region)
-  require(not art_regions.has(identity),"Duplicate card illustration crop")
+  if definition.get("introduced_revision",0)==0:
+   require(not art_regions.has(identity),"Duplicate original card illustration crop")
   require(Rect2(0,0,image.texture.atlas.get_width(),image.texture.atlas.get_height()).encloses(region),"Card illustration crop outside atlas")
-  art_regions.append(identity)
+  if definition.get("introduced_revision",0)==0: art_regions.append(identity)
   image.free()
+ require(art_regions.size()==72,"All original 72 illustration identities remain unique; expansion shared art is NOT distinct art acceptance")
 
  for pair in [["res://art/ships_hd/manifest.json","ships",ui.hd_ship_regions,700],["res://art/cards_hd/manifest.json","cards",ui.hd_card_regions,600]]:
   if FileAccess.file_exists(pair[0]):

@@ -206,6 +206,7 @@ func test_all() -> void:
 	var old=game.run.duplicate(true)
 	old.schema_revision=2
 	old.erase("reward_generation")
+	old.erase("content_pool_revision")
 	old.erase("rare_offer_misses")
 	old.erase("pending_selection")
 	old.battle.erase("engine_counters")

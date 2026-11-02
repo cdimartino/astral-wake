@@ -55,7 +55,7 @@ func run_tests() -> void:
 			require(game.run.battle.strain[1]==maxi(0,2-int(effective.vent))+(0 if effective.first_free else 1),"Actual first-free strain replacement")
 			if effective.get("exhaust",false): require(game.run.battle.exhausted[0].uid==instance.uid,"Actual exhaustion")
 			if effective.get("retain",false): require(game.retained(instance),"Actual retention")
-	require(count==36,"Exactly 36 Cartographer pairs")
+	require(count==45,"Exactly 45 Cartographer pairs including 9 expansion cards")
 	flags(catalog)
 	paired_scenarios()
 	policy_checks()

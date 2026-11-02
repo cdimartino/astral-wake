@@ -1,5 +1,11 @@
 # Reward distribution — #19 first coherent slice
 
+Historical distribution-slice record. Its 72-card pool and schema 6 remain the
+legacy compatibility baseline. The [Cartographer expansion candidate](cartographer-expansion.md)
+adds an independent content-pool revision (schema 7), without changing reward
+generation constants. Fresh pool 1 includes Atlas scaling and typed defense
+engines; the original pool-0 exposure reports below remain historical.
+
 [Primary drafting run, exact replay and evidence limits](reward-playtest-0093cg.md)
 
 **Candidate, not issue closure or balance approval.** [Finite generation report](reward-distribution-report.md).

@@ -1,0 +1,179 @@
+{
+  "content_pool_revision": 1,
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "label": "Single automated tactical expedition smoke, NOT a win-rate baseline or human playtest",
+  "result": {
+    "actions": 414,
+    "battles": 22,
+    "cards_played": 250,
+    "character": "cartographer",
+    "checkpoints": [
+      {
+        "cards": 14,
+        "hull": 51,
+        "region": 0,
+        "turns": 14
+      },
+      {
+        "cards": 15,
+        "hull": 69,
+        "region": 1,
+        "turns": 45
+      }
+    ],
+    "content_pool_revision": 1,
+    "deck": [
+      {
+        "evolution": "sunpoint",
+        "id": "needle",
+        "level": 1,
+        "uid": 1
+      },
+      {
+        "evolution": "sunpoint",
+        "id": "needle",
+        "level": 1,
+        "uid": 2
+      },
+      {
+        "evolution": "sunpoint",
+        "id": "needle",
+        "level": 1,
+        "uid": 3
+      },
+      {
+        "id": "quiet_pulse",
+        "level": 0,
+        "uid": 4
+      },
+      {
+        "evolution": "sunburst",
+        "id": "sun_splinter",
+        "level": 1,
+        "uid": 5
+      },
+      {
+        "id": "hull_stitch",
+        "level": 0,
+        "uid": 6
+      },
+      {
+        "id": "hull_stitch",
+        "level": 0,
+        "uid": 7
+      },
+      {
+        "id": "cold_breath",
+        "level": 0,
+        "uid": 8
+      },
+      {
+        "id": "cold_breath",
+        "level": 0,
+        "uid": 9
+      },
+      {
+        "id": "graft_wire",
+        "level": 0,
+        "uid": 10
+      },
+      {
+        "evolution": "bright_match",
+        "id": "last_match",
+        "level": 1,
+        "uid": 11
+      },
+      {
+        "id": "parry_filament",
+        "level": 0,
+        "uid": 12
+      },
+      {
+        "id": "pilgrim_signal",
+        "level": 0,
+        "uid": 13
+      },
+      {
+        "evolution": "deep_survey",
+        "id": "survey_spike",
+        "level": 1,
+        "uid": 14
+      },
+      {
+        "id": "mute_bell",
+        "level": 0,
+        "uid": 15
+      },
+      {
+        "evolution": "radiant_seam",
+        "id": "seam_of_light",
+        "level": 1,
+        "uid": 16
+      },
+      {
+        "evolution": "gentle_mercy",
+        "id": "mercy_circuit",
+        "level": 1,
+        "uid": 17
+      },
+      {
+        "evolution": "guarded_fang",
+        "id": "refracted_fang",
+        "level": 1,
+        "uid": 18
+      }
+    ],
+    "evolution_policy_version": "cartographer-content1-setup-v1",
+    "hull": 76,
+    "layer": 12,
+    "max_cards_per_turn": 3,
+    "mode": "victory",
+    "no_bonuses": false,
+    "policy": "tactical",
+    "pool_tier": 0,
+    "powerups": [
+      "second_eyelid",
+      "hermit_knot",
+      "mourning_veil",
+      "soft_copper",
+      "wide_lung",
+      "first_light",
+      "pilgrim_spine",
+      "echo_pearl",
+      "velvet_tongue",
+      "forked_rib",
+      "amber_sight",
+      "winter_gland"
+    ],
+    "profile_unlocks": 0,
+    "region": 3,
+    "reward_generation": 1,
+    "rng_version": 0,
+    "route_regions": [
+      5,
+      4,
+      3
+    ],
+    "save_directory": "/private/var/folders/tj/54g2g21d0pd98kcp8btp0s_r0000gn/T/opencode/astral-playthrough-424242-220808",
+    "seed": 424242,
+    "seeded": false,
+    "turns": 71,
+    "wall_seconds": 12.111
+  },
+  "reward_generation": 1,
+  "sources": {
+    "data/catalog.json": "fa93d0e9fb8f46ac6ac63143fa56053128ef2795efbaa6f0abb3c7f6b8795d7d",
+    "scripts/evolutions.gd": "44f5a6a0cdb8a0e388f560af7032b18b5c3b721664a799f431aa442884c69fb9",
+    "scripts/game.gd": "e9e177227533002577eac5a9eab32074e998c837f9fc513b815ce7fc9d07b2aa",
+    "scripts/install_engines.gd": "1b78830b19f3efc5e319293a36e8814dc812532f177a721cf6b517e4231161ca",
+    "scripts/keywords.gd": "52012cc268d8b002adc263ffaefffca44e909e82ba517eef3057b6ce6a319606",
+    "scripts/known_selections.gd": "09ee695fb31694047263e0cc938bc64c059182bbfb65b870ee95a45973651879",
+    "scripts/main.gd": "3b6f4f1c6858f1084dfd5319ff8daef5bb9c9f3c06e4f5cb213fdd80d533a9fc",
+    "scripts/reward_distribution.gd": "e71ec2d777fafeb1e51cc289486eeeccd1c7a71ed01eda08255f11a0a1a73c85",
+    "scripts/route_effects.gd": "b923761389ecd281b0b4e12166a44fbad62594fb27f9e8357d4edfac67f18fb5",
+    "scripts/save_store.gd": "e9ff2bd885dd112478a6df144243843350b34dd5e50dd85490f881c5758eac1d",
+    "scripts/seed_engine.gd": "277daaf520077524fdf49232ea4e34089924ca73f71769063432b675cedc72d7",
+    "tests/cartographer_package_evidence.gd": "80fc95a55f8a604ff74e9d6b48a59311c8caec27c3a26cf1ee3f90f6e4b4798e",
+    "tests/playthrough.gd": "36f580bfdbaa2155e8413ff34a2820b64bd63572262ffc2ffd97caa2f1f92eea"
+  }
+}

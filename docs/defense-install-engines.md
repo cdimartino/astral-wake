@@ -1,5 +1,9 @@
 # Typed defense Install engines (#14/#16 prerequisite only)
 
+Historical prerequisite record. The [production expansion candidate](cartographer-expansion.md)
+now registers these engines on production cards in content pool 1 / schema 7.
+The fixture-only scope and validation record below describe df3e6c5, not closure.
+
 **Fixture-only; neither issue is complete.** Phase Radiator and Interception Loom
 are real prototype names, utility Install, cost 2, registered only by
 `tests/defense_engine_fixtures.gd`. No production card, 72-base/144-branch content,
