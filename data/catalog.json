@@ -10,14 +10,14 @@
     {
       "id": "fork",
       "name": "The Fork",
-      "verb": "Divide",
+      "verb": "Split",
       "description": "The command also deals half its damage to every other enemy.",
       "color": "#f18e79"
     },
     {
       "id": "echo",
       "name": "The Echo",
-      "verb": "Resound",
+      "verb": "Amplify",
       "description": "Multiply damage and healing by 1.5, rounded down.",
       "color": "#b8a3ef"
     },
@@ -31,7 +31,7 @@
     {
       "id": "hush",
       "name": "The Hush",
-      "verb": "Silence",
+      "verb": "Dampen",
       "description": "Add 2 disruption for this enemy phase. Combined disruption and redirection can prevent at most half of each attack.",
       "color": "#7ac6d8"
     },
@@ -2794,14 +2794,14 @@
         {
           "id": "fork",
           "name": "The Fork",
-          "verb": "Divide",
+          "verb": "Split",
           "description": "The command also deals half its damage to every other enemy.",
           "color": "#f18e79"
         },
         {
           "id": "echo",
           "name": "The Echo",
-          "verb": "Resound",
+          "verb": "Amplify",
           "description": "Multiply damage and healing by 1.5, rounded down.",
           "color": "#b8a3ef"
         },
@@ -2815,7 +2815,7 @@
         {
           "id": "hush",
           "name": "The Hush",
-          "verb": "Silence",
+          "verb": "Dampen",
           "description": "Add 2 disruption for this enemy phase. Combined disruption and redirection can prevent at most half of each attack.",
           "color": "#7ac6d8"
         },
@@ -3012,7 +3012,7 @@
         {
           "id": "rest",
           "name": "Rest",
-          "verb": "Breathe",
+          "verb": "Settle",
           "description": "Repair and utility commands gain 1 healing and 1 Resonance, up to 3. Attack commands gain neither.",
           "color": "#a3cdb9"
         },

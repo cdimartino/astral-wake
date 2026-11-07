@@ -17,6 +17,32 @@ const GOLD := Color("e7c381")
 const ORGAN_KEYS := [KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y]
 const ORGAN_LETTERS := ["Q", "W", "E", "R", "T", "Y"]
 const PLAYER_COMBAT_RECT := Rect2(38, 177, 280, 270)
+const GLOSSARY_TERMS := [
+	["Command", "A card played through an organ route. Its kind is attack, repair or utility."],
+	["Command points", "The three-point turn budget used to pay card costs."],
+	["Hull", "Current health; repair cannot exceed maximum hull."],
+	["Organ", "A ship system that changes a command as the route reaches it."],
+	["Route", "The ordered sequence of one to three distinct, connected organs."],
+	["Strain / capacity", "An organ's accumulated load and the threshold that prevents further use."],
+	["Vent / cooling", "Strain removed by a command / at the end of a turn."],
+	["Link / sever", "Restore or add connections / temporarily cut them."],
+	["Disruption", "Reduces a surviving enemy's next attack; disruption plus redirection prevent at most half the raw attack, rounded down; expires after the enemy phase."],
+	["Redirection", "Damage diverted from an attack into another enemy, also subject to that shared cap."],
+	["Ward", "A temporary pool that absorbs normal attack damage."],
+	["Split damage", "Damage to secondary enemies, normally half the final command damage, rounded down; Forked Rib adds to each secondary hit."],
+	["Trace", "The Palimpsest's combat resource, capped at 6; its systems can spend it and reuse part of a previous command's base payload."],
+	["Resonance", "The Hollow Choir's combat resource, capped at 3. Changing command kinds builds it; repeating a kind resets it before card/organ gains."],
+	["Enemy phase", "After you end your turn: enemies act, organs cool, and you draw for the next turn."],
+	["Saturated / full", "An organ at capacity. It cannot take another command until it cools."],
+	["Overload", "Extra damage for each saturated organ when an enemy's overload attack lands."],
+	["Interrupt threshold", "An enemy's interruptible action is cancelled if you meet its shown disruption during that turn."],
+	["Mark", "A hull penalty for repeating your last exact route."],
+	["Resource gate", "Splice and Chorus split damage only at 2 or more Trace or Resonance; otherwise they add a small bonus."],
+	["Salvage", "Expedition currency spent at shops and some events."],
+	["Evolution", "A once-per-copy command upgrade that lasts for the voyage."],
+	["Powerup", "An installed expedition-wide passive effect."],
+	["Discovery tier", "Persistent profile progression that adds optional cards and powerups to future pools."]
+]
 
 var game = Game.new()
 var page: Control
@@ -66,6 +92,8 @@ var last_feedback: Array = []
 var resolving := false
 var presentation_duration := 0.0
 var opening_film
+var mcp_controller
+var mcp_bridge
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -95,6 +123,11 @@ func _ready() -> void:
 	_apply_settings()
 	resized.connect(_layout_stage)
 	_render()
+	mcp_controller = preload("res://scripts/mcp_controller.gd").new(self)
+	mcp_bridge = preload("res://scripts/mcp_bridge.gd").new()
+	mcp_bridge.controller = mcp_controller
+	# Keep the listener outside the presentation children rebuilt by _render.
+	audio.add_child(mcp_bridge)
 	if DisplayServer.get_name() != "headless" and OS.get_environment("ASTRAL_SKIP_INTRO") != "1" and not game.profile.get("settings", {}).get("reduced_motion", false):
 		opening_film = OpeningFilm.new()
 		add_child(opening_film)
@@ -676,7 +709,8 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var readout: Array = OrganVisuals.READOUTS[str(organ.id)]
 		var accent := Color(str(readout[2]))
 		var tip: String = str(organ.name) + " [" + ORGAN_LETTERS[i] + "]\n" + str(organ.description)
-		tip += "\nStrain %d / %d. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
+		tip += "\nStrain %d / %d. An organ's accumulated load; at capacity it cannot be used. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
+		tip += _keyword_definitions(str(organ.description))
 		tip += "\n" + ("Click to undo this organ and later steps." if selected else "Available next organ." if available else reason if selected_card >= 0 else "Choose a card to begin routing.")
 		var button := _button("", func(): _select_organ(i), tip)
 		button.name = "Organ%d" % i
@@ -827,12 +861,12 @@ func _preview() -> void:
 		var result: Dictionary = game.preview_card(selected_card, route, target)
 		valid = result.get("ok", false)
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
-		summary = "Damage %d · Hull %+d · Disrupt %d · Command points %d → %d" % [int(result.get("damage", 0)), int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))] if valid else full_summary
+		summary = "Damage %d · Hull %+d · Disruption %d · Command points %d → %d" % [int(result.get("damage", 0)), int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))] if valid else full_summary
 	_screen_text(heading, Rect2(58, 545, 700, 26), 19, TEAL)
 	var detail := _screen_text(summary.replace("\n", " · "), Rect2(58, 575, 700, 27), 17, CREAM if selected_card < 0 or valid else CORAL)
 	detail.max_lines_visible = 1
 	detail.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	detail.tooltip_text = full_summary
+	detail.tooltip_text = full_summary + _keyword_definitions(full_summary)
 	detail.mouse_filter = Control.MOUSE_FILTER_STOP
 	var confirm := _button("Confirm [Space]", _confirm, full_summary, true)
 	confirm.disabled = not valid
@@ -1089,6 +1123,7 @@ func _modal(title: String) -> VBoxContainer:
 	_close_overlay()
 	page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 	overlay = Control.new()
+	overlay.set_meta("mcp_title", title)
 	# Hand cards and combat feedback use elevated canvas layers.
 	overlay.z_index = 100
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1115,8 +1150,12 @@ func _modal(title: String) -> VBoxContainer:
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	stack.add_child(scroll)
 	var body := _column(scroll)
-	close.grab_focus.call_deferred()
+	_focus_control.call_deferred(close)
 	return body
+
+func _focus_control(control: Control) -> void:
+	# Several validated local commands may replace a modal in the same frame.
+	if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
 
 func _close_overlay() -> void:
 	if is_instance_valid(overlay):
@@ -1189,6 +1228,8 @@ func _open_settings() -> void:
 	full.toggled.connect(update)
 	for volume in volumes.values(): volume.value_changed.connect(update)
 	body.add_child(_text("Settings save immediately on this Mac.", 16))
+	if ResourceLoader.exists("res://scripts/mcp_settings.gd"):
+		load("res://scripts/mcp_settings.gd").populate(self, body)
 
 func _apply_settings() -> void:
 	var settings: Dictionary = game.profile.get("settings", {})
@@ -1217,6 +1258,17 @@ func _open_help() -> void:
 	body.add_child(_label("KEYBOARD", 15, GOLD))
 	body.add_child(_text("1–5  Select the first five hand cards\nQ W E R T Y  Add organs while a card is selected\nSpace  Confirm route\nE  End turn when no command is selected\nShift+E  End turn at any time\nEsc  Cancel a selection, close a panel or pause\nTab / Shift+Tab  Move focus · Enter  Activate a button\nLeft / Right  Change enemy target when routing\nCards overlap when your hand grows. Hover or focus a card to enlarge it and lift it above the hand. Full card effects remain in the tooltip.", 17, CREAM))
 	body.add_child(_text("Hull and salvage persist across the voyage. Deck changes and powerups last for this expedition. Finish or abandon voyages to discover optional cards and powerups; starting stats stay the same.", 17))
+	body.add_child(_label("GLOSSARY", 17, GOLD))
+	for term in GLOSSARY_TERMS:
+		body.add_child(_text("%s — %s" % [term[0], term[1]], 16, CREAM))
+
+func _keyword_definitions(source: String) -> String:
+	var result := ""
+	var keywords := ["Disruption", "Redirection", "Strain / capacity", "Trace", "Resonance", "Ward", "Split damage"]
+	for term in GLOSSARY_TERMS:
+		if str(term[0]) in keywords and source.to_lower().contains(str(term[0]).to_lower()):
+			result += "\n%s: %s" % [term[0], term[1]]
+	return result
 
 func _open_deck() -> void:
 	var body := _modal(str(game.character().name) + " · deck")

@@ -107,11 +107,17 @@ bash tools/export_macos.sh
 bash tools/package_release.sh
 ```
 
-Packaging creates `dist/Astral-Wake-0.1.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
+Packaging creates `dist/Astral-Wake-0.2.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
 
 The bootstrap downloads approximately 1.5GB of editor/export archives into ignored `.tools/`. Only the Mac template is extracted. On macOS, editor import/export needs permission to write Godot's normal user-data/editor settings folder; restricted automation sandboxes may require an approved native launch.
 
 ## Structure
+
+### AI control
+
+The source-shipped [MCP server](docs/mcp.md) controls the live game window and
+returns immediate authoritative game state. It is opt-in, authenticated, and
+local-only; control is disabled until enabled in Settings, and that preference persists.
 
 - `scripts/game.gd`: deterministic action validation, previews/resolution, expedition, rewards and progression.
 - `scripts/save_store.gd`: versioned JSON, atomic replacement and validated-backup preservation.
@@ -129,3 +135,33 @@ Automated fresh-profile policies exercise complete expeditions and genuine defea
 The 60–90 minute duration is a design target, not a measured human playtest result. Accelerated runs measure card/turn counts and cannot establish how long someone takes to learn or decide. Balance needs human playtesting. The universal binary includes Apple Silicon and Intel; only Apple Silicon is locally tested. Release archives are ad-hoc signed; Apple notarization and storefront integration are not included.
 
 Godot and bundled dependency notices: `THIRD_PARTY_NOTICES.md`, `GODOT_LICENSE.txt`, `GODOT_COPYRIGHT.txt`.
+
+## Architecture blueprint
+
+### System overview
+
+The Godot project launches `main.tscn`, whose root control uses `scripts/main.gd` (`project.godot:run/main_scene`, `main.tscn:ExtResource`). The UI calls the dictionary-based `AstralGame` rules engine; drawing controls present its results, while `AstralSaveStore` handles local save files. Developer tools generate assets, verify the project, and package macOS releases separately from the runtime.
+
+### Interface and system boundaries
+
+- [Runtime scripts](./scripts/README.md): rules and action previews, save persistence, UI/input, organ and combat drawings, tooltips, and opening playback.
+- [Development tools](./tools/README.md): pinned engine bootstrap, checks, authored asset generators, captures, macOS export, and release packaging.
+- [Homebrew cask](./Casks/README.md): versioned release archive, checksum, application artifact, and installation caveats.
+- Authored content and media remain inputs, not code packages: `scripts/game.gd:_init` reads `data/catalog.json`; presentation scripts load local art, fonts, audio, and video. Existing [player documentation](./docs/README.md) remains separate from these code contracts.
+
+### Global invariants
+
+- `scripts/game.gd:preview_card` and `play_card` share simulation; previews must not mutate the live run or consume its RNG. Presentation displays resolved effects rather than applying damage again.
+- `scripts/game.gd:_validate_route` owns route legality; the UI and conduit drawings must agree with the engine's connected, unsevered organ graph.
+- `scripts/game.gd:load_saved` validates save candidates before accepting them; `scripts/save_store.gd:write` must not rotate an unverified primary over the backup.
+- Release versions and archive names must agree across `tools/package_release.sh:version`, `Casks/astral-wake.rb:version`, and `export_presets.cfg:application/short_version`; the cask checksum must match the packaged archive.
+
+### Global side effects
+
+- `scripts/save_store.gd:write` writes local primary, pending, and backup save files. Its directory precedence is an explicit argument, `ASTRAL_SAVE_DIR`, then Godot's user-data directory. Runtime scripts make no network calls.
+- `scripts/main.gd:_apply_settings` changes window/audio state; runtime controls load resources, consume input, and schedule scene animations and playback.
+- `tools/bootstrap.sh:curl` downloads the pinned engine archives. Asset generators overwrite their named media outputs; capture tools write screenshots; export and packaging tools stage and sign release artifacts. See the tool contract before invoking these mutating commands.
+
+### System verification
+
+Run `bash tools/check.sh` from the repository root with the cached Godot engine installed. It validates authored content and media, imports the project, runs headless rules/UI/audio checks, and executes a seeded tactical expedition. It isolates saves with `ASTRAL_SAVE_DIR`; its audio smoke check explicitly requires CoreAudio. This does not verify Homebrew installation, notarization, or human playtime. Check cask syntax separately with `ruby -c Casks/astral-wake.rb`.
