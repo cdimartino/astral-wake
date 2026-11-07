@@ -1,0 +1,1817 @@
+{
+  "exposure": [
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 0,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 0,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 29,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 0,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 0,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 28
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 28
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 29
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 29,
+        "scaling": 29
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 29,
+        "scaling": 27
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 29
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 29
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "normal_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 29,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 29,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "elite_pockets",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 30,
+        "scaling": 30
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 0,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "families": 30,
+      "first_offers": 7,
+      "generation": 1,
+      "scenario": "sparse_no_rare",
+      "seen": {
+        "defense": 30,
+        "enabler": 30,
+        "rare": 0,
+        "scaling": 0
+      },
+      "ship": "hollow_choir",
+      "tier": 3
+    }
+  ],
+  "families": [
+    "002KLC",
+    "002KWG",
+    "002L7K",
+    "002LIO",
+    "002LTS",
+    "002M4W",
+    "002MG0",
+    "002MR4",
+    "002N28",
+    "002NDC",
+    "002NOG",
+    "002NZK",
+    "002OAO",
+    "002OLS",
+    "002OWW",
+    "002P80",
+    "002PJ4",
+    "002PU8",
+    "002Q5C",
+    "002QGG",
+    "002QRK",
+    "002R2O",
+    "002RDS",
+    "002ROW",
+    "002S00",
+    "002SB4",
+    "002SM8",
+    "002SXC",
+    "002T8G",
+    "002TJK"
+  ],
+  "metadata": {
+    "comparison_base": "7382d3d",
+    "elite_draw_weights": [
+      35,
+      45,
+      20
+    ],
+    "generation": 1,
+    "godot": "4.7.2-stable (official)",
+    "normal_draw_weights": [
+      65,
+      28,
+      7
+    ],
+    "pity_limit": 6,
+    "schema": 6,
+    "scope": "fast offer generation, NOT actual area-1 boss reach; same 72-card catalog, NOT a card-pool expansion comparison",
+    "sources": {
+      "data/catalog.json": "fd2afff6e8babc68a1facc8ebc1e4604a6ebdf9ac1b8c916f80fa92455d51fef",
+      "scripts/game.gd": "18270111b655effd5fd37f1bcc42a7983cd8062e379e1b68232008088984a157",
+      "scripts/reward_distribution.gd": "d9170e0fa6f2afbb8708c45f71aa8073716c5e6f46be69a07e89683f1665b43e",
+      "scripts/seed_engine.gd": "277daaf520077524fdf49232ea4e34089924ca73f71769063432b675cedc72d7",
+      "tests/reward_distribution_test.gd": "27e55672b9fc0131dbe30c7da25cc4bc3ade2544e3ee30e65e8f3555f45c38be"
+    }
+  },
+  "offers": [
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2104,
+        4151,
+        2745
+      ],
+      "scenario": "normal",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 200,
+      "rarity": [
+        5731,
+        2458,
+        811
+      ],
+      "scenario": "normal",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2792,
+        5552,
+        3656
+      ],
+      "scenario": "normal_pockets",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 161,
+      "rarity": [
+        7663,
+        3361,
+        976
+      ],
+      "scenario": "normal_pockets",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1407,
+        2761,
+        1832
+      ],
+      "scenario": "elite",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2105,
+        2701,
+        1194
+      ],
+      "scenario": "elite",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2104,
+        4151,
+        2745
+      ],
+      "scenario": "elite_pockets",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3121,
+        4069,
+        1810
+      ],
+      "scenario": "elite_pockets",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1794,
+        3468,
+        3738
+      ],
+      "scenario": "normal",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 187,
+      "rarity": [
+        5784,
+        2388,
+        828
+      ],
+      "scenario": "normal",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2362,
+        4671,
+        4967
+      ],
+      "scenario": "normal_pockets",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 140,
+      "rarity": [
+        7784,
+        3236,
+        980
+      ],
+      "scenario": "normal_pockets",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1201,
+        2324,
+        2475
+      ],
+      "scenario": "elite",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2038,
+        2751,
+        1211
+      ],
+      "scenario": "elite",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1794,
+        3468,
+        3738
+      ],
+      "scenario": "elite_pockets",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3130,
+        4085,
+        1785
+      ],
+      "scenario": "elite_pockets",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2980,
+        3008,
+        3012
+      ],
+      "scenario": "normal",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 200,
+      "rarity": [
+        5731,
+        2458,
+        811
+      ],
+      "scenario": "normal",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3961,
+        4034,
+        4005
+      ],
+      "scenario": "normal_pockets",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 161,
+      "rarity": [
+        7663,
+        3361,
+        976
+      ],
+      "scenario": "normal_pockets",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1956,
+        2020,
+        2024
+      ],
+      "scenario": "elite",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2105,
+        2701,
+        1194
+      ],
+      "scenario": "elite",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2980,
+        3008,
+        3012
+      ],
+      "scenario": "elite_pockets",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3121,
+        4069,
+        1810
+      ],
+      "scenario": "elite_pockets",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3073,
+        2966,
+        2961
+      ],
+      "scenario": "normal",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 187,
+      "rarity": [
+        5784,
+        2388,
+        828
+      ],
+      "scenario": "normal",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        4065,
+        3997,
+        3938
+      ],
+      "scenario": "normal_pockets",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 140,
+      "rarity": [
+        7784,
+        3236,
+        980
+      ],
+      "scenario": "normal_pockets",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2037,
+        1968,
+        1995
+      ],
+      "scenario": "elite",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2038,
+        2751,
+        1211
+      ],
+      "scenario": "elite",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3073,
+        2966,
+        2961
+      ],
+      "scenario": "elite_pockets",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3130,
+        4085,
+        1785
+      ],
+      "scenario": "elite_pockets",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2980,
+        3008,
+        3012
+      ],
+      "scenario": "normal",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 200,
+      "rarity": [
+        5731,
+        2458,
+        811
+      ],
+      "scenario": "normal",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3961,
+        4034,
+        4005
+      ],
+      "scenario": "normal_pockets",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 161,
+      "rarity": [
+        7663,
+        3361,
+        976
+      ],
+      "scenario": "normal_pockets",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        1956,
+        2020,
+        2024
+      ],
+      "scenario": "elite",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2105,
+        2701,
+        1194
+      ],
+      "scenario": "elite",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2980,
+        3008,
+        3012
+      ],
+      "scenario": "elite_pockets",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3121,
+        4069,
+        1810
+      ],
+      "scenario": "elite_pockets",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3073,
+        2966,
+        2961
+      ],
+      "scenario": "normal",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 187,
+      "rarity": [
+        5784,
+        2388,
+        828
+      ],
+      "scenario": "normal",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        4065,
+        3997,
+        3938
+      ],
+      "scenario": "normal_pockets",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 140,
+      "rarity": [
+        7784,
+        3236,
+        980
+      ],
+      "scenario": "normal_pockets",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2037,
+        1968,
+        1995
+      ],
+      "scenario": "elite",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        2038,
+        2751,
+        1211
+      ],
+      "scenario": "elite",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3073,
+        2966,
+        2961
+      ],
+      "scenario": "elite_pockets",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        3130,
+        4085,
+        1785
+      ],
+      "scenario": "elite_pockets",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 0,
+      "offers": 3000,
+      "pity_due": 0,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "generation": 1,
+      "offers": 3000,
+      "pity_due": 2820,
+      "rarity": [
+        6000,
+        0,
+        0
+      ],
+      "scenario": "sparse_no_rare",
+      "ship": "hollow_choir",
+      "tier": 3
+    }
+  ],
+  "raw": [
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7739,
+        3392,
+        869
+      ],
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4207,
+        5364,
+        2429
+      ],
+      "ship": "cartographer",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7844,
+        3303,
+        853
+      ],
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4236,
+        5298,
+        2466
+      ],
+      "ship": "cartographer",
+      "tier": 3
+    },
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7739,
+        3392,
+        869
+      ],
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4207,
+        5364,
+        2429
+      ],
+      "ship": "palimpsest",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7844,
+        3303,
+        853
+      ],
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4236,
+        5298,
+        2466
+      ],
+      "ship": "palimpsest",
+      "tier": 3
+    },
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7739,
+        3392,
+        869
+      ],
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4207,
+        5364,
+        2429
+      ],
+      "ship": "hollow_choir",
+      "tier": 0
+    },
+    {
+      "draws": 12000,
+      "kind": "battle",
+      "rarity": [
+        7844,
+        3303,
+        853
+      ],
+      "ship": "hollow_choir",
+      "tier": 3
+    },
+    {
+      "draws": 12000,
+      "kind": "elite",
+      "rarity": [
+        4236,
+        5298,
+        2466
+      ],
+      "ship": "hollow_choir",
+      "tier": 3
+    }
+  ]
+}

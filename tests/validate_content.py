@@ -6,13 +6,13 @@ import json
 from collections import Counter
 from pathlib import Path
 
-COUNTS = {'organs': 6, 'cards': 72, 'powerups': 18, 'enemies': 36,
+COUNTS = {'organs': 6, 'cards': 81, 'powerups': 18, 'enemies': 36,
           'events': 18, 'regions': 6, 'starting_deck': 10, 'characters': 3}
 FIELDS = {
     'organs': {'id', 'name', 'verb', 'description', 'color'},
     'characters': {'id', 'name', 'description', 'max_hull', 'capacity', 'cooling', 'starting_deck', 'organs', 'edges'},
     'cards': {'id', 'name', 'kind', 'description', 'damage', 'heal', 'vent', 'draw',
-              'disrupt', 'link', 'rarity', 'unlock', 'art', 'cost'},
+              'disrupt', 'link', 'rarity', 'unlock', 'art', 'cost', 'roles', 'primary_role'},
     'powerups': {'id', 'name', 'description', 'effect', 'value', 'unlock'},
     'enemies': {'id', 'name', 'region', 'role', 'hp', 'art', 'description', 'pattern', 'tactics'},
     'events': {'id', 'name', 'region', 'text', 'choices'},
@@ -42,6 +42,60 @@ def text(value, label):
     require(isinstance(value, str) and value.strip(), f'{label}: missing text')
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, f'duplicate JSON key: {key}')
+        result[key] = value
+    return result
+
+
+def validate_evolutions(card):
+    if 'evolutions' not in card:
+        return
+    branches = card['evolutions']
+    require(isinstance(branches, list) and len(branches) == 2, 'expected two evolutions')
+    ids = set()
+    flags = {'retain', 'exhaust', 'first_free'}
+    stats = {'cost', 'damage', 'heal', 'vent', 'disrupt', 'draw', 'trace', 'resonance', 'ward'} | flags
+    for branch in branches:
+        require(isinstance(branch, dict) and set(branch) == {'id', 'name', 'description', 'stats'}, 'invalid evolution fields')
+        ident = branch['id']
+        text(ident, 'evolution.id')
+        require(ident.isidentifier() and ident.isascii() and ident.islower() and ident != 'legacy' and ident not in ids, 'invalid/duplicate evolution identity')
+        ids.add(ident)
+        text(branch['name'], 'evolution.name')
+        text(branch['description'], 'evolution.description')
+        require(isinstance(branch['stats'], dict) and branch['stats'] and set(branch['stats']) <= stats, 'invalid evolution stats')
+        for key, value in branch['stats'].items():
+            if key in flags:
+                require(type(value) is bool, f'{key}: expected boolean')
+                continue
+            integer(value, 1 if key == 'cost' else 0, {'cost': 2, 'trace': 6, 'resonance': 3}.get(key, 99), key)
+            if key in {'trace', 'resonance'}:
+                require(card.get('character') == {'trace': 'palimpsest', 'resonance': 'hollow_choir'}[key], 'foreign evolution resource')
+        for kind, stat in [('attack', 'damage'), ('repair', 'heal')]:
+            require(card['kind'] != kind or branch['stats'].get(stat, card[stat]) > 0, 'empty evolution payload')
+        require(not ('install' in card and branch['stats'].get('exhaust', card.get('exhaust', False))), 'Install and Exhaust are mutually exclusive')
+
+
+def validate_route_effects(card):
+    if 'ward' in card:
+        integer(card['ward'], 0, 99, 'ward')
+    for field, types in [('conditional_damage', {'novel_route', 'route_strain_two'}),
+                         ('conditional_ward', {'prism_other_foe'}),
+                         ('route_cooling', {'three_first'})]:
+        if field not in card:
+            continue
+        spec = card[field]
+        require(isinstance(spec, dict) and set(spec) == {'type', 'amount'}, f'invalid {field}')
+        require(isinstance(spec['type'], str) and spec['type'] in types, f'unsupported {field}')
+        integer(spec['amount'], 1, 1 if field == 'route_cooling' else 99, field)
+        if field == 'conditional_damage':
+            require(card['kind'] == 'attack' and type(card['damage']) is int and 1 <= card['damage'] <= 99,
+                    'conditional damage requires positive printed attack damage')
+
+
 def validate(data):
     require(isinstance(data, dict) and set(data) == set(COUNTS), 'catalog keys differ from schema')
     for group, count in COUNTS.items():
@@ -51,7 +105,7 @@ def validate(data):
             continue
         ids, names = set(), set()
         for item in data[group]:
-            optional = {'character', 'trace', 'rewrite', 'resonance', 'concert'} if group == 'cards' else set()
+            optional = {'introduced_revision', 'character', 'trace', 'rewrite', 'resonance', 'concert', 'retain', 'exhaust', 'install', 'selections', 'engine', 'evolutions', 'ward', 'conditional_damage', 'conditional_ward', 'route_cooling'} if group == 'cards' else set()
             require(isinstance(item, dict) and FIELDS[group] <= set(item) <= FIELDS[group] | optional, f'{group}: unsupported or missing fields')
             ident = item['id']
             text(ident, f'{group}.id')
@@ -76,6 +130,22 @@ def validate(data):
             'organ order differs from routing indexes')
     cards = {c['id']: c for c in data['cards']}
     for c in cards.values():
+        integer(c.get('introduced_revision', 0), 0, 1, 'introduced_revision')
+        validate_evolutions(c)
+        validate_route_effects(c)
+        expected_roles = set()
+        if c.get('damage', 0): expected_roles.add('attack')
+        if c.get('disrupt', 0) or c.get('ward', 0) or c.get('conditional_ward'): expected_roles.add('prevention')
+        if c.get('heal', 0): expected_roles.add('repair')
+        if any(c.get(k) for k in ('vent', 'link', 'trace', 'resonance', 'route_cooling')): expected_roles.add('enabler')
+        if c.get('draw', 0) or c.get('selections'): expected_roles.add('selection')
+        engine_type = c.get('engine', {}).get('type')
+        if engine_type == 'cooling_ward': expected_roles.update(('prevention', 'enabler'))
+        if engine_type == 'redirect_retaliation': expected_roles.add('enabler')
+        if c.get('rewrite') or c.get('concert') or engine_type in {'novel_route', 'other_exhaust'}: expected_roles.add('scaling')
+        require(isinstance(c['roles'], list) and len(c['roles']) == len(expected_roles)
+                and set(c['roles']) == expected_roles and c['primary_role'] in expected_roles,
+                f'{c["id"]}: roles must describe printed base mechanics, with an explicit primary')
         ident = c['id']
         require(c['kind'] in {'attack', 'repair', 'utility'}, f'{ident}: invalid card kind')
         for field in ('damage', 'heal', 'vent', 'draw', 'disrupt'):
@@ -87,17 +157,47 @@ def validate(data):
             if resource in c: integer(c[resource], 0, maximum, f'{ident}.{resource}')
         for flag in ('rewrite', 'concert'):
             if flag in c: require(type(c[flag]) is bool, f'{ident}: invalid resource command flag')
+        for flag in ('retain', 'exhaust'):
+            if flag in c: require(type(c[flag]) is bool, f'{ident}: {flag} must be boolean')
+        if 'selections' in c:
+            ops = c['selections']
+            require(isinstance(ops, list) and 1 <= len(ops) <= 3, f'{ident}: expected 1–3 known-card selections')
+            for op in ops:
+                require(isinstance(op, dict) and {'kind'} <= set(op) <= {'kind', 'optional', 'kind_filter'}, f'{ident}: malformed selection')
+                require(op['kind'] in {'exhaust_hand', 'retain_hand', 'return_discard'}, f'{ident}: unsupported selection')
+                if 'optional' in op: require(type(op['optional']) is bool, f'{ident}: optional must be boolean')
+                if 'kind_filter' in op:
+                    require(op['kind'] == 'return_discard' and op['kind_filter'] in {'attack', 'repair'}, f'{ident}: invalid selection filter')
+        if 'install' in c:
+            identity = c['install']
+            text(identity, f'{ident}.install')
+            require(identity.replace('_', '').isalnum() and identity.islower(), f'{ident}: invalid Install identity')
+            require(not c.get('exhaust', False), f'{ident}: Install and Exhaust are mutually exclusive')
+        if 'engine' in c:
+            spec = c['engine']
+            require('install' in c and isinstance(spec, dict) and isinstance(spec.get('type'), str), f'{ident}: malformed engine')
+            kind = spec['type']
+            fields = {'novel_route': {'type', 'cap'}, 'other_exhaust': {'type', 'cap'},
+                      'cooling_ward': {'type', 'threshold', 'ward'}, 'redirect_retaliation': {'type', 'damage'}}
+            require(kind in fields and set(spec) == fields[kind], f'{ident}: unsupported/malformed engine')
+            if kind in {'novel_route', 'other_exhaust'}:
+                integer(spec['cap'], 1, 6 if kind == 'novel_route' else 5, f'{ident}.engine.cap')
+            elif kind == 'cooling_ward':
+                integer(spec['threshold'], 1, 12, f'{ident}.engine.threshold')
+                integer(spec['ward'], 1, 99, f'{ident}.engine.ward')
+            else:
+                integer(spec['damage'], 1, 99, f'{ident}.engine.damage')
         require(not any(k in c for k in ('trace', 'rewrite')) or c.get('character') == 'palimpsest', f'{ident}: Trace belongs to Palimpsest')
         require(not any(k in c for k in ('resonance', 'concert')) or c.get('character') == 'hollow_choir', f'{ident}: Resonance belongs to Choir')
         integer(c['cost'], 1, 2, f'{ident}.cost')
         integer(c['rarity'], 0, 2, f'{ident}.rarity')
         integer(c['unlock'], 0, 3, f'{ident}.unlock')
-        integer(c['art'], 0, 19, f'{ident}.art')
+        integer(c['art'], 0, 35 if c.get('introduced_revision', 0) else 19, f'{ident}.art')
         require(type(c['link']) is bool, f'{ident}: link must be boolean')
-        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')), f'{ident}: empty card')
+        require(any(c[f] for f in ('damage', 'heal', 'vent', 'draw', 'disrupt', 'link')) or any(c.get(k) for k in ('selections', 'ward', 'conditional_ward', 'route_cooling', 'engine')), f'{ident}: empty card')
         require(c['kind'] != 'attack' or c['damage'] > 0, f'{ident}: attack must deal damage')
         require(c['kind'] != 'repair' or c['heal'] > 0, f'{ident}: repair must heal')
-    require(Counter(c['unlock'] for c in cards.values()) == {0: 66, 1: 2, 2: 2, 3: 2},
+    require(Counter(c['unlock'] for c in cards.values()) == {0: 75, 1: 2, 2: 2, 3: 2},
             'cards: expected six unlocks, two at each level')
     for ident in data['starting_deck']:
         require(ident in cards, f'starting_deck: unknown card {ident}')
@@ -107,7 +207,7 @@ def validate(data):
     require(any(cards[x]['vent'] for x in data['starting_deck']), 'starter deck lacks venting')
 
     require([v['id'] for v in data['characters']] == ['cartographer', 'palimpsest', 'hollow_choir'], 'character registry order differs')
-    require(Counter(c.get('character', 'cartographer') for c in cards.values()) == {'cartographer': 36, 'palimpsest': 18, 'hollow_choir': 18}, 'incorrect isolated card pools')
+    require(Counter(c.get('character', 'cartographer') for c in cards.values()) == {'cartographer': 45, 'palimpsest': 18, 'hollow_choir': 18}, 'incorrect isolated card pools')
     networks = []
     for vessel in data['characters']:
         ident = vessel['id']
@@ -217,7 +317,92 @@ def validate(data):
 
 
 def self_test(data):
+    branches = [
+        {'id': 'impact', 'name': 'Fixture Impact', 'description': 'Deal 13 damage.', 'stats': {'damage': 13}},
+        {'id': 'flow', 'name': 'Fixture Flow', 'description': 'Deal 10 damage. Draw 1.', 'stats': {'damage': 10, 'draw': 1}},
+    ]
+    authored = copy.deepcopy(data)
+    authored['cards'][0]['evolutions'] = copy.deepcopy(branches)
+    validate(authored)
+    branch_mutations = [
+        lambda b: b.pop(),
+        lambda b: b[0].update(id='legacy'),
+        lambda b: b[0].update(id='flow'),
+        lambda b: b[0].update(id='not an id'),
+        lambda b: b[0].update(name=''),
+        lambda b: b[0].update(description=''),
+        lambda b: b[0].update(stats={}),
+        lambda b: b[0]['stats'].update(damage=13.5),
+        lambda b: b[0]['stats'].update(damage=True),
+        lambda b: b[0]['stats'].update(damage=0),
+        lambda b: b[0]['stats'].update(cost=0),
+        lambda b: b[0]['stats'].update(trace=1),
+        lambda b: b[0].update(script='arbitrary'),
+    ]
+    for field in ('uid', 'id', 'art', 'character', 'evolutions', 'conditional_damage', 'conditional_ward', 'route_cooling', 'refund', 'install', 'engine', 'selections'):
+        branch_mutations.append(lambda b, field=field: b[0]['stats'].update({field: 1}))
+    for mutate in branch_mutations:
+        broken = copy.deepcopy(authored)
+        mutate(broken['cards'][0]['evolutions'])
+        try:
+            validate(broken)
+        except ValueError:
+            continue
+        raise ValueError('self-test accepted invalid evolution')
+    try:
+        json.loads('{"stats":{"damage":13,"damage":10}}', object_pairs_hook=unique_object)
+    except ValueError:
+        pass
+    else:
+        raise ValueError('self-test accepted duplicate JSON keys')
+    valid = copy.deepcopy(data)
+    valid['cards'][0].update(retain=True, exhaust=True)
+    valid['cards'][1].update(install='fixture_engine')
+    valid['cards'][4].update(damage=0, heal=0, vent=0, draw=0, disrupt=0, link=False,
+                            roles=['selection'], primary_role='selection',
+                            selections=[{'kind': 'exhaust_hand'}, {'kind': 'retain_hand'},
+                                        {'kind': 'return_discard', 'optional': True, 'kind_filter': 'repair'}])
+    validate(valid)
+    for kind, cap in [('novel_route', 6), ('other_exhaust', 5)]:
+        engine_valid = copy.deepcopy(data)
+        engine_valid['cards'][0].update(install='fixture_engine', engine={'type': kind, 'cap': cap}, roles=['attack', 'scaling'])
+        validate(engine_valid)
+    for spec in [{'type': 'cooling_ward', 'threshold': 2, 'ward': 5},
+                 {'type': 'redirect_retaliation', 'damage': 6}]:
+        engine_valid = copy.deepcopy(data)
+        roles = ['attack', 'prevention', 'enabler'] if spec['type'] == 'cooling_ward' else ['attack', 'enabler']
+        engine_valid['cards'][0].update(install='fixture_engine', engine=spec, roles=roles)
+        validate(engine_valid)
+        bad_specs = [{**spec, 'cap': 1}, {**spec, 'type': 'unknown'}]
+        for key in set(spec) - {'type'}:
+            for bad in [True, False, None, -1, 0, 0.5, 100, '6']:
+                bad_specs.append({**spec, key: bad})
+            bad_specs.append({k: v for k, v in spec.items() if k != key})
+        for bad in bad_specs:
+            broken = copy.deepcopy(engine_valid)
+            broken['cards'][0]['engine'] = bad
+            try:
+                validate(broken)
+            except (ValueError, AssertionError):
+                pass
+            else:
+                raise AssertionError(f'accepted malformed typed defense engine: {bad}')
     mutations = [
+        lambda d: d['cards'][0].pop('roles'),
+        lambda d: d['cards'][0].update(roles=[]),
+        lambda d: d['cards'][0].update(roles=['attack', 'attack']),
+        lambda d: d['cards'][0].update(roles=['group']),
+        lambda d: d['cards'][0].update(primary_role='scaling'),
+        lambda d: d['cards'][0].update(rarity=True),
+        lambda d: d['cards'][0].update(rarity=1.5),
+        lambda d: d['cards'][0].update(engine={'type': 'novel_route', 'cap': 6}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'script', 'cap': 1}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 6.5}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': True}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'other_exhaust', 'cap': 6}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 0}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route', 'cap': 6, 'ward': 3}),
+        lambda d: d['cards'][0].update(install='fixture_engine', engine={'type': 'novel_route'}),
         lambda d: d['cards'].pop(),
         lambda d: d['characters'][1]['starting_deck'].__setitem__(0, 'needle'),
         lambda d: d['characters'][1].__setitem__('edges', [[0, 1]]),
@@ -227,6 +412,18 @@ def self_test(data):
         lambda d: d['starting_deck'].__setitem__(0, 'missing_card'),
         lambda d: d['cards'][0].__setitem__('damage', True),
         lambda d: d['cards'][0].__setitem__('unsupported', 1),
+        lambda d: d['cards'][0].__setitem__('retain', 1),
+        lambda d: d['cards'][0].__setitem__('exhaust', 'yes'),
+        lambda d: d['cards'][0].__setitem__('install', True),
+        lambda d: d['cards'][0].__setitem__('install', ''),
+        lambda d: d['cards'][0].__setitem__('install', 'not an identity'),
+        lambda d: d['cards'][0].update(install='fixture_engine', exhaust=True),
+        lambda d: d['cards'][0].__setitem__('selections', []),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'draw_then_discard'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'retain_hand', 'optional': 1}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'retain_hand', 'kind_filter': 'attack'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'return_discard', 'kind_filter': 'utility'}]),
+        lambda d: d['cards'][0].__setitem__('selections', [{'kind': 'return_discard', 'count': 2}]),
         lambda d: d['powerups'][0].__setitem__('effect', 'teleport'),
         lambda d: d['enemies'][0]['pattern'][0].__setitem__('kind', 'poison'),
         lambda d: d['regions'][0].__setitem__('boss', 'missing_boss'),
@@ -247,7 +444,7 @@ def self_test(data):
         except ValueError:
             continue
         raise ValueError(f'self-test {index}: accepted invalid catalog')
-    return len(mutations)
+    return len(mutations) + len(branch_mutations) + 1
 
 
 def main():
@@ -256,7 +453,7 @@ def main():
     parser.add_argument('--self-test', action='store_true', help='also prove rejection of malformed catalogs')
     args = parser.parse_args()
     try:
-        data = json.loads(args.catalog.read_text())
+        data = json.loads(args.catalog.read_text(), object_pairs_hook=unique_object)
         counts = validate(data)
         print('PASS: ' + ', '.join(f'{n} {k}' for k, n in counts.items()))
         if args.self_test:

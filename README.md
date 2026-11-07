@@ -31,7 +31,7 @@ Release builds are ad-hoc signed and have not been notarized by Apple. If macOS 
 
 Open **Astral Wake** from Applications. Developers can also open the local **dist/Astral Wake.app** build.
 
-A skippable opening cinematic leads into the title screen; press any key or click to skip it. Combat and encounter choices use a fixed game stage, while the illustrated overmap scrolls vertically through branching routes that fork and merge. Ships move against regional backgrounds with six original looping soundtracks and action cues. Hover or focus a card to lift and enlarge its illustrated face, command cost, and effect icons. All enemies appear together, with names and hull bars below their artwork. Target markers, projectiles, impact flashes, floating points, healing, disruption, cooling and distinct enemy actions show what each command did. Reduced motion and volume controls are available in Settings.
+A skippable opening cinematic leads into the title screen; press any key or click to skip it. Combat and encounter choices use a fixed game stage, while the illustrated overmap scrolls vertically through branching routes that fork and merge. Ships move against regional backgrounds with six original looping soundtracks and action cues. Your vessel and every enemy drift while waiting, lean into their actions, and recoil when struck. Hover or focus a card to lift and enlarge its illustrated face, command cost, and effect icons. All enemies appear together, with names and hull bars below their artwork. Target markers, projectiles, impact flashes, floating points, healing, disruption, cooling and distinct enemy actions show what each command did. Reduced motion and volume controls are available in Settings.
 
 Astral Wake Display is an original font reserved for large headings. Gameplay readouts and body text use Avenir Next, with semibold card and enemy names, brighter secondary text, and dark reading surfaces over illustrated backgrounds. The custom font is reproducible with `tools/make_font.py`. See the [UI legibility audit](docs/ui-legibility-audit.md) for findings and verification.
 
@@ -57,15 +57,21 @@ A route cannot repeat an organ or cross a severed connection. A saturated organ 
 
 ### Three vessels
 
-- **The Cartographer** starts with 100 hull and draws from the original 36-card pool. Lens, Fork, Echo, Suture, Hush and Prism transform commands in route order.
+- **The Cartographer** starts with 100 hull and draws from 45 cards in fresh expeditions (36 in legacy content-pool revision 0). Lens, Fork, Echo, Suture, Hush and Prism transform commands in route order.
 - **The Palimpsest** starts with 96 hull and has 18 distinct cards. Build up to 6 Trace, then spend it to recall damage, repair, redact or rewrite part of the previous command’s base payload. Its six organs form their own routing network.
 - **The Hollow Choir** starts with 104 hull and has 18 distinct cards. Changing command kinds builds Resonance, up to 3; repeating a kind resets it before card and organ gains. Coordinate the phrase, then spend it on Crescendo, Cadence or Concert commands through a different six-organ network.
 
-All three are available immediately, each with a ten-card starter deck and its own card rewards and shop pool. Every vessel has three command points, base capacity 3 and cooling 1. Concluded voyages unlock six optional Cartographer cards and three powerups; progression never increases a vessel’s starting stats.
+All three are available immediately, each with a ten-card starter deck and its own card rewards and shop pool. Every vessel has three command points, base capacity 3 and cooling 1. Concluded ordinary voyages unlock six optional Cartographer cards and three powerups; progression never increases a vessel’s starting stats. Entered-seed practice voyages never award durable progression or unlocks.
 
 ### Three stops, six possible areas
 
 Each new expedition samples three different areas without replacement using its seed. Each visited area has twelve map layers, two to four destinations per ordinary layer, and one final boss. Enemy strength scales with the area’s position in the mission rather than its geographic identity.
+
+### Replay a seed
+
+New expeditions receive a **six-character code using A–Z and 0–9**. Leave the seed field blank for an ordinary voyage, or enter a code on the ship-selection screen to start reproducible practice. Victory and defeat both display the code and offer **Retry seed**, which restarts with the same vessel. Use the same vessel, game version and choices to reproduce maps, enemies, card order, rewards and shops. Lowercase entry is accepted and normalized to uppercase.
+
+Entered-seed runs allow normal in-voyage upgrades but **no durable leveling, discovery-tier gains or unlocks**, including after defeat or abandonment. They still save/resume and appear as practice in run history. The code includes the original discovery pool, so a retry is unaffected by later profile progression. [Seeding engine and guarantees](docs/seeds.md).
 
 | Possible area | Guardian |
 | --- | --- |
@@ -80,7 +86,7 @@ Enemy intentions appear as icon-and-number badges. Hover or keyboard-focus a bad
 
 All 36 enemies have distinct repeating tactical profiles: armored and exposed phases, route weaknesses, interruptible support actions, drain, or overload attacks. Hover or focus an intent badge for its cycle and counter. Strain targets the busiest organs; cuts target your last route first, letting you anticipate and bait them. See the [enemy field guide](docs/enemies.md).
 
-The release contains **72 command cards, 18 shared powerups, 24 regular enemy types, 6 elites, 6 bosses and 18 events**.
+The candidate contains **81 command cards, 18 shared powerups, 24 regular enemy types, 6 elites, 6 bosses and 18 events**. The nine Cartographer additions reuse licensed atlas art as prototype coverage, not nine new illustrations; see [expansion acceptance status](docs/cartographer-expansion.md).
 
 ## Saves and settings
 
@@ -107,6 +113,10 @@ bash tools/export_macos.sh
 bash tools/package_release.sh
 ```
 
+`tools/check.sh` runs the content, audio, and art validators plus the automated headless Godot suite, including combat, UI, save/load, routing, audio playback, intro completion/skipping, and a full-expedition playthrough. GitHub Actions runs the same script on every pull request and pushes to `main` through [`.github/workflows/tests.yml`](.github/workflows/tests.yml); use `bash tools/bootstrap.sh --engine-only` when only the pinned editor is needed for tests. CI uses `ASTRAL_AUDIO_DRIVER=Dummy` to test the audio mixer without physical audio hardware.
+
+To block merging when tests fail, configure a GitHub branch protection rule or ruleset for `main` requiring the **Godot 4.7.2 checks** status check after its first workflow run.
+
 Packaging creates `dist/Astral-Wake-0.2.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
 
 The bootstrap downloads approximately 1.5GB of editor/export archives into ignored `.tools/`. Only the Mac template is extracted. On macOS, editor import/export needs permission to write Godot's normal user-data/editor settings folder; restricted automation sandboxes may require an approved native launch.
@@ -120,11 +130,12 @@ returns immediate authoritative game state. It is opt-in, authenticated, and
 local-only; control is disabled until enabled in Settings, and that preference persists.
 
 - `scripts/game.gd`: deterministic action validation, previews/resolution, expedition, rewards and progression.
+- `scripts/seed_engine.gd`: versioned gameplay RNG, independent persisted streams, six-character codes and legacy RNG compatibility.
 - `scripts/save_store.gd`: versioned JSON, atomic replacement and validated-backup preservation.
 - `scripts/main.gd`, `scripts/space_canvas.gd`, `scripts/intro_cinematic.gd`: native presentation, opening film, input and audio.
 - `data/catalog.json`: authored content, stable IDs, balance values.
 - `art/`: original backgrounds, vessel/enemy artwork, and 72 command illustrations; prompts and provenance live alongside the assets and in `art/PROMPTS.md`.
-- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 21 layered combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation.
+- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 22 combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation. Use `--cards-only` to rebuild the brief, dry paper draw/discard sounds.
 - `tests/`: headless rules/regression checks, native scene smoke and deterministic full-run policy.
 - `docs/`: gameplay guide, ship and organ reference, and reproducible native screenshots.
 

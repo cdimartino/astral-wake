@@ -38,6 +38,14 @@ Settings-enabled access returns on the next launch until you disable it.
 
 ## Connect an MCP client
 
+Client-specific, opt-in integrations are included for
+[OpenCode](../integrations/opencode/README.md),
+[Codex](../integrations/codex/README.md), and
+[Claude Code / Claude Desktop](../integrations/claude/README.md).
+These examples do not install themselves or contain credentials. Follow the
+client-specific environment and configuration rules rather than copying one
+client's JSON shape into another.
+
 Configure a local stdio server using absolute paths to Python and this checkout:
 
 ```json
@@ -58,6 +66,15 @@ environment values from the command-line setup. Start the game first. The server
 loopback; do not expose or forward the port to a network.
 
 ## Agent interaction loop
+
+Agents should read [the complete playbook](mcp-agent-guide.md), which covers
+discovery, combat, every encounter flow, notifications, and safe error recovery.
+
+**Blind-play limitation:** released v0.2.0 exposed draw-pile contents/order and
+RNG state. Filtering those from agent displays is not sufficient for a fully
+blind test. Use a newer build with server-side projection and leakage tests;
+see the playbook's blind-play boundary. Source changes do not update an already
+installed app automatically.
 
 1. Call `get_state`. Read `ui`, `run`, `busy`, `revision`, and `legal_actions`.
 2. Choose an available semantic action and its arguments from `legal_actions`.

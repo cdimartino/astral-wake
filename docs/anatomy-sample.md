@@ -6,6 +6,7 @@ Combat now opens in **Anatomy view**: an enlarged, translucent vessel with its s
 - Gold numbers show route order; illuminated sockets mark legal next steps.
 - Arcs around each specimen show strain. Gold arc segments preview changes, and the numeric readout remains alongside the organ.
 - Hover or focus an organ to show its function conditions in the central readout. Hover for its full tooltip.
+- Conduits route around captions and the central readout so every connection and severed-link marker stays visible.
 - The six routing keys and combat rules are unchanged. The anatomy layout runs clockwise from Q at the top.
 
 ## Hollow Choir

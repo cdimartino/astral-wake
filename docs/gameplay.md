@@ -6,7 +6,25 @@ Choose a living ship, build its deck, and defeat the guardians of three regions.
 
 All three ships are available immediately. **New expedition** opens ship selection; **Details** shows a ship's systems and starting deck. See the [ship guide](ships.md) for their different organ networks, Trace and Resonance mechanics.
 
+The combat header's **Last command** box shows the previous card, its kind, and its resolved damage, repair, and disruption. Hover for its base payload, or click/focus and press Enter to inspect the card. Rewrite uses half the upgraded base damage, repair, and disruption, rounded down—not the results after organs, resources, or powerups. This memory persists across turns and saves; older saves may retain the payload without the card's identity.
+
 ## Your first encounter
+
+Card faces show their effective upgraded numbers, including Vent, Draw, and vessel-resource gains. Effect badges wrap rather than disappearing beneath long descriptions.
+
+All 72 cards now offer two authored evolutions per copy: [Cartographer](cartographer-evolutions.md),
+[Palimpsest](palimpsest-evolutions.md), and the [Choir candidate](choir-evolutions.md).
+Compare output, CP, timing, resource gains and any Retain/Exhaust/first-free flags
+before confirming.
+Old evolved copies on all ships keep that exact legacy behavior, including Draw.
+
+While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
+
+The **Draw** and **Discard** piles flank your hand. Cards travel into and out of them when played or when a turn ends; reshuffles and pile counts follow the same sequence. Click a pile to inspect its composition (draw order stays hidden). Escape skips the presentation without changing the committed result. Reduced motion shows the same card and count changes without travel animations.
+
+The route preview's **Damage** is damage to the selected enemy. **Split** lists damage to other living enemies, separately; unequal values reflect each recipient's defenses and remaining hull. Hover the preview or Confirm for the full named-target breakdown.
+
+Hover or keyboard-focus a card to read definitions of its keywords beside the enlarged face. The same glossary is available from reward/shop controls, deck card headings, and organ tooltips. Number keys can inspect an unaffordable hand card without selecting or playing it. Long explanations scroll within the viewport, and opening an overlay dismisses hand explanations.
 
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
@@ -23,7 +41,7 @@ For an unmodified Cartographer, **Needle of Dawn → Lens [Q] → Fork [W] → E
 
 Every turn starts with **3 command points**. Cards cost **1 or 2**, paid once per command regardless of route length. Unspent points do not carry over: End turn refills the meter to 3. Command points and salvage are separate resources.
 
-A fight starts with your shuffled expedition deck and a five-card hand. Second Eyelid adds one card to the opening hand only. Played cards enter the discard pile; draw effects can supply more cards during your turn. Whenever the draw pile runs out, the discard pile is shuffled into it. Your hand holds at most ten cards.
+A fight starts with your shuffled expedition deck and a five-card hand. Second Eyelid adds one card to the opening hand only. Played cards enter the discard pile **before their draw effect**; with no other cards in either pile, a drawing command can redraw itself. Whenever the draw pile runs out, the discard pile is shuffled into it. Your hand holds at most ten cards.
 
 End turn does the following:
 
@@ -126,17 +144,26 @@ Base combat salvage is **18 / 25 / 32** in the first, second and third regions. 
 
 Salvage is awarded automatically after victory. Then choose **one** offered discovery or skip. Normal rewards offer three card choices. Elites and bosses offer two cards and up to two distinct, unowned powerups. Many Pockets adds another card choice. You still take just one discovery: choose the card or powerup that addresses your deck's current weakness.
 
-Cards come from the chosen ship's unlocked pool. Duplicate cards are allowed, and each copy can evolve independently. Powerups are shared between ships, last for the expedition and cannot be acquired twice in the same voyage. They do not become starting equipment for future runs.
+Cards come from the chosen ship's discovery pool, fixed when the expedition starts. New ordinary voyages use your current discovery tier; a seed replay restores the pool encoded in that code regardless of the current profile. Duplicate cards are allowed, and each copy can evolve independently. Powerups are shared between ships, last for the expedition and cannot be acquired twice in the same voyage. They do not become starting equipment for future runs.
 
-Shops normally offer two commands priced at 35 and 43 salvage, two distinct unowned powerups for 75 each, removal for 30, and evolution for 35. Old Favour discounts these prices by 20%. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
+New expeditions use [reward generation v1](reward-distribution.md): ordinary rarity draw weights 65/28/7, elite/boss 35/45/20, distinct card IDs per offer and at least two primary roles in ordinary offers when possible. After six ordinary offers without any rare, the next eligible ordinary offer includes one; reset happens on offering, not taking. Elite/boss/shop offers do not count. Inspect rewards or your deck for the saved pity counter and generation. Rarity weights are not final-offer probabilities after constraints.
 
-A command can evolve once. Evolution adds every applicable printed-stat bonus: **+3 damage, +2 repair, +1 Vent and +1 disruption**, where that base stat is already positive. If none of those four base stats is positive, the first routed organ instead gains no strain. Evolution does not change the card's command point cost. The card's expanded text lists its actual bonuses.
+New shops offer a distinct immediate-use card and an enabler/scaling card when feasible, with transparent finite pool fallback. Base prices are common 30, uncommon 40, rare 55; Bright Canon has an explicit 40-salvage dominance-audit floor. Two distinct unowned powerups remain 75 each, removal 30, and evolution 35. Old Favour discounts these prices once by 20%. Existing generation-0 runs permanently retain uniform offers and old 35/43 shop card prices. Each listed exchange can be completed once. Removal or evolution opens a card chooser; payment happens only when you confirm a particular card. Cancelling does not charge you. Removal must leave at least five cards.
+
+A command can evolve once. Every ship's copies choose one permanent named branch;
+some exchange output for Retain, cooling, disruption or draw, and some reduce a
+2-CP command to 1 CP with lower payload. Branches replace printed stats, never add
+generic bonuses afterwards. Compare both full definitions before confirming.
+Existing `legacy` copies keep **+3 damage,
++2 repair, +1 Vent and +1 disruption** where the base stat is positive; if none is
+positive, their first routed organ instead gains no strain. Legacy cost and Draw
+are unchanged. Expanded text and CP always reflect the chosen definition.
 
 Hull, maximum-hull changes, salvage, deck changes and powerups persist through the voyage. Starting a new fight resets strain, temporary links/cuts, defenses, marks and ship-specific combat meters.
 
 ## Discoveries, history and saves
 
-Every concluded expedition—victory, defeat or abandonment—advances the profile's discovery tier by one, up to tier 3. Each tier adds two optional Cartographer cards and one shared powerup to the available reward/shop pools:
+Every concluded **ordinary** expedition—victory, defeat or abandonment—advances the profile's discovery tier by one, up to tier 3. **Entered-seed practice never advances durable progression or grants unlocks.** Each tier adds two optional Cartographer cards and one shared powerup to the available reward/shop pools:
 
 | Tier | Cards | Powerup |
 | --- | --- | --- |
@@ -145,6 +172,10 @@ Every concluded expedition—victory, defeat or abandonment—advances the profi
 | 3 | Whole Horizon, Unbroken Song | Buried Dawn |
 
 Discoveries broaden future options; they do not increase starting hull, capacity or command points. All ships are available without unlocking them. **Discoveries** shows the tiers; **Run history** lists the last thirty concluded voyages. Abandoning records a defeat. Simply replacing an active expedition with a new one does not conclude it or award a discovery tier.
+
+### Seeded practice
+
+On **Select your ship**, enter a six-character seed (letters A–Z and digits 0–9), or leave it blank for an ordinary voyage. Both final screens show your code. **Retry seed** restarts the same vessel and code in practice mode. Practice saves and resumes normally, permits temporary deck upgrades and powerups, and records a marked history entry, but cannot grant durable progression. Reuse the same vessel, game version and actions to reproduce tactics exactly. See [seeds](seeds.md) for details and legacy-save limitations.
 
 The game has one active expedition and saves locally after committed actions and choices. **Save and return to title**, then **Continue expedition**, resumes that state, including the selected ship, itinerary, deck order, combat meters and pending rewards. An unconfirmed route selection is not a committed action. Settings save immediately.
 
@@ -174,7 +205,7 @@ Older saves retain the Cartographer and their original three-area itinerary. In 
 | Enter | Activate the focused control. |
 | Any key or click during the opening film | Skip the film. |
 
-Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, reduced motion, and four audio sliders: **Master**, **Music & cinematic**, **Combat effects**, and **Interface**. Category sliders change independently; zero mutes that category, while Master zero mutes everything. Changes apply and save immediately. Reduced motion stops ship/star drift and animated combat feedback, retains result information, and skips the opening film on launch.
+Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** inspects your commands and installed powerups; **?** opens help. Settings include fullscreen, reduced motion, and four audio sliders: **Master**, **Music & cinematic**, **Combat effects**, and **Interface**. Category sliders change independently; zero mutes that category, while Master zero mutes everything. Changes apply and save immediately. Reduced motion stops ship, enemy and star drift plus animated combat feedback, retains result information, and skips the opening film on launch.
 
 ## Glossary
 

@@ -20,6 +20,24 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def assert_public(value):
+    """Assert transport-level projection on successes, errors and resources."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            assert key != "seed" and not key.lower().startswith("rng"), ("hidden field", key)
+            if key == "battle" and isinstance(item, dict):
+                assert "draw" not in item, "draw-pile identities exposed"
+            assert_public(item)
+        if "state" in value and isinstance(value["state"], dict):
+            state = value["state"]
+            if state.get("ui", {}).get("screen") == "combat":
+                battle = state["run"]["battle"]
+                assert type(battle.get("draw_count")) is int, "public draw_count missing"
+    elif isinstance(value, list):
+        for item in value:
+            assert_public(item)
+
+
 class Client:
     def __init__(self, port, token):
         self.process = subprocess.Popen(
@@ -49,7 +67,13 @@ class Client:
             if message.get("id") == self.sequence:
                 assert "error" not in message, message
                 self.latencies.append((method, (time.monotonic() - start) * 1000))
+                assert_public(message["result"])
+                if method == "resources/read":
+                    for content in message["result"]["contents"]:
+                        state = json.loads(content["text"])
+                        assert_public({"state": state})
                 return message["result"]
+            assert_public(message)
             self.events.append(message)
 
     def tool(self, name, args=None):
@@ -147,6 +171,7 @@ def combat_flow(client):
         client.act(action)
         state = client.settle()
     assert state["ui"]["screen"] == "combat", "combat not reached within bounded navigation"
+    client.rpc("resources/read", {"uri": "astral://state"})
     initial_cards = options(state, "select_card")
     preview = None
     for card in initial_cards:
@@ -269,6 +294,8 @@ def main():
             combat_flow(client)
             client.state()  # drain asynchronous notifications before reporting
             assert any(event.get("method") == "notifications/resources/updated" for event in client.events), client.events
+            client.rpc("resources/read", {"uri": "astral://state"})
+            print("PASS public projection on tool success/error/preview and subscription-triggered resource refresh", flush=True)
             print("PASS resource notifications", len(client.events), flush=True)
             print("LATENCY_MS", json.dumps(client.latencies), flush=True)
             print("SKIP manual-input event: requires human interaction; no synthetic injection", flush=True)

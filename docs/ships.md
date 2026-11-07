@@ -1,5 +1,10 @@
 # Ships and organs
 
+[Cartographer](cartographer-evolutions.md), [Palimpsest](palimpsest-evolutions.md)
+and [Choir evolutions](choir-evolutions.md) offer two authored choices for all 72
+cards. Base decks are unchanged. Existing legacy copies on every ship keep their
+exact behavior; the Choir slice remains a review/playtest candidate.
+
 Choose a vessel when you begin a new expedition. Each has its own six-organ network, ten-card starter deck and card pool. The Cartographer shapes damage and healing through order; the Palimpsest saves and spends Trace; the Hollow Choir builds a phrase by changing command kinds.
 
 | Vessel | Starting hull | Card pool | Main decision |

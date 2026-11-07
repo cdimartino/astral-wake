@@ -2,8 +2,17 @@ class_name AstralGame
 extends RefCounted
 
 const SaveStore = preload("res://scripts/save_store.gd")
+const SeedEngine = preload("res://scripts/seed_engine.gd")
+const Selections = preload("res://scripts/known_selections.gd")
+const Engines = preload("res://scripts/install_engines.gd")
+const RouteEffects = preload("res://scripts/route_effects.gd")
+const Evolutions = preload("res://scripts/evolutions.gd")
+const Distribution = preload("res://scripts/reward_distribution.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
+const RUN_SCHEMA = 7
+const CONTENT_POOL_REVISION = 1
+const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
 const ATTACK_PRESSURE = 1.6
@@ -20,8 +29,14 @@ var _last_clock = 0
 func _init(save_directory: String = "") -> void:
 	var parsed = JSON.parse_string(FileAccess.get_file_as_string("res://data/catalog.json"))
 	assert(parsed is Dictionary, "Game content missing or invalid")
+	for item in parsed.cards:
+		assert(Evolutions.valid_definition(item), "Invalid raw evolution content")
+		assert(RouteEffects.valid_definition(item), "Invalid raw route effect content")
+		assert(Distribution.valid_card(item), "Invalid raw draft metadata")
 	catalog = _restore_integers(parsed)
-	for item in catalog.cards: _cards[item.id] = item
+	for item in catalog.cards:
+		assert(Evolutions.valid_definition(item), "Invalid evolution content")
+		_cards[item.id] = item
 	for item in catalog.enemies: _enemies[item.id] = item
 	for item in catalog.powerups: _powerups[item.id] = item
 	store = SaveStore.new(save_directory)
@@ -43,24 +58,16 @@ func region() -> Dictionary:
 	return catalog.regions[int(run.get("route_regions",[0,1,2])[int(run.get("region",0))])]
 func _ok() -> Dictionary: return {"ok":true,"error":""}
 func _fail(message: String) -> Dictionary: return {"ok":false,"error":message}
-func _mode(expected: String) -> bool: return run.get("mode","") == expected
+func selection_pending() -> bool: return not run.get("pending_selection",{}).is_empty()
+func _mode(expected: String) -> bool: return not selection_pending() and run.get("mode","") == expected
 
-func _rng(state: Dictionary) -> RandomNumberGenerator:
-	var random = RandomNumberGenerator.new()
-	random.seed = int(state.seed)
-	if state.has("rng_state"): random.state = int(state.rng_state)
-	return random
+func _pick(state: Dictionary, count: int, stream: String = "world") -> int:
+	if state.has("rng_version"): return SeedEngine.pick(state,count,stream)
+	return SeedEngine.pick_legacy(state,count)
 
-func _pick(state: Dictionary, count: int) -> int:
-	if count <= 1: return 0
-	var random = _rng(state)
-	var result = random.randi_range(0,count-1)
-	state.rng_state = str(random.state)
-	return result
-
-func _shuffle(state: Dictionary, items: Array) -> void:
+func _shuffle(state: Dictionary, items: Array, stream: String = "world") -> void:
 	for i in range(items.size()-1,0,-1):
-		var j = _pick(state,i+1)
+		var j = _pick(state,i+1,stream)
 		var old = items[i]
 		items[i] = items[j]
 		items[j] = old
@@ -87,26 +94,86 @@ func owned_card_count(id: String) -> int:
 		if instance.id == id: count += 1
 	return count
 
-func card_text(instance: Dictionary) -> String:
-	var definition = card(instance.get("id",""))
-	var lines = [str(definition.get("description",""))]
+func effective_card(instance: Dictionary) -> Dictionary:
+	# Detached printed definition only: never include runtime resources, powerups,
+	# copied payloads or organs. Legacy level 1 retains its exact arithmetic.
+	var definition = card(instance.get("id","")).duplicate(true)
+	definition.erase("evolutions")
+	# Draft metadata is not a combat payload. Preserve legacy effective definitions
+	# and pending-selection guards byte-for-byte.
+	definition.erase("roles")
+	definition.erase("primary_role")
+	definition.erase("introduced_revision")
+	definition.first_free=false
 	if int(instance.get("level",0)) > 0:
-		var changes = []
-		if definition.get("damage",0)>0: changes.append("+3 damage")
-		if definition.get("heal",0)>0: changes.append("+2 repair")
-		if definition.get("vent",0)>0: changes.append("+1 vent")
-		if definition.get("disrupt",0)>0: changes.append("+1 disruption")
-		if changes.is_empty(): changes.append("first routed organ gains no strain")
-		lines.append("Evolved: " + ", ".join(changes))
-	return "\n".join(lines)
+		var identity=instance.get("evolution",Evolutions.LEGACY)
+		if identity!=Evolutions.LEGACY:
+			var choice=Evolutions.branch(card(instance.id),identity)
+			if choice.is_empty(): return {}
+			definition.merge(choice.stats.duplicate(true),true)
+			definition.name=choice.name
+			definition.description=choice.description
+			return definition
+		definition.first_free=true
+		# Printed ward has no invented legacy increment or free-strain upgrade.
+		if int(definition.get("ward",0))>0 or definition.has("engine"): definition.first_free=false
+		for field in ["damage","heal","vent","disrupt"]:
+			if int(definition.get(field,0))>0:
+				definition[field]+=3 if field=="damage" else 2 if field=="heal" else 1
+				definition.first_free=false
+	return definition
 
-func new_run(seed_value: int = 0, character_id: String = "cartographer") -> Dictionary:
+func card_text(instance: Dictionary) -> String:
+	var original = card(instance.get("id",""))
+	var effective = effective_card(instance)
+	var text = str(effective.get("description",""))
+	var phrases = {"damage":"Deal %d damage", "heal":"Restore %d hull", "vent":"Cool every organ by %d", "disrupt":"Apply %d disruption", "ward":"Gain %d flat ward"}
+	for field in phrases:
+		if instance.get("evolution",Evolutions.LEGACY)==Evolutions.LEGACY and int(original.get(field,0))>0:
+			text=text.replace(phrases[field]%int(original[field]),phrases[field]%int(effective[field]))
+	if effective.first_free: text+="\nFirst routed organ gains no strain."
+	if effective.get("retain",false): text+="\nRetain: stays in hand at end of turn."
+	if effective.get("exhaust",false): text+="\nExhaust: leaves circulation for this combat."
+	if effective.has("install"): text+="\nInstall: "+Engines.detail(self,instance)
+	return text
+
+# Direct fixture/helper operation; authored selection effects commit atomically below.
+func retain_card(uid: int) -> Dictionary:
+	if not _mode("combat"): return _fail("There is no active battle.")
+	for instance in run.battle.hand:
+		if int(instance.uid)==uid:
+			if not uid in run.battle.temporary_retain: run.battle.temporary_retain.append(uid)
+			save()
+			return _ok()
+	return _fail("Choose a card currently in hand.")
+
+func retained(instance: Dictionary) -> bool:
+	return effective_card(instance).get("retain",false) or instance.get("uid",-1) in run.get("battle",{}).get("temporary_retain",[])
+
+func new_run(seed_value = "", character_id: String = "cartographer") -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
 	var vessel=character(character_id)
 	if vessel.is_empty(): return _fail("Choose an available vessel.")
-	if seed_value == 0: seed_value = int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec()
-	# Seed stays within JSON's exact integer range; RNG state is stored as a decimal string.
-	seed_value = absi(seed_value) % 2147483647
+	var modern=seed_value is String or (seed_value is int and seed_value==0)
+	var seeded=false
+	if modern:
+		var code=SeedEngine.canonical(str(seed_value)) if seed_value is String else ""
+		seeded=not code.is_empty()
+		if seeded and not SeedEngine.valid(code): return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
+		seed_value=code if seeded else SeedEngine.generate(int(profile.unlocks))
+	elif seed_value is int:
+		# Retain the old numeric API/RNG for legacy saves and deterministic fixtures.
+		seed_value=absi(seed_value)%2147483647
+	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
+	run.schema_revision=RUN_SCHEMA
+	run.content_pool_revision=CONTENT_POOL_REVISION
+	run.reward_generation=1
+	run.rare_offer_misses=0
+	run.pending_selection={}
+	if modern:
+		SeedEngine.initialize(run,seed_value)
+		run.seeded=seeded
 	run.character=character_id
 	run.max_hull=int(vessel.max_hull)
 	run.hull=run.max_hull
@@ -256,6 +323,12 @@ func _make_enemy(id: String) -> Dictionary:
 func _start_battle(node: Dictionary) -> void:
 	run.mode = "combat"
 	run.battle = {"enemies":[],"hand":[],"draw":run.deck.duplicate(true),"discard":[],"strain":[0,0,0,0,0,0],"capacity":int(character().capacity)+_effect(run,"capacity"),"edges":character().edges.duplicate(true),"severed":[],"ward":_effect(run,"starting_ward"),"turn":1,"last_route":[],"mark":0,"first_play":true,"emergency_used":false,"kind":node.type,"command_points":3,"max_command_points":3,"trace":0,"last_payload":{},"resonance":0,"last_command_kind":""}
+	run.battle.exhausted=[]
+	run.battle.installed=[]
+	run.battle.installed_sources=[]
+	run.battle.engine_counters=[]
+	run.battle.engine_routes=[]
+	run.battle.temporary_retain=[]
 	for id in node.enemy_ids: run.battle.enemies.append(_make_enemy(id))
 	if node.type=="boss" and "salvage_parliament" in node.enemy_ids:
 		var ids=[]
@@ -266,11 +339,11 @@ func _start_battle(node: Dictionary) -> void:
 			attendant.hp = int(ceil(attendant.hp*0.6))
 			attendant.max_hp=attendant.hp
 			run.battle.enemies.append(attendant)
-	_shuffle(run,run.battle.draw)
+	_shuffle(run,run.battle.draw,"cards")
 	_draw(run,5+_effect(run,"draw"))
 	_log(run,"Encounter: " + run.battle.enemies[0].name)
 
-func _draw(state: Dictionary, count: int) -> void:
+func _draw(state: Dictionary, count: int, presentation: Array = []) -> void:
 	var battle = state.battle
 	for unused in range(count):
 		if battle.hand.size()>=10: break
@@ -278,8 +351,11 @@ func _draw(state: Dictionary, count: int) -> void:
 			if battle.discard.is_empty(): break
 			battle.draw=battle.discard.duplicate(true)
 			battle.discard.clear()
-			_shuffle(state,battle.draw)
-		battle.hand.append(battle.draw.pop_back())
+			_shuffle(state,battle.draw,"cards")
+			presentation.append({"kind":"shuffle","draw_count":battle.draw.size(),"discard_count":0})
+		var instance=battle.draw.pop_back()
+		battle.hand.append(instance)
+		presentation.append({"kind":"draw_card","card":instance.duplicate(true),"hand_index":battle.hand.size()-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
 
 func _edge_exists(edges: Array, a: int, b: int) -> bool:
 	for edge in edges:
@@ -290,6 +366,7 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 	if route.is_empty() or route.size()>3: return "Route through one to three organs."
 	var visited=[]
 	for i in range(route.size()):
+		if not _number(route[i]): return "Use integral organ indices."
 		var node=int(route[i])
 		if node<0 or node>=6 or node in visited: return "Each organ can appear only once in a route."
 		if int(state.battle.strain[node])>=int(state.battle.capacity): return organ(node).name+" is at strain capacity."
@@ -299,34 +376,48 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 		visited.append(node)
 	return ""
 
-func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int) -> Dictionary:
+func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int, preview_only: bool = false, choices: Array = []) -> Dictionary:
 	if state.get("mode","")!="combat": return _fail("There is no active battle.")
 	var battle=state.battle
 	if hand_index<0 or hand_index>=battle.hand.size(): return _fail("Choose a card from your hand.")
 	var route_error=_validate_route(state,route)
-	if not route_error.is_empty(): return _fail(route_error)
+	if not route_error.is_empty() and not (preview_only and route.is_empty()): return _fail(route_error)
 	if target_index<0 or target_index>=battle.enemies.size() or int(battle.enemies[target_index].hp)<=0: return _fail("Choose a living target.")
 	var incoming_before=_incoming_damage(state)
 	var instance=battle.hand[hand_index]
-	var definition=card(instance.id)
+	var definition=effective_card(instance)
+	if not Engines.valid_definition(definition): return _fail("Invalid authored Install engine.")
+	if not RouteEffects.valid_definition(definition): return _fail("Invalid authored route effect.")
+	if definition.has("install"):
+		for source in battle.installed_sources:
+			if source.identity==definition.install: return _fail("That Install identity is already installed.")
+		for installed in battle.installed:
+			if effective_card(installed).name==definition.name: return _fail("That named command is already installed.")
 	var cost=int(definition.cost)
 	if cost>int(battle.command_points): return _fail("Not enough command points: this command costs %d, with %d remaining."%[cost,int(battle.command_points)])
+	var ops=definition.get("selections",[])
+	if definition.has("selections") and not Selections.valid_definition(ops): return _fail("Invalid authored selection definition.")
+	var selection=Selections.plan(self,battle,int(instance.uid),ops,choices)
+	if not selection.ok: return selection
+	if not selection.complete:
+		selection.ok=false
+		selection.selection_required=true
+		selection.error="Choose known cards before committing this command."
+		return selection
 	var trace_before=int(battle.get("trace",0))
 	var resonance_before=int(battle.get("resonance",0))
 	var previous_kind=str(battle.get("last_command_kind",""))
 	var vessel_id=str(state.get("character","cartographer"))
 	var ward_gain=0
-	var upgraded=int(instance.level)>0
 	var damage=int(definition.get("damage",0))
 	var heal=int(definition.get("heal",0))
 	var vent=int(definition.get("vent",0))
 	var disrupt=int(definition.get("disrupt",0))
-	if upgraded:
-		if damage>0: damage+=3
-		if heal>0: heal+=2
-		if vent>0: vent+=1
-		if disrupt>0: disrupt+=1
+	# Snapshot before resource spending/copying, conditional powerups and organs.
 	var plain_payload={"damage":damage,"heal":heal,"disrupt":disrupt}
+	var flat_ward=RouteEffects.ward(self,definition,battle,route,target_index)
+	var conditional_damage=RouteEffects.damage(definition,battle,route)
+	damage+=conditional_damage
 	if vessel_id=="palimpsest":
 		battle.trace=mini(6,int(battle.trace)+int(definition.get("trace",0)))
 		if definition.get("rewrite",false):
@@ -345,6 +436,13 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			battle.resonance=0
 			damage+=spent*2
 			heal+=spent
+	var resource_preview={"trace_before":trace_before,"resonance_before":resonance_before,"card_trace":int(battle.get("trace",0)),"card_resonance":int(battle.get("resonance",0))}
+	if route.is_empty():
+		return {"ok":false,"error":"Choose an organ to begin routing.","resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":[]}
+	var qualifying_attack=definition.kind=="attack" and damage>0
+	# Entry-active stacks only: awards below occur after payload/zone resolution,
+	# and new installs are registered only after old sources have observed events.
+	if qualifying_attack: damage+=Engines.bonus(battle)
 	if damage>0:
 		damage+=_effect(state,"damage")
 		if battle.first_play: damage+=_effect(state,"first_damage")
@@ -353,7 +451,14 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	if heal>0: heal+=_effect(state,"heal")
 	var split=false
 	var redirect=0
+	var route_steps=[]
+	var other_living=false
+	for i in range(battle.enemies.size()):
+		if i!=target_index and int(battle.enemies[i].hp)>0: other_living=true
 	for index in route:
+		var before_payload=[damage,heal,disrupt,redirect,split,ward_gain]
+		var before_trace=int(battle.get("trace",0))
+		var before_resonance=int(battle.get("resonance",0))
 		match organ(int(index)).id:
 			"lens":
 				if damage>0: damage+=3
@@ -407,12 +512,25 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 				if int(battle.resonance)>=2:
 					battle.resonance-=2
 					ward_gain=3
+		var payload_changed=before_payload!=[damage,heal,disrupt,redirect,split,ward_gain]
+		var id=str(organ(int(index)).id)
+		if id in ["fork","splice","chorus"] and split: payload_changed=damage>0 and other_living and (int(floor(damage/2.0))+_effect(state,"fork"))>0
+		if id=="prism": payload_changed=other_living and int(battle.enemies[target_index].redirect)<3
+		if id=="cadence": payload_changed=ward_gain>int(before_payload[5]) and int(battle.ward)<3
+		var resource_gained=int(battle.get("trace",0))>before_trace or int(battle.get("resonance",0))>before_resonance
+		var resource_spent=int(battle.get("trace",0))<before_trace or int(battle.get("resonance",0))<before_resonance
+		var status="active" if payload_changed or resource_gained else "wasted" if resource_spent else "inactive"
+		if status=="active" and ((id=="redact" and before_trace==0) or (id=="splice" and before_trace<2) or (id=="chorus" and before_resonance<2)): status="fallback"
+		var reasons={"lens":"Needs damage", "fork":"No split target", "echo":"No damage/repair", "prism":"No redirect available", "scribe":"Trace full", "splice":"No split target", "recall":"Needs damage/Trace", "palimend":"Needs 1 Trace", "rewrite":"Needs Trace/base", "conductor":"Same kind or full", "chorus":"No split target", "crescendo":"No gain from spending", "rest":"Needs non-attack", "cadence":"Needs resource/ward room"}
+		var reason="Effect applied" if status=="active" else "Fallback applied" if status=="fallback" else "Spent without benefit" if status=="wasted" else str(reasons.get(id,"No payload change"))
+		route_steps.append({"organ":int(index),"status":status,"reason":reason,"trace_before":before_trace,"trace_after":int(battle.get("trace",0)),"resonance_before":before_resonance,"resonance_after":int(battle.get("resonance",0)),"payload_before":before_payload,"payload_after":[damage,heal,disrupt,redirect,split,ward_gain]})
 	if disrupt>0: disrupt+=_effect(state,"disrupt")
 	var target=battle.enemies[target_index]
 	var events=[]
 	var presentation=[]
 	battle.command_points-=cost
 	events.append("Spend %d command point(s); %d remain."%[cost,int(battle.command_points)])
+	if conditional_damage>0: events.append("Conditional damage: +%d before organs."%conditional_damage)
 	if vessel_id=="palimpsest":
 		presentation.append({"kind":"trace","before":trace_before,"after":int(battle.trace),"amount":int(battle.trace)-trace_before})
 		events.append("Trace %d → %d."%[trace_before,int(battle.trace)])
@@ -420,6 +538,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"resonance","before":resonance_before,"after":int(battle.resonance),"amount":int(battle.resonance)-resonance_before})
 		events.append("Resonance %d → %d."%[resonance_before,int(battle.resonance)])
 	var actual_damage=0
+	var applied_flat_ward=0
 	var hull_before=int(state.hull)
 	if int(battle.mark)>0 and battle.last_route==route:
 		var before_mark=int(state.hull)
@@ -451,6 +570,13 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		var gained=mini(ward_gain,maxi(0,3-int(battle.ward)))
 		battle.ward+=gained
 		if gained>0: presentation.append({"kind":"ward","amount":gained})
+	# Cadence's local room-to-three calculation above is unchanged. Printed ward
+	# is additive afterwards, never multiplied or stored in the copyable payload.
+	if flat_ward>0 and int(state.hull)>0:
+		applied_flat_ward=flat_ward
+		battle.ward+=flat_ward
+		presentation.append({"kind":"ward","amount":flat_ward})
+		events.append("Gain %d flat ward."%flat_ward)
 	if int(target.hp)>0:
 		target.disrupt+=disrupt
 		if disrupt>0:
@@ -458,7 +584,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			events.append("%s: +%d disruption for this enemy phase (combined defense caps at half an attack)."%[target.name,disrupt])
 			if int(target.intent.get("interrupt",0))>0:
 				events.append("%s: action interrupted."%target.name if int(target.disrupt)>=int(target.intent.interrupt) else "%s: %d more disruption interrupts this action."%[target.name,int(target.intent.interrupt)-int(target.disrupt)])
-		var other_living=false
+		other_living=false
 		for i in range(battle.enemies.size()):
 			if i!=target_index and int(battle.enemies[i].hp)>0: other_living=true
 		var added_redirect=mini(3,int(target.redirect)+redirect)-int(target.redirect) if other_living else 0
@@ -471,19 +597,55 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		cooled.append(mini(int(battle.strain[i]),vent))
 		battle.strain[i]=maxi(0,int(battle.strain[i])-vent)
 	if vent>0: presentation.append({"kind":"cooling","amounts":cooled})
-	var pure_utility_upgrade=upgraded and int(definition.get("damage",0))==0 and int(definition.get("heal",0))==0 and int(definition.get("vent",0))==0 and int(definition.get("disrupt",0))==0
+	var pure_utility_upgrade=definition.first_free
 	for i in range(route.size()):
 		if not (pure_utility_upgrade and i==0): battle.strain[int(route[i])]+=1
+	var route_cooled=RouteEffects.cool(definition,battle,route)
+	if route_cooled.has(1):
+		presentation.append({"kind":"cooling","amounts":route_cooled})
+		events.append("Three-organ route: cool its first organ by 1 after route strain.")
 	if vent>0: events.append("Cool every organ by %d before route strain."%vent)
+	var command_cooling=int(cooled.reduce(func(total, amount): return total+amount,0))+int(route_cooled.reduce(func(total, amount): return total+amount,0))
+	# Before installation: only entry-active sources can observe this command.
+	Engines.cooling(self,state,command_cooling,presentation,events)
 	if definition.get("link",false):
 		battle.severed.clear()
 		presentation.append({"kind":"link","route":route.duplicate()})
 		if route.size()>1 and not _edge_exists(battle.edges,int(route[0]),int(route[-1])): battle.edges.append([int(route[0]),int(route[-1])])
 		events.append("Connections restored; route endpoints linked for this battle.")
-	battle.discard.append(battle.hand.pop_at(hand_index))
-	_draw(state,int(definition.get("draw",0)))
+	# Ordinary cards can self-redraw; dedicated zones must be populated before draw.
+	# Choices were validated together before any resource/CP mutation. Apply hand
+	# operations before source draw; retrieval is explicitly distinct from drawing.
+	for step in range(ops.size()):
+		var uid=choices[step]
+		if uid==null: continue
+		var op=ops[step]
+		var zone="discard" if op.kind=="return_discard" else "hand"
+		var chosen=battle[zone][Selections.index(battle[zone],uid)].duplicate(true)
+		var chosen_index=Selections.index(battle.hand,uid)
+		Selections.move(battle,op,uid)
+		if op.kind=="exhaust_hand": presentation.append({"kind":"zone_card","zone":"exhausted","card":chosen,"hand_index":chosen_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+		if op.kind=="exhaust_hand": Engines.trigger(self,state,"other_exhaust",int(uid),presentation,events)
+		if op.kind=="return_discard": presentation.append({"kind":"retrieve_card","card":chosen,"zone":"hand","hand_index":-1,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+		events.append("%s: %s (UID %d)."%[op.kind,effective_card(chosen).name,uid])
+	hand_index=Selections.index(battle.hand,instance.uid)
+	var destination="installed" if definition.has("install") else "exhausted" if definition.get("exhaust",false) else "discard"
+	battle[destination].append(battle.hand.pop_at(hand_index))
+	battle.temporary_retain.erase(int(instance.uid))
+	if destination=="exhausted": Engines.trigger(self,state,"other_exhaust",int(instance.uid),presentation,events)
+	if qualifying_attack and not route in battle.engine_routes: Engines.trigger(self,state,"novel_route",int(instance.uid),presentation,events)
+	if not route in battle.engine_routes: battle.engine_routes.append(route.duplicate())
+	if destination=="installed": battle.installed_sources.append({"source_uid":int(instance.uid),"identity":definition.install})
+	if destination=="installed": Engines.install(battle,instance,definition)
+	var movement={"kind":"discard_card" if destination=="discard" else "zone_card","card":instance.duplicate(true),"hand_index":hand_index,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()}
+	if destination!="discard": movement.zone=destination
+	presentation.append(movement)
+	for cue in presentation:
+		if cue.kind=="retrieve_card": cue.hand_index=Selections.index(battle.hand,cue.card.uid)
+	_draw(state,int(definition.get("draw",0)),presentation)
 	if vessel_id=="palimpsest": battle.last_payload=plain_payload
 	if vessel_id=="hollow_choir": battle.last_command_kind=definition.kind
+	battle.last_command={"card":instance.duplicate(true),"kind":definition.kind,"base":plain_payload.duplicate(),"resolved":{"damage":actual_damage,"heal":repaired,"disrupt":disrupt if int(target.hp)>0 else 0}}
 	battle.last_route=route.duplicate()
 	battle.first_play=false
 	state.tutorial_step=maxi(1,int(state.tutorial_step))
@@ -493,21 +655,134 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		presentation.append({"kind":"heal","amount":finish_heal,"source":"repair_after"})
 		events.append("After combat: repair %d hull."%finish_heal)
 	_log(state,definition.name+": "+" ".join(events))
-	return {"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation}
-
-func preview_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
-	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index)
-	result.erase("next")
+	var result={"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
+	if ["ward","conditional_ward","conditional_damage","route_cooling"].any(func(key): return definition.has(key)):
+		result.flat_ward_requested=flat_ward
+		result.flat_ward_applied=applied_flat_ward
+		result.conditional_damage=conditional_damage
+		# Count actual removals, not net change: vent before strain and route
+		# cooling after strain are distinct legitimate effects (including re-added strain).
+		result.command_cooling=command_cooling
 	return result
 
-func play_card(hand_index: int, route: Array, target_index: int) -> Dictionary:
-	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index)
+func preview_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
+	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true,choices)
+	result.erase("next")
+	# Pending known-card choice is cancellable: never disclose newly simulated
+	# hidden draw identities. Preserve the historical no-choice preview contract.
+	if run.get("mode","")=="combat" and hand_index>=0 and hand_index<run.battle.hand.size() and effective_card(run.battle.hand[hand_index]).has("selections"):
+		for cue in result.get("presentation",[]):
+			if cue.kind=="draw_card":
+				cue.erase("card")
+				cue.hidden=true
+	return result
+
+func play_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
+	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,false,choices)
 	if not result.ok: return result
 	run=result.next
 	_check_battle_end()
 	save()
 	result.erase("next")
 	return result
+
+func begin_selection(source_uid, ordered_route: Array, target_index, target_guard: Dictionary) -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
+	if not _number(source_uid) or not _number(target_index): return _fail("Use integral source and target IDs.")
+	for node in ordered_route:
+		if not _number(node): return _fail("Use integral route indices.")
+	if run.get("mode","")!="combat": return _fail("There is no active battle.")
+	if target_index<0 or target_index>=run.battle.enemies.size() or target_guard!=run.battle.enemies[int(target_index)]: return _fail("The guarded target changed.")
+	var index=Selections.index(run.battle.hand,source_uid)
+	var result=_simulate_card(run.duplicate(true),index,ordered_route,int(target_index))
+	if not result.get("selection_required",false): return result if not result.ok else _fail("This command needs no card selection.")
+	var pending={"source_uid":source_uid,"route":ordered_route.duplicate(),"target_index":target_index,"target_guard":target_guard.duplicate(true),"definition":effective_card(run.battle.hand[index]),"guard":"","choices":[]}
+	pending.guard=Selections.guard(self,run,pending)
+	run.pending_selection=pending
+	save()
+	return selection_view()
+
+func _valid_pending(state: Dictionary) -> bool:
+	var p=state.get("pending_selection")
+	if not p is Dictionary: return false
+	if p.is_empty(): return true
+	if state.get("mode","")!="combat" or p.size()!=7: return false
+	for key in ["source_uid","target_index"]:
+		if not _number(p.get(key)): return false
+	if not p.get("route") is Array or not p.get("choices") is Array: return false
+	for node in p.route:
+		if not _number(node) or node<0 or node>5: return false
+	for uid in p.choices:
+		if uid!=null and not _number(uid): return false
+	if not p.get("definition") is Dictionary or not p.get("target_guard") is Dictionary or not p.get("guard") is String: return false
+	var b=state.battle
+	if p.target_index<0 or p.target_index>=b.enemies.size() or p.target_guard!=b.enemies[int(p.target_index)]: return false
+	var index=Selections.index(b.hand,p.source_uid)
+	if index<0 or not _same_authored(p.definition,effective_card(b.hand[index])): return false
+	if not Selections.valid_definition(p.definition.get("selections")): return false
+	if not _validate_route(state,p.route).is_empty() or int(p.definition.cost)>int(b.command_points) or b.enemies[int(p.target_index)].hp<=0: return false
+	return p.guard==Selections.guard(self,state,p) and Selections.plan(self,b,int(p.source_uid),p.definition.selections,p.choices).ok
+
+func _same_authored(raw, expected) -> bool:
+	# Validate the raw tree before numeric restoration: 1.5 must never become 1.
+	if expected is int: return _number(raw) and raw==expected
+	if expected is Dictionary:
+		if not raw is Dictionary or raw.size()!=expected.size(): return false
+		for key in expected:
+			if not raw.has(key) or not _same_authored(raw[key],expected[key]): return false
+		return true
+	if expected is Array:
+		if not raw is Array or raw.size()!=expected.size(): return false
+		for i in range(expected.size()):
+			if not _same_authored(raw[i],expected[i]): return false
+		return true
+	return typeof(raw)==typeof(expected) and raw==expected
+
+func selection_view() -> Dictionary:
+	if not selection_pending() or not _valid_pending(run): return _fail("The pending card selection is stale or invalid; cancel it.")
+	var p=run.pending_selection
+	var result=Selections.plan(self,run.battle,int(p.source_uid),p.definition.selections,p.choices)
+	result.context=p.duplicate(true)
+	return result
+
+func select_uid(uid) -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	if view.complete: return _fail("All card choices are already selected.")
+	if uid!=null and not _number(uid): return _fail("Choose an integral card UID.")
+	if not uid in view.eligible: return _fail("Choose an explicitly eligible card UID.")
+	run.pending_selection.choices.append(uid)
+	run.pending_selection.guard=Selections.guard(self,run,run.pending_selection)
+	save()
+	return selection_view()
+
+func preview_selection() -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	var p=run.pending_selection
+	return preview_card(Selections.index(run.battle.hand,p.source_uid),p.route,int(p.target_index),p.choices)
+
+func confirm_selection() -> Dictionary:
+	var view=selection_view()
+	if not view.ok: return view
+	if not view.complete: return _fail("Finish choosing known cards first.")
+	var p=run.pending_selection
+	var state=run.duplicate(true)
+	state.pending_selection={}
+	var result=_simulate_card(state,Selections.index(state.battle.hand,p.source_uid),p.route,int(p.target_index),false,p.choices)
+	if not result.ok: return result
+	run=result.next
+	_check_battle_end()
+	save()
+	result.erase("next")
+	return result
+
+func cancel_selection() -> Dictionary:
+	if not selection_pending(): return _fail("There is no pending card selection.")
+	run.pending_selection={}
+	save()
+	return _ok()
 
 func _damage_enemy(state: Dictionary, index: int, amount: int, route_length: int = 0, split_hit: bool = false) -> int:
 	if amount<=0: return 0
@@ -596,11 +871,23 @@ func _incoming_damage(state: Dictionary) -> int:
 func end_turn() -> Dictionary:
 	if not _mode("combat"): return _fail("There is no active battle.")
 	var battle=run.battle
-	battle.discard.append_array(battle.hand)
-	battle.hand.clear()
+	var presentation=[]
+	var held=[]
+	for i in range(battle.hand.size()):
+		var instance=battle.hand[i]
+		if effective_card(instance).get("retain",false) or int(instance.uid) in battle.temporary_retain:
+			held.append(instance)
+			continue
+		battle.discard.append(instance)
+		presentation.append({"kind":"discard_card","card":instance.duplicate(true),"hand_index":i,"draw_count":battle.draw.size(),"discard_count":battle.discard.size()})
+	battle.hand=held
+	# One upcoming discard, including intrinsic retain; never a persistent skip.
+	battle.temporary_retain.clear()
 	battle.severed.clear()
 	var count=battle.enemies.size()
-	var presentation=[]
+	# Snapshot source records, not newly created sources; keep enemy indices stable
+	# until the existing phase-end cleanup (including deaths and incubated enemies).
+	var retaliation_sources=battle.engine_counters.filter(func(counter): return counter.type=="redirect_retaliation")
 	for i in range(count):
 		var foe=battle.enemies[i]
 		if int(foe.hp)<=0: continue
@@ -613,6 +900,7 @@ func end_turn() -> Dictionary:
 			foe.redirect=0
 			continue
 		var intent=foe.intent
+		var retaliation_recipient=-1
 		var amount=int(intent.get("amount",0))
 		if int(intent.get("interrupt",0))>0 and int(foe.disrupt)>=int(intent.interrupt):
 			_log(run,"%s: %s interrupted by disruption."%[foe.name,str(intent.label).get_slice(" · ",0)])
@@ -636,6 +924,7 @@ func end_turn() -> Dictionary:
 					if restored>0:
 						presentation.append({"kind":"enemy_heal","source_index":i,"target_index":i,"amount":restored})
 						_log(run,"%s drains %d hull to repair itself."%[foe.name,restored])
+				if attack.redirected>0: retaliation_recipient=int(attack.redirect_target)
 
 			"strain":
 				var indices=_strain_targets(battle.strain)
@@ -680,6 +969,7 @@ func end_turn() -> Dictionary:
 		foe.disrupt=0
 		foe.redirect=0
 		if int(run.hull)<=0: break
+		if retaliation_recipient>=0: Engines.retaliation(self,run,retaliation_sources,retaliation_recipient,i,presentation)
 	_clean_enemies(run,presentation)
 	battle.ward=0
 	var cooled=[]
@@ -688,6 +978,7 @@ func end_turn() -> Dictionary:
 		battle.strain[i]=maxi(0,int(battle.strain[i])-1-_effect(run,"cooling"))
 	presentation.append({"kind":"cooling","amounts":cooled})
 	battle.turn+=1
+	Engines.reset_turn(battle)
 	battle.first_play=true
 	battle.command_points=int(battle.max_command_points)
 	run.turns+=1
@@ -698,7 +989,7 @@ func end_turn() -> Dictionary:
 	var before_finish=int(run.hull)
 	_check_battle_end()
 	if int(run.hull)>before_finish: presentation.append({"kind":"heal","amount":int(run.hull)-before_finish,"source":"repair_after"})
-	if _mode("combat"): _draw(run,5)
+	if _mode("combat"): _draw(run,5,presentation)
 	save()
 	return {"ok":true,"error":"","presentation":presentation,"strain":battle.strain.duplicate()}
 
@@ -711,13 +1002,16 @@ func _check_battle_end() -> void:
 func _available_cards() -> Array:
 	var result=[]
 	for definition in catalog.cards:
-		if int(definition.get("unlock",0))<=int(profile.unlocks) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
+		if int(definition.get("introduced_revision",0))<=int(run.get("content_pool_revision",0)) and int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and definition.get("character","cartographer")==run.get("character","cartographer"): result.append(definition.id)
 	return result
+
+func _pool_card(state: Dictionary, id) -> bool:
+	return id is String and _cards.has(id) and card(id).get("character","cartographer")==state.character and card(id).get("introduced_revision",0)<=state.get("content_pool_revision",0)
 
 func _available_powerups() -> Array:
 	var result=[]
 	for definition in catalog.powerups:
-		if int(definition.get("unlock",0))<=int(profile.unlocks) and not definition.id in run.powerups: result.append(definition.id)
+		if int(definition.get("unlock",0))<=int(run.get("pool_tier",profile.unlocks)) and not definition.id in run.powerups: result.append(definition.id)
 	return result
 
 func _finish_battle() -> void:
@@ -732,12 +1026,15 @@ func _finish_battle() -> void:
 	_log(run,"Recovered %d salvage."%salvage)
 	var choices=[]
 	var pool=_available_cards()
-	_shuffle(run,pool)
 	var card_choices=(2 if kind in ["elite","boss"] else 3)+_effect(run,"reward_choices")
+	if run.reward_generation==0:
+		_shuffle(run,pool,"rewards")
+	else:
+		pool=Distribution.reward(self,pool,card_choices,kind)
 	for i in range(mini(card_choices,pool.size())): choices.append({"kind":"card","id":pool[i]})
 	if kind in ["elite","boss"]:
 		var powers=_available_powerups()
-		_shuffle(run,powers)
+		_shuffle(run,powers,"rewards")
 		for i in range(mini(2,powers.size())): choices.append({"kind":"powerup","id":powers[i]})
 	run.reward={"choices":choices,"boss":kind=="boss"}
 	run.mode="reward"
@@ -752,6 +1049,7 @@ func choose_reward(choice_index: int) -> Dictionary:
 	if choice_index < -1 or choice_index>=run.reward.choices.size(): return _fail("Choose a visible reward, or skip.")
 	if choice_index>=0:
 		var reward=run.reward.choices[choice_index]
+		if reward.kind=="card" and not _pool_card(run,reward.id): return _fail("That card is outside this expedition's content pool.")
 		if reward.kind=="card": run.deck.append(_instance(run,reward.id))
 		else: _grant_powerup(reward.id)
 	var boss=run.reward.boss
@@ -779,10 +1077,13 @@ func _make_shop() -> void:
 	run.mode="shop"
 	var items=[]
 	var cards=_available_cards()
-	_shuffle(run,cards)
-	for i in range(2): items.append({"kind":"card","id":cards[i],"cost":35+i*8,"sold":false})
+	if run.reward_generation==0: _shuffle(run,cards,"shop")
+	else: cards=Distribution.shop(self,cards)
+	for i in range(mini(2,cards.size())):
+		var price=35+i*8 if run.reward_generation==0 else Distribution.price(card(cards[i]))
+		items.append({"kind":"card","id":cards[i],"cost":price,"sold":false})
 	var powers=_available_powerups()
-	_shuffle(run,powers)
+	_shuffle(run,powers,"shop")
 	for i in range(mini(2,powers.size())): items.append({"kind":"powerup","id":powers[i],"cost":75,"sold":false})
 	items.append({"kind":"remove","id":"","cost":30,"sold":false})
 	items.append({"kind":"upgrade","id":"","cost":35,"sold":false})
@@ -793,6 +1094,7 @@ func buy(index: int) -> Dictionary:
 	if not _mode("shop"): return _fail("You are not at a salvage exchange.")
 	if index<0 or index>=run.shop.items.size(): return _fail("Choose a listed exchange.")
 	var item=run.shop.items[index]
+	if item.kind=="card" and not _pool_card(run,item.id): return _fail("That card is outside this expedition's content pool.")
 	if item.sold: return _fail("That exchange is already complete.")
 	if int(run.salvage)<int(item.cost): return _fail("Not enough salvage.")
 	if item.kind in ["remove","upgrade"]:
@@ -816,17 +1118,47 @@ func _can_upgrade() -> bool:
 	return false
 
 func modify_card(deck_index: int) -> Dictionary:
+	return _modify_card(deck_index, "")
+
+func evolve_card(uid, branch_id: String) -> Dictionary:
+	if not _number(uid) or uid<=0: return _fail("Choose an integral card UID.")
+	if branch_id.is_empty(): return _fail("Choose an explicit evolution identity.")
+	if not _mode("modify") or run.modify_kind!="upgrade": return _fail("No evolution is pending.")
+	var index=-1
+	for i in range(run.deck.size()):
+		if run.deck[i].uid==uid:
+			if index>=0: return _fail("Card UID is not unique in your deck.")
+			index=i
+	if index<0: return _fail("Choose a card in your deck.")
+	return _modify_card(index,branch_id)
+
+func evolution_choices(instance: Dictionary) -> Array:
+	return card(instance.id).get("evolutions",[]).duplicate(true)
+
+func _modify_card(deck_index: int, branch_id: String) -> Dictionary:
 	if not _mode("modify"): return _fail("No deck modification is pending.")
 	if deck_index<0 or deck_index>=run.deck.size(): return _fail("Choose a card in your deck.")
 	if run.modify_kind=="remove" and run.deck.size()<=5: return _fail("Keep at least five cards.")
+	if run.modify_kind=="upgrade" and not _valid_instance(run.deck[deck_index]): return _fail("Invalid command evolution identity.")
 	if run.modify_kind=="upgrade" and int(run.deck[deck_index].level)>0: return _fail("This command is already evolved.")
+	var identity=Evolutions.LEGACY
+	if run.modify_kind=="upgrade":
+		if not Evolutions.valid_definition(card(run.deck[deck_index].id)): return _fail("Invalid authored evolution content.")
+		var choices=evolution_choices(run.deck[deck_index])
+		if not choices.is_empty():
+			if branch_id.is_empty(): return _fail("Evolution choice required.")
+			if Evolutions.branch(card(run.deck[deck_index].id),branch_id).is_empty(): return _fail("Choose an authored evolution.")
+			identity=branch_id
+		elif not branch_id.is_empty() and branch_id!=Evolutions.LEGACY: return _fail("This command has no authored evolutions.")
 	if run.modify_return=="shop":
 		var item=run.shop.items[int(run.modify_shop_index)]
 		if item.sold or int(run.salvage)<int(item.cost): return _fail("That exchange is no longer available.")
 		item.sold=true
 		run.salvage-=int(item.cost)
 	if run.modify_kind=="remove": run.deck.remove_at(deck_index)
-	else: run.deck[deck_index].level=1
+	else:
+		run.deck[deck_index].level=1
+		run.deck[deck_index].evolution=identity
 	run.mode="shop" if run.modify_return=="shop" else "map"
 	run.modify_return=""
 	run.modify_kind=""
@@ -879,14 +1211,14 @@ func event_choice(index: int) -> Dictionary:
 			run.hull=mini(int(run.max_hull),int(run.hull)+35)
 		"card":
 			var pool=_available_cards()
-			run.deck.append(_instance(run,pool[_pick(run,pool.size())]))
+			run.deck.append(_instance(run,pool[_pick(run,pool.size(),"events")]))
 		"powerup","capacity_trade":
 			var pool=_available_powerups()
 			if pool.is_empty(): return _fail("You have already integrated every available powerup.")
 			if effect=="capacity_trade":
 				run.max_hull-=8
 				run.hull=mini(int(run.hull),int(run.max_hull))
-			_grant_powerup(pool[_pick(run,pool.size())])
+			_grant_powerup(pool[_pick(run,pool.size(),"events")])
 		"upgrade","remove":
 			run.mode="modify"
 			run.modify_return="event"
@@ -909,12 +1241,15 @@ func _finish_run(won: bool) -> void:
 	_tick_time()
 	run.finished=true
 	run.mode="victory" if won else "defeat"
-	profile.unlocks=mini(3,int(profile.unlocks)+1)
-	profile.history.push_front({"id":run.id,"seed":run.seed,"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
+	if not run.get("seeded",false): profile.unlocks=mini(3,int(profile.unlocks)+1)
+	profile.history.push_front({"id":run.id,"seed":run.seed,"seeded":run.get("seeded",false),"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
+	profile.history[0].reward_generation=run.reward_generation
+	profile.history[0].content_pool_revision=run.content_pool_revision
 	if profile.history.size()>30: profile.history.resize(30)
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
 func abandon() -> Dictionary:
+	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
 	if run.is_empty() or run.get("finished",false): return _fail("There is no active expedition.")
 	_finish_run(false)
 	save()
@@ -958,8 +1293,64 @@ func load_saved() -> bool:
 	store.primary_verified=false
 	for candidate in store.candidates():
 		var saved=candidate.data
+		# Unversioned runs are the legacy schema. Never repair current-schema data.
+		var legacy_schema=not saved.run.has("schema_revision")
+		if legacy_schema and not saved.run.is_empty():
+			# Additive fields without a revision indicate damaged new data, not legacy.
+			var old_battle=saved.run.get("battle",{})
+			if saved.run.has("content_pool_revision") or saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or saved.run.has("pending_selection") or (old_battle is Dictionary and ["exhausted","installed","installed_sources","temporary_retain","engine_counters","engine_routes"].any(func(key): return old_battle.has(key))):
+				store.error="A save contains incomplete game data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=4
+			saved.run.pending_selection={}
+			if old_battle is Dictionary and not old_battle.is_empty():
+				for key in ["exhausted","installed","installed_sources","temporary_retain"]: old_battle[key]=[]
+				old_battle.engine_counters=[]
+				old_battle.engine_routes=[]
+		# Explicit zones-revision migration; never repair current-schema fields.
+		if saved.run.get("schema_revision")==2 and not saved.run.has("pending_selection"):
+			saved.run.schema_revision=3
+			saved.run.pending_selection={}
+		if saved.run.get("schema_revision")==3:
+			var old_battle=saved.run.get("battle",{})
+			if old_battle is Dictionary and (old_battle.has("engine_counters") or old_battle.has("engine_routes")):
+				store.error="A save contains incomplete game data. Your existing files have been preserved."
+				continue
+			var pending=saved.run.get("pending_selection",{})
+			if pending is Dictionary and not pending.is_empty():
+				if not pending.get("guard") is String or pending.guard!=Selections.guard(self,saved.run,pending):
+					store.error="A save contains incomplete game data. Your existing files have been preserved."
+					continue
+			saved.run.schema_revision=4
+			if old_battle is Dictionary and not old_battle.is_empty():
+				old_battle.engine_counters=[]
+				old_battle.engine_routes=[]
+			if pending is Dictionary and not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
+		if saved.run.get("schema_revision")==4:
+			if not _migrate_evolutions(saved.run):
+				store.error="A save contains incomplete evolution data. Your existing files have been preserved."
+				continue
+		if saved.run.get("schema_revision")==5:
+			# Validate old pending guards before adding fields covered by that guard.
+			var pending=saved.run.get("pending_selection",{})
+			if saved.run.has("reward_generation") or saved.run.has("rare_offer_misses") or not pending is Dictionary or (not pending.is_empty() and pending.get("guard")!=Selections.guard(self,saved.run,pending)):
+				store.error="A save contains incomplete distribution data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=6
+			saved.run.reward_generation=0
+			saved.run.rare_offer_misses=0
+			if not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
+		if saved.run.get("schema_revision")==6:
+			# Guards cover the complete old state: verify BEFORE adding the pool pin.
+			var pending=saved.run.get("pending_selection",{})
+			if saved.run.has("content_pool_revision") or not pending is Dictionary or (not pending.is_empty() and pending.get("guard")!=Selections.guard(self,saved.run,pending)):
+				store.error="A save contains incomplete content-pool data. Your existing files have been preserved."
+				continue
+			saved.run.schema_revision=RUN_SCHEMA
+			saved.run.content_pool_revision=0
+			if not pending.is_empty(): pending.guard=Selections.guard(self,saved.run,pending)
 		var legacy_expansion=not saved.run.has("character") and not saved.run.has("route_regions")
-		if not saved.run.is_empty() and legacy_expansion:
+		if legacy_schema and not saved.run.is_empty() and legacy_expansion:
 			saved.run.character="cartographer"
 			saved.run.route_regions=[0,1,2]
 			if saved.run.get("battle") is Dictionary and not saved.run.battle.is_empty():
@@ -969,7 +1360,7 @@ func load_saved() -> bool:
 				if not battle.has("resonance"): battle.resonance=0
 				if not battle.has("last_command_kind"): battle.last_command_kind=""
 		# Older combat saves prove only whether no card has been played this turn.
-		if saved.run.get("mode","")=="combat" and saved.run.get("battle") is Dictionary:
+		if legacy_schema and saved.run.get("mode","")=="combat" and saved.run.get("battle") is Dictionary:
 			var battle=saved.run.battle
 			if not battle.has("command_points") and not battle.has("max_command_points"):
 				battle.max_command_points=3
@@ -1003,7 +1394,51 @@ func _restore_integers(value):
 func _number(value) -> bool: return (value is int or value is float) and is_finite(float(value)) and value==floor(value)
 
 func _valid_instance(instance) -> bool:
-	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1]
+	return instance is Dictionary and _cards.has(instance.get("id","")) and _number(instance.get("uid")) and _number(instance.get("level")) and int(instance.level) in [0,1] and Evolutions.valid_instance(card(instance.id),instance) and RouteEffects.valid_definition(effective_card(instance))
+
+func _migrate_evolutions(state: Dictionary) -> bool:
+	var pending=state.get("pending_selection",{})
+	if not pending is Dictionary: return false
+	if not pending.is_empty() and (not pending.get("guard") is String or pending.guard!=Selections.guard(self,state,pending)): return false
+	var instances=[]
+	if not state.get("deck") is Array or not state.get("battle") is Dictionary: return false
+	instances.append_array(state.deck)
+	for zone in COMBAT_ZONES:
+		if state.battle.has(zone):
+			if not state.battle[zone] is Array: return false
+			instances.append_array(state.battle[zone])
+	var memory=state.battle.get("last_command",{})
+	if not memory is Dictionary: return false
+	if not memory.is_empty(): instances.append(memory.get("card"))
+	# Validate raw levels before conversion; old revisions cannot contain new identities.
+	for instance in instances:
+		if not instance is Dictionary or instance.has("evolution") or not _number(instance.get("level")) or not int(instance.level) in [0,1]: return false
+		if not _cards.has(instance.get("id","")) or not _number(instance.get("uid")): return false
+	var pending_index=-1
+	if not pending.is_empty():
+		if not _number(pending.get("source_uid")) or not pending.get("definition") is Dictionary: return false
+		pending_index=Selections.index(state.battle.get("hand",[]),pending.source_uid)
+		if pending_index<0 or not _same_authored(pending.definition,effective_card(state.battle.hand[pending_index])): return false
+	for instance in instances:
+		if instance.level==1: instance.evolution=Evolutions.LEGACY
+	state.schema_revision=5
+	if not pending.is_empty():
+		pending.definition=effective_card(state.battle.hand[pending_index])
+		pending.guard=Selections.guard(self,state,pending)
+	return true
+
+func _valid_last_command(value) -> bool:
+	if not value is Dictionary: return false
+	if value.is_empty(): return true
+	if not _valid_instance(value.get("card")): return false
+	var definition=effective_card(value.card)
+	if value.get("kind")!=definition.kind: return false
+	for payload in ["base","resolved"]:
+		if not value.get(payload) is Dictionary: return false
+		for field in ["damage","heal","disrupt"]:
+			if not _number(value[payload].get(field)) or value[payload][field]<0: return false
+			if payload=="base" and value.base[field]!=definition.get(field,0): return false
+	return true
 
 func _valid_itinerary(value) -> bool:
 	if not value is Array or value.size()!=3: return false
@@ -1019,7 +1454,11 @@ func _valid_profile(value) -> bool:
 	if value.history.size()>30: return false
 	for item in value.history:
 		if not item is Dictionary: return false
-		for key in ["seed","region","turns","battles","seconds","date","deck_size"]:
+		if not _number(item.get("seed")) and not (item.get("seed") is String and SeedEngine.valid(item.seed)): return false
+		if item.has("seeded") and not item.seeded is bool: return false
+		if item.has("reward_generation") and (not _number(item.reward_generation) or not int(item.reward_generation) in [0,1]): return false
+		if item.has("content_pool_revision") and (not _number(item.content_pool_revision) or not int(item.content_pool_revision) in [0,CONTENT_POOL_REVISION]): return false
+		for key in ["region","turns","battles","seconds","date","deck_size"]:
 			if not _number(item.get(key)): return false
 		if not item.get("won") is bool: return false
 		if item.has("character") and (not item.character is String or character(item.character).is_empty()): return false
@@ -1033,16 +1472,24 @@ func _valid_profile(value) -> bool:
 func _valid_run(value) -> bool:
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
+	if not _number(value.get("schema_revision")) or value.schema_revision!=RUN_SCHEMA: return false
+	if not _number(value.get("content_pool_revision")) or not int(value.content_pool_revision) in [0,CONTENT_POOL_REVISION]: return false
+	if not _number(value.get("reward_generation")) or not int(value.reward_generation) in [0,1]: return false
+	if not _number(value.get("rare_offer_misses")) or value.rare_offer_misses<0 or value.rare_offer_misses>Distribution.PITY_LIMIT: return false
+	if value.reward_generation==0 and value.rare_offer_misses!=0: return false
 	if not value.get("character") is String or character(value.character).is_empty(): return false
 	if not _valid_itinerary(value.get("route_regions")): return false
-	for key in ["seed","region","layer","hull","max_hull","salvage","turns","started_at","elapsed_seconds","tutorial_step","next_uid","battles"]:
+	if value.get("seed") is String:
+		if not SeedEngine.valid_state(value): return false
+	elif not _number(value.get("seed")) or value.has("rng_version") or value.has("rng_streams") or value.has("seeded") or value.has("pool_tier"): return false
+	for key in ["region","layer","hull","max_hull","salvage","turns","started_at","elapsed_seconds","tutorial_step","next_uid","battles"]:
 		if not _number(value.get(key)): return false
 	if int(value.region)<0 or int(value.region)>2 or int(value.layer)<-1 or int(value.layer)>11: return false
 	if int(value.hull)<0 or int(value.hull)>int(value.max_hull) or int(value.max_hull)<1 or int(value.max_hull)>1000: return false
 	if not value.get("mode","") in MODES or not value.get("finished") is bool: return false
-	for key in ["id","current_node","event_id","modify_return","modify_kind","rng_state"]:
+	for key in ["id","current_node","event_id","modify_return","modify_kind"]:
 		if not value.get(key) is String: return false
-	if not value.rng_state.is_valid_int(): return false
+	if not value.has("rng_version") and (not value.get("rng_state") is String or not value.rng_state.is_valid_int()): return false
 	for key in ["deck","powerups","map","visited","log"]:
 		if not value.get(key) is Array: return false
 	if value.deck.size()<5 or value.deck.size()>200 or value.map.size()!=12: return false
@@ -1051,6 +1498,7 @@ func _valid_run(value) -> bool:
 	for instance in value.deck:
 		if not _valid_instance(instance) or instance.uid in uids: return false
 		if card(instance.id).get("character","cartographer")!=value.character: return false
+		if card(instance.id).get("introduced_revision",0)>value.content_pool_revision: return false
 		uids.append(instance.uid)
 		originals[int(instance.uid)]=instance
 	for id in value.powerups:
@@ -1065,9 +1513,20 @@ func _valid_run(value) -> bool:
 				if not _enemies.has(id): return false
 	for key in ["battle","reward","shop"]:
 		if not value.get(key) is Dictionary: return false
+	if not value.battle.is_empty() and not Engines.valid_state(self,value.battle): return false
+	# Completed battles remain inspectable after rewards/workshops. Their instances
+	# must still belong to this pool, but may predate deck removal/evolution.
+	if not value.battle.is_empty():
+		for zone in COMBAT_ZONES:
+			if not value.battle.get(zone) is Array: return false
+			for instance in value.battle[zone]:
+				if not _valid_instance(instance) or not _pool_card(value,instance.id): return false
+		if not _valid_last_command(value.battle.get("last_command",{})): return false
+		var archived_command=value.battle.get("last_command",{})
+		if not archived_command.is_empty() and not _pool_card(value,archived_command.card.id): return false
 	if value.mode=="combat":
 		var battle=value.battle
-		for key in ["hand","draw","discard","enemies","strain","edges","severed","last_route"]:
+		for key in COMBAT_ZONES+["installed_sources","temporary_retain","enemies","strain","edges","severed","last_route"]:
 			if not battle.get(key) is Array: return false
 		if battle.strain.size()!=6 or battle.enemies.is_empty() or battle.enemies.size()>8 or battle.hand.size()>10: return false
 		for key in ["capacity","ward","turn","mark","command_points","max_command_points","trace","resonance"]:
@@ -1076,6 +1535,7 @@ func _valid_run(value) -> bool:
 		if int(battle.max_command_points)!=3 or int(battle.command_points)<0 or int(battle.command_points)>3: return false
 		if int(battle.trace)<0 or int(battle.trace)>6 or int(battle.resonance)<0 or int(battle.resonance)>3: return false
 		if not battle.get("last_payload") is Dictionary or not battle.get("last_command_kind") is String: return false
+		if not _valid_last_command(battle.get("last_command",{})): return false
 		if not battle.last_command_kind in ["","attack","repair","utility"]: return false
 		for field in ["damage","heal","disrupt"]:
 			if battle.last_payload.has(field) and (not _number(battle.last_payload[field]) or battle.last_payload[field]<0): return false
@@ -1084,13 +1544,35 @@ func _valid_run(value) -> bool:
 		for node in battle.last_route:
 			if not _number(node) or node<0 or node>5: return false
 		var piles=[]
-		for key in ["hand","draw","discard"]:
+		for key in COMBAT_ZONES:
 			for instance in battle[key]:
 				if not _valid_instance(instance) or not instance.uid in uids or instance.uid in piles: return false
 				var original=originals[int(instance.uid)]
-				if instance.id!=original.id or int(instance.level)!=int(original.level): return false
+				if instance.id!=original.id or int(instance.level)!=int(original.level) or instance.get("evolution","")!=original.get("evolution",""): return false
 				piles.append(instance.uid)
 		if piles.size()!=uids.size(): return false
+		var memory=battle.get("last_command",{})
+		if not memory.is_empty():
+			var source=originals.get(int(memory.card.uid),{})
+			if source.is_empty() or memory.card!=source: return false
+		var retained_uids=[]
+		for uid in battle.temporary_retain:
+			if not _number(uid) or uid in retained_uids or not battle.hand.any(func(instance): return instance.uid==uid): return false
+			retained_uids.append(uid)
+		if battle.installed_sources.size()!=battle.installed.size(): return false
+		var source_uids=[]
+		var identities=[]
+		var names=[]
+		for source in battle.installed_sources:
+			if not source is Dictionary or source.size()!=2 or not _number(source.get("source_uid")) or not source.get("identity") is String or source.identity.is_empty(): return false
+			if source.source_uid in source_uids or source.identity in identities: return false
+			var matches=battle.installed.filter(func(instance): return instance.uid==source.source_uid)
+			if matches.size()!=1: return false
+			var definition=effective_card(matches[0])
+			if definition.get("install","")!=source.identity or definition.name in names: return false
+			source_uids.append(source.source_uid)
+			identities.append(source.identity)
+			names.append(definition.name)
 		for strain in battle.strain:
 			if not _number(strain) or strain<0 or strain>battle.capacity: return false
 		for key in ["edges","severed"]:
@@ -1111,15 +1593,15 @@ func _valid_run(value) -> bool:
 		if not value.reward.get("choices") is Array or not value.reward.get("boss") is bool: return false
 		for choice in value.reward.choices:
 			if not choice is Dictionary or not choice.get("kind","") in ["card","powerup"]: return false
-			if choice.kind=="card" and (not _cards.has(choice.get("id","")) or card(choice.id).get("character","cartographer")!=value.character): return false
+			if choice.kind=="card" and not _pool_card(value,choice.get("id","")): return false
 			if choice.kind=="powerup" and not _powerups.has(choice.get("id","")): return false
 	if value.mode=="shop" or (value.mode=="modify" and value.modify_return=="shop"):
 		if not value.shop.get("items") is Array: return false
 		for item in value.shop.items:
 			if not item is Dictionary or not item.get("kind","") in ["card","powerup","remove","upgrade"] or not _number(item.get("cost")) or not item.get("sold") is bool or not item.get("id") is String: return false
-			if item.kind=="card" and (not _cards.has(item.id) or card(item.id).get("character","cartographer")!=value.character): return false
+			if item.kind=="card" and not _pool_card(value,item.id): return false
 			if item.kind=="powerup" and not _powerups.has(item.id): return false
 	if value.mode=="modify":
 		if not value.modify_return in ["shop","event","recovery"] or not value.modify_kind in ["upgrade","remove"]: return false
 		if value.modify_return=="shop" and (not _number(value.get("modify_shop_index")) or int(value.modify_shop_index)<0 or int(value.modify_shop_index)>=value.shop.items.size()): return false
-	return true
+	return _valid_pending(value)

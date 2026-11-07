@@ -28,6 +28,17 @@ func _init(owner):
 
 func _command(button: Button) -> String:
 	var n := str(button.name)
+	if n in ["DrawPile", "DiscardPile", "ExhaustedPile", "InstalledPile"]: return "inspect_pile"
+	if n == "LastCommand": return "inspect_last_command"
+	if button.text == "Choose cards [Space]": return "confirm"
+	if button.text == "Choose evolution": return "modify_card"
+	if button.text == "Cancel · back to deck chooser": return "close_overlay"
+	if button.text in ["Cancel · spend nothing [Esc]", "Cancel  [Esc]"]: return "cancel_known_selection"
+	if button.text.begins_with("Confirm · spend "): return "confirm_known_selection"
+	if button.text.begins_with("UID ") or button.text == "None (authored optional choice)": return "choose_known_card"
+	if is_instance_valid(main.overlay) and main.overlay.get_meta("mcp_title", "").begins_with("Choose one evolution") and button.text.begins_with("Confirm "): return "choose_evolution"
+	if button.text.begins_with("Retry seed · "): return "retry_expedition"
+	if button.text == "Travel here →": return "choose_node"
 	for pair in [["CharacterChoice", "select_character"], ["CharacterDetails", "character_details"], ["Destination", "choose_node"], ["Organ", "select_organ"], ["Hand", "select_card"], ["EnemyTarget", "select_target"]]:
 		if n.begins_with(pair[0]) and n.trim_prefix(pair[0]).is_valid_int(): return pair[1]
 	if button.text.begins_with("Deck ·"): return "open_deck"
@@ -42,11 +53,13 @@ func snapshot() -> Dictionary:
 	var legal: Array = []
 	var texts: Array = []
 	var root = main.overlay if is_instance_valid(main.overlay) else main.page
+	var hidden_pile: bool = root.get_meta("mcp_title", "") == "Draw pile"
 	var busy: bool = main.presentation_busy() or is_instance_valid(main.opening_film)
 	for node in root.find_children("*", "", true, false):
-		if node is Label and node.is_visible_in_tree() and not _private(node): texts.append(node.text)
+		if node is Label and node.is_visible_in_tree() and not _private(node) and not hidden_pile: texts.append(node.text)
 		if not node is Button or node is CheckBox or not node.is_visible_in_tree(): continue
 		var command := _command(node)
+		if hidden_pile and command != "close_overlay": continue
 		if command.is_empty(): continue
 		if not bindings.has(command): bindings[command] = []
 		bindings[command].append(node)
@@ -59,8 +72,8 @@ func snapshot() -> Dictionary:
 			if not options.is_empty(): legal.append({"action":command, "args":{"index":{"type":"integer", "options":options}}, "description":"Activate the corresponding visible " + command + " control. index defaults to 0."})
 		if is_instance_valid(main.overlay) and main.overlay.get_meta("mcp_title", "") == "Settings":
 			legal.append({"action":"set_setting", "args":{"key":{"options":["reduced_motion", "fullscreen", "volume", "music_volume", "combat_volume", "interface_volume"]}, "value":{"description":"boolean for motion/fullscreen; finite number 0..1 for volume"}}})
-	var state := {"busy":busy, "ui":{"screen":"character" if main.choosing_character else "title" if main.menu else str(main.game.run.get("mode", "title")), "overlay":root.get_meta("mcp_title", "") if root == main.overlay else "", "selection":{"card":main.selected_card, "route":main.route.duplicate(), "target":main.target, "character":main.selected_character, "modify_page":main.modify_page, "anatomy_view":main.anatomy_view}, "notice":main.notice, "text":texts}, "run":main.game.run.duplicate(true), "profile":main.game.profile.duplicate(true), "legal_actions":legal}
-	state.profile.get("settings", {}).erase("mcp_token")
+	var state := {"busy":busy, "ui":{"screen":"character" if main.choosing_character else "title" if main.menu else str(main.game.run.get("mode", "title")), "overlay":root.get_meta("mcp_title", "") if root == main.overlay else "", "selection":{"card":main.selected_card, "route":main.route.duplicate(), "target":main.target, "character":main.selected_character, "modify_page":main.modify_page, "anatomy_view":main.anatomy_view}, "notice":main.notice, "text":texts}, "run":_public_run(), "profile":_public_profile(), "legal_actions":legal}
+	state = _blind(state)
 	var encoded := JSON.stringify(state)
 	if encoded != fingerprint:
 		revision += 1
@@ -79,7 +92,8 @@ func request(method: String, params: Dictionary) -> Dictionary:
 	if method == "preview":
 		if not params.is_empty(): return error("invalid_args", "preview uses the live selection")
 		if state.ui.screen != "combat" or main.selected_card < 0: return error("unavailable", "Select a combat card first")
-		return {"ok":true, "state":state, "result":main.game.preview_card(main.selected_card, main.route, main.target)}
+		var result: Dictionary = main.game.preview_selection() if main.game.selection_pending() else main.game.preview_card(main.selected_card, main.route, main.target)
+		return {"ok":true, "state":state, "result":_public_preview(result)}
 	if method != "act": return error("invalid_request", "Unknown method")
 	if params.size() != 3 or not params.get("action") is String or not params.get("args") is Dictionary or not _integer(params.get("expected_revision")):
 		return error("invalid_args", "act requires action, args and integer expected_revision")
@@ -118,3 +132,67 @@ func _private(node: Node) -> bool:
 		if node.get_meta("mcp_private", false): return true
 		node = node.get_parent()
 	return false
+
+# Explicit boundaries: never export save/replay internals or simulation output.
+func _fields(source: Dictionary, keys: Array) -> Dictionary:
+	var result := {}
+	for key in keys:
+		if source.has(key): result[key] = source[key]
+	return result.duplicate(true)
+
+func _public_run() -> Dictionary:
+	var run: Dictionary = main.game.run
+	var result := _fields(run, ["character", "region", "layer", "mode", "hull", "max_hull", "salvage", "deck", "powerups", "current_node", "visited", "log", "turns", "elapsed_seconds", "tutorial_step", "modify_return", "modify_kind", "finished", "battles", "reward_generation", "rare_offer_misses", "seeded", "pool_tier", "content_pool_revision"])
+	if run.is_empty(): return result
+	result.map = []
+	for layer in run.get("map", []):
+		var visible: Array = []
+		for node in layer: visible.append(_fields(node, ["id", "layer", "column", "type", "edges"]))
+		result.map.append(visible)
+	var battle: Dictionary = run.get("battle", {})
+	result.battle = _fields(battle, ["enemies", "hand", "discard", "exhausted", "installed", "strain", "capacity", "edges", "severed", "ward", "turn", "last_route", "mark", "first_play", "emergency_used", "kind", "command_points", "max_command_points", "trace", "last_payload", "resonance", "last_command_kind", "last_command", "engine_routes", "engine_counters"])
+	if not battle.is_empty(): result.battle.draw_count = battle.get("draw", []).size()
+	# Offers are public only while actually in that room.
+	if run.get("mode") == "reward": result.reward = run.get("reward", {}).duplicate(true)
+	if run.get("mode") == "shop" or run.get("modify_return") == "shop": result.shop = run.get("shop", {}).duplicate(true)
+	if run.get("mode") == "event": result.event_id = run.get("event_id", "")
+	result.pending_selection = _fields(run.get("pending_selection", {}), ["source_uid", "route", "target_index", "target_guard", "definition", "choices"])
+	return result
+
+func _public_profile() -> Dictionary:
+	var result := _fields(main.game.profile, ["version", "unlocks"])
+	result.settings = _fields(main.game.profile.get("settings", {}), ["reduced_motion", "fullscreen", "volume", "music_volume", "combat_volume", "interface_volume", "mcp_enabled", "mcp_port"])
+	result.history = []
+	for record in main.game.profile.get("history", []):
+		result.history.append(_fields(record, ["character", "won", "region", "turns", "seeded", "battles", "seconds", "date", "deck_size", "reward_generation", "content_pool_revision"]))
+	return result
+
+func _public_preview(result: Dictionary) -> Dictionary:
+	# In particular omit next, presentation (including future draw identities),
+	# events and summary. Return only the deterministic, player-facing forecast.
+	return _blind(_fields(result, ["ok", "error", "damage", "heal", "disrupt", "cost", "attack_reduction", "command_points", "strain", "resource_preview", "trace", "resonance", "route_steps", "ward", "conditional_damage", "command_cooling", "selection_required"]))
+
+# Scrub replay codes repeated in public UI labels/history, not arbitrary keys.
+func _blind(value):
+	if value is Dictionary:
+		var clean := {}
+		for key in value:
+			clean[key] = _blind(value[key])
+		return clean
+	if value is Array:
+		var clean: Array = []
+		for item in value: clean.append(_blind(item))
+		return clean
+	if value is String:
+		var text: String = value
+		# Public labels/history can repeat a replay code; suppress it there too.
+		var seeds: Array = [main.game.run.get("seed", "")]
+		for record in main.game.profile.get("history", []): seeds.append(record.get("seed", ""))
+		for seed_value in seeds:
+			if seed_value is String and not seed_value.is_empty(): text = text.replace(seed_value, "[hidden]")
+		# Legacy numeric seeds must not erase unrelated damage/count digits.
+		var pattern := RegEx.new()
+		pattern.compile("(?i)\\bseed\\s*[·:]?\\s+[a-z0-9]+\\b")
+		text = pattern.sub(text, "Seed [hidden]", true)
+		return text
+	return value

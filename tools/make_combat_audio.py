@@ -3,23 +3,26 @@
 Run independently to rebuild combat sounds without regenerating the music.
 """
 import math
+import argparse
 import random
 import struct
 
 from make_audio import RATE, ROOT, TAU, write
 
 FAMILIES = ("kinetic", "plasma", "fracture", "sonic", "memory", "beam")
-SUPPORT = ("repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw")
+SUPPORT = ("repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw", "discard")
 
 
 def render(name, duration):
     rng = random.Random(name)
     dry = []
     low_noise = 0.0
+    paper_noise = 0.0
     for i in range(round(duration * RATE)):
         t = i / RATE
         noise = rng.uniform(-1, 1)
         low_noise += .09 * (noise - low_noise)
+        paper_noise += .45 * (noise - paper_noise)
         high_noise = noise - low_noise
         attack = min(1, t / .004)
         tail = min(1, (duration - t) / .07)
@@ -62,8 +65,16 @@ def render(name, duration):
             value = .4 * math.sin(TAU * (950 * t - 620 * t * t) + 2 * math.sin(TAU * 121 * t)) * math.exp(-t * 12)
             value += .12 * high_noise * math.exp(-t * 16)
             if impact: value += .55 * body
-        elif name in ("repair", "link", "ready", "draw"):
-            notes = {"repair": [330, 440, 554, 660], "link": [220, 330, 440], "ready": [392, 523, 784], "draw": [620, 830]}[name]
+        elif name in ("draw", "discard"):
+            # Dry, band-limited paper friction: a slide, a tiny trailing flick,
+            # and a soft contact. No pitched notes or electronic resonances.
+            offset = .012 if name == "discard" else 0
+            slide = math.exp(-((t - .045 - offset) / .030) ** 2)
+            flick = .45 * math.exp(-((t - .105 - offset) / .018) ** 2)
+            contact = .12 * low_noise * math.exp(-((t - .135 - offset) / .009) ** 2)
+            value = .30 * (paper_noise - low_noise) * (slide + flick) + contact
+        elif name in ("repair", "link", "ready"):
+            notes = {"repair": [330, 440, 554, 660], "link": [220, 330, 440], "ready": [392, 523, 784]}[name]
             value = 0.0
             for j, frequency in enumerate(notes):
                 local = t - j * .075
@@ -89,17 +100,24 @@ def render(name, duration):
     frames = bytearray()
     for i, value in enumerate(dry):
         fade = min(1, (len(dry) - 1 - i) / (RATE * .045))
-        left = value + (dry[i - int(RATE * .037)] * .18 if i >= int(RATE * .037) else 0)
-        right = value + (dry[i - int(RATE * .053)] * .2 if i >= int(RATE * .053) else 0)
+        paper = name in ("draw", "discard")
+        left_delay, right_delay = (.001, .002) if paper else (.037, .053)
+        reflection = .025 if paper else .18
+        left = value + (dry[i - int(RATE * left_delay)] * reflection if i >= int(RATE * left_delay) else 0)
+        right = value + (dry[i - int(RATE * right_delay)] * (reflection if paper else .2) if i >= int(RATE * right_delay) else 0)
         frames.extend(struct.pack("<hh", round(left * fade * 23500), round(right * fade * 23500)))
     write("combat_" + name, frames)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cards-only", action="store_true", help="Rebuild only the paper draw/discard Foley")
+    args = parser.parse_args()
     ROOT.mkdir(exist_ok=True)
-    for family in FAMILIES:
-        render(family + "_launch", .38)
-        render(family + "_hit", .65)
-    for name in SUPPORT:
-        render(name, .8 if name in ("repair", "link", "ready") else .55)
-    print("Rendered 21 original stereo combat cues.")
+    if not args.cards_only:
+        for family in FAMILIES:
+            render(family + "_launch", .38)
+            render(family + "_hit", .65)
+    for name in ("draw", "discard") if args.cards_only else SUPPORT:
+        render(name, .28 if name in ("draw", "discard") else .8 if name in ("repair", "link", "ready") else .55)
+    print("Rendered paper card Foley." if args.cards_only else "Rendered 22 original stereo combat cues.")

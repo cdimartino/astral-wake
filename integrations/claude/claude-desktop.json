@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "astral-wake": {
+      "command": "/absolute/path/to/python3",
+      "args": ["/absolute/path/to/astral-wake/tools/astral_mcp.py", "--port", "REPLACE_WITH_GAME_PORT"],
+      "env": {"ASTRAL_MCP_TOKEN": "REPLACE_LOCALLY_WITH_PRIVATE_GAME_TOKEN"}
+    }
+  }
+}

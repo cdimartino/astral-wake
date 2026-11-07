@@ -31,6 +31,14 @@ Unauthenticated errors must not disclose state. State contains `revision` (int),
 `legal_actions` (explicit commands and argument descriptions/options).
 `preview` params use the live selection and do not mutate.
 
+All states use a player-visible allowlisted projection, never a raw save/run
+dictionary. Omit RNG internals, replay seed/run identifiers, draw-pile contents
+and ordering, and unseen room offers. Expose `run.battle.draw_count` instead of
+the draw array. This applies to responses, errors, and notifications. Preview
+results omit simulated next-state and future-draw presentation/event/summary
+payloads. Draw-pile UI labels must not bypass the projection. Preserve hidden
+state internally; observation must not mutate the game.
+
 Command names and parameters are discoverable from `legal_actions`; include all
 normal gameplay, title/character flows, overlays and settings. Game-side schema
 is authoritative. MCP host passes whitelisted semantic commands, not method names

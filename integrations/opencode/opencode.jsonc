@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "astral-wake": {
+        "type": "local",
+        "command": [
+          "python3",
+          "/absolute/path/to/astral-wake/tools/astral_mcp.py",
+          "--port",
+          "{env:ASTRAL_MCP_PORT}"
+        ],
+        "environment": {
+          "ASTRAL_MCP_TOKEN": "{env:ASTRAL_MCP_TOKEN}"
+        },
+        "timeout": {
+          "execution": 45000
+        },
+        "disabled": true
+      }
+    }
+  }
+}

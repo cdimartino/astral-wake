@@ -128,6 +128,9 @@ class StdioTest(unittest.TestCase):
     def test_discovery_negotiation_and_results(self):
         result = self.rpc("initialize", {"protocolVersion": "future"})["result"]
         self.assertEqual(result["protocolVersion"], "2025-11-25")
+        self.assertIn("legal_actions", result["instructions"])
+        self.assertIn("expected_revision", result["instructions"])
+        self.assertIn("v0.2.0", result["instructions"])
         tools = self.rpc("tools/list")["result"]["tools"]
         self.assertEqual({tool["name"] for tool in tools}, {"get_state", "act", "preview", "wait_for_state"})
         for name in ("get_state", "preview"):
@@ -149,6 +152,16 @@ class StdioTest(unittest.TestCase):
             with self.subTest(name=name, args=args):
                 self.assertEqual(self.tool(name, args)["error"]["code"], -32602)
         self.assertEqual(self.bridge.requests, [])
+
+    def test_opencode_session_metadata_is_not_bridge_authentication(self):
+        result = self.rpc("tools/call", {"name": "get_state", "arguments": {},
+                                        "_meta": {"sessionID": "ses_opencode_test"}})
+        self.assertFalse(result["result"]["isError"])
+        request = self.bridge.requests[-1]
+        self.assertEqual(request["token"], TOKEN)
+        self.assertEqual(request["params"], {})
+        self.assertNotIn("_meta", request)
+        self.assertNotIn("ses_opencode_test", json.dumps(request))
 
     def test_game_errors_and_semantic_forwarding(self):
         for mode in ("busy", "stale_revision", "unauthorized", "invalid_args", "unknown_action"):

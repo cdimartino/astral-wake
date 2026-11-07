@@ -1,6 +1,8 @@
 extends Control
 
 const Game = preload("res://scripts/game.gd")
+const Keywords = preload("res://scripts/keywords.gd")
+const CardTooltip = preload("res://scripts/card_tooltip.gd")
 const SpaceCanvas = preload("res://scripts/space_canvas.gd")
 const OrganCircuit = preload("res://scripts/organ_circuit.gd")
 const OrganVisuals = preload("res://scripts/organ_visuals.gd")
@@ -56,6 +58,7 @@ var notice := ""
 var menu := true
 var choosing_character := false
 var selected_character := "cartographer"
+var expedition_seed := ""
 var ship_atlas: Texture2D
 var card_atlas: Texture2D
 var player_hd: Texture2D
@@ -214,8 +217,9 @@ func _text(text: String, font_size: int = 17, color: Color = MUTED) -> Label:
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return label
 
-func _button(text: String, callback: Callable, tip: String = "", accent: bool = false) -> Button:
-	var button := Button.new()
+func _button(text: String, callback: Callable, tip: String = "", accent: bool = false, card_instance: Dictionary = {}) -> Button:
+	var button: Button = Button.new() if card_instance.is_empty() else CardTooltip.new()
+	if not card_instance.is_empty(): button.explanation = _card_tip(card_instance, true)
 	button.text = text
 	button.tooltip_text = tip
 	button.custom_minimum_size.y = 44
@@ -228,6 +232,47 @@ func _button(text: String, callback: Callable, tip: String = "", accent: bool = 
 	if accent:
 		button.add_theme_stylebox_override("normal", _style(Color("254840"), TEAL, 10, 12))
 		button.add_theme_color_override("font_color", TEAL)
+	return button
+
+func _card_tip(instance: Dictionary, rich: bool = false) -> String:
+	var names := Keywords.for_card(game.effective_card(instance))
+	if game.retained(instance) and not names.has("Retain"): names.append("Retain")
+	var duration := _retain_detail(instance)
+	if not instance.get("evolution","") in ["", "legacy"]:
+		duration="Evolution: %s [%s]\n%s" % [game.effective_card(instance).name, instance.evolution, duration]
+	var alternatives := ""
+	if int(instance.get("level", 0)) == 0:
+		for branch in game.evolution_choices(instance):
+			var evolved := {"id":instance.id, "level":1, "evolution":branch.id}
+			alternatives += "\n\nEvolution option: %s · %d CP\n%s" % [branch.name, game.effective_card(evolved).cost, game.card_text(evolved)]
+	return (duration + "\n\n" if not duration.is_empty() else "") + game.card_text(instance) + "\n\n" + _draft_hint(instance.id) + alternatives + "\n\n" + Keywords.describe(names, rich)
+
+func _draft_hint(id: String) -> String:
+	var card: Dictionary = game.card(id)
+	return "%s · Primary: %s\nBase roles: %s" % [["Common", "Uncommon", "Rare"][int(card.rarity)], card.primary_role, ", ".join(card.roles)]
+
+func _retain_marker(instance: Dictionary) -> String:
+	if game.effective_card(instance).get("retain", false): return "[R] EVERY TURN"
+	if instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", []): return "[R1] NEXT DISCARD"
+	return ""
+
+func _retain_detail(instance: Dictionary) -> String:
+	var intrinsic: bool = game.effective_card(instance).get("retain", false)
+	var temporary: bool = instance.get("uid", -1) in game.run.get("battle", {}).get("temporary_retain", [])
+	if intrinsic:
+		return "Retained every end turn until played." + ("\nTemporary retain also expires at the next discard or when played; intrinsic Retain remains." if temporary else "")
+	return "Retained through next discard only; expires when played." if temporary else ""
+
+func _card_heading(instance: Dictionary, font_size: int) -> Button:
+	var button := _button("", func(): pass, _card_tip(instance), false, instance)
+	button.custom_minimum_size.y = 48
+	button.set_meta("focus_key", "inspect-" + str(instance.id))
+	for state in ["normal", "hover", "pressed"]:
+		button.add_theme_stylebox_override(state, _style(Color.TRANSPARENT, Color.TRANSPARENT, 0, 0, 0))
+	var title := _card_title(str(game.effective_card(instance).name) + (" +" if int(instance.get("level", 0)) > 0 else ""), font_size)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	button.add_child(title)
 	return button
 
 func _column(parent: Node, expand: bool = true) -> VBoxContainer:
@@ -351,10 +396,11 @@ func _render() -> void:
 		banner.z_index = 80
 		banner.add_theme_stylebox_override("normal", _style(Color(0.03, 0.06, 0.10, 0.95), CORAL, 8, 10))
 	_soundtrack()
+	if not menu and game.selection_pending(): _selection_chooser()
 	_focus_first.call_deferred()
 
 func _focus_first() -> void:
-	if not is_instance_valid(page):
+	if not is_instance_valid(page) or is_instance_valid(overlay):
 		return
 	var buttons := page.find_children("*", "Button", true, false)
 	if not menu and game.run.get("mode", "") == "map":
@@ -408,6 +454,7 @@ func _title() -> void:
 	_screen_text("A nervous system built for the unknown.", Rect2(922, 790, 420, 50), 20, CREAM)
 
 func _request_new() -> void:
+	expedition_seed = ""
 	choosing_character = true
 	menu = true
 	selected_character = str(game.run.get("character", selected_character))
@@ -415,6 +462,10 @@ func _request_new() -> void:
 	_render()
 
 func _begin_character_run() -> void:
+	if not expedition_seed.is_empty() and not Game.SeedEngine.valid(Game.SeedEngine.canonical(expedition_seed)):
+		notice = "Use exactly 6 letters or digits (A–Z, 0–9), or leave the seed blank."
+		_render()
+		return
 	if game.run_exists() or (game.run.is_empty() and not game.save_error.is_empty()):
 		var body := _modal("Replace this expedition?")
 		body.add_child(_text("Begin a new voyage aboard %s. The active expedition will be replaced and its current progress cannot be resumed." % str(game.character(selected_character).name), 19, CREAM))
@@ -427,11 +478,22 @@ func _begin_character_run() -> void:
 func _new_run() -> void:
 	choosing_character = false
 	menu = false
-	_perform(func(): return game.new_run(0, selected_character))
+	_perform(func(): return game.new_run(expedition_seed, selected_character))
 
 func _character_selection() -> void:
 	_reading_plate(Rect2(44, 118, 1352, 84))
 	_screen_text("Select your ship", Rect2(60, 130, 1320, 66), 43, CREAM)
+	_screen_text("Seed (optional)", Rect2(600, 137, 180, 29), 18, CREAM)
+	var seed_input := LineEdit.new()
+	seed_input.name = "ExpeditionSeed"
+	seed_input.placeholder_text = "e.g. A1B2C3"
+	seed_input.text = expedition_seed
+	seed_input.max_length = 6
+	seed_input.add_theme_font_size_override("font_size", 20)
+	seed_input.tooltip_text = "Blank: normal expedition. Enter 6 letters/digits: reproducible practice, with no durable progression or unlocks. Use the same ship and game version to retry tactics."
+	seed_input.text_changed.connect(func(value: String): expedition_seed = value)
+	_at(seed_input, Rect2(786, 132, 190, 40))
+	_screen_text("Entered seed = practice · no progression or unlocks", Rect2(600, 176, 760, 26), 16, GOLD)
 	var characters: Array = game.catalog.get("characters", [])
 	for i in range(characters.size()):
 		var character: Dictionary = characters[i]
@@ -589,11 +651,15 @@ func _combat() -> void:
 	var maximum := int(battle.get("max_command_points", 3))
 	var points_label := _screen_text("COMMAND POINTS  %d / %d" % [points, maximum], Rect2(430, 95, 345, 32), 20, GOLD if points > 0 else CORAL)
 	points_label.name = "CommandPoints"
-	_screen_text("TURN %d   WARD %d   DRAW %d   DISCARD %d" % [battle.turn, battle.ward, battle.draw.size(), battle.discard.size()], Rect2(800, 96, 600, 32), 18, TEAL)
+	var counters := _screen_text("TURN %d   WARD %d   DRAW %d   DISCARD %d" % [battle.turn, battle.ward, battle.draw.size(), battle.discard.size()], Rect2(800, 96, 600, 32), 18, TEAL)
+	counters.name = "CombatCounters"
+	counters.set_meta("turn", battle.turn)
+	counters.set_meta("ward", battle.ward)
 	if points == 0:
-		_screen_text("NO COMMAND POINTS LEFT  ·  End turn [E] to refill to %d. You can still inspect every card." % maximum, Rect2(45, 133, 1360, 32), 19, CORAL)
+		_screen_text("NO POINTS LEFT · End turn [E] to refill. Cards remain inspectable.", Rect2(45, 133, 740, 32), 17, CORAL)
 	elif int(game.run.get("tutorial_step", 0)) < 4:
-		_screen_text("FIRST CONTACT  ·  %d points each turn · Choose a card → route connected organs [Q W E R T Y] → Space" % maximum, Rect2(45, 133, 1360, 32), 19, GOLD)
+		_screen_text("Choose a card → route connected organs [Q W E R T Y] → Space", Rect2(45, 133, 740, 32), 17, GOLD)
+	_last_command()
 	var anatomy := Panel.new()
 	anatomy.name = "LivingCircuit"
 	anatomy.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -620,14 +686,70 @@ func _combat() -> void:
 	_reading_plate(Rect2(40, 607, 1360, 22))
 	var hints := _screen_text("1–5 select   Q W E R T Y route   Space confirm   E end turn (Shift+E while routing)   Esc cancel", Rect2(50, 605, 1340, 23), 16, CREAM)
 	hints.name = "ShortcutHints"
+	_card_piles()
 	_hand()
 
+func _card_piles() -> void:
+	for pile in ["draw", "discard", "exhausted", "installed"]:
+		var button := _button("%s\n%d" % [pile.to_upper(), game.run.battle[pile].size()], func():
+			var body := _modal(pile.capitalize() + " pile")
+			if pile == "installed": body.add_child(_text("Installed sources — active counters below; untyped installs remain dormant."))
+			if pile == "exhausted": body.add_child(_text("Out of circulation until the next combat. Still in your expedition deck."))
+			var cards: Array = game.run.battle[pile].duplicate(true)
+			# Inspect composition, never reveal the shuffled draw order.
+			cards.sort_custom(func(a, b): return str(game.effective_card(a).name) < str(game.effective_card(b).name))
+			if cards.is_empty(): body.add_child(_text("This pile is empty."))
+			else: _deck_grid(body, false, cards), "Inspect pile contents. Draw order is hidden.")
+		button.name = pile.capitalize() + "Pile"
+		button.add_theme_font_size_override("font_size", 14 if pile in ["exhausted", "installed"] else 20)
+		button.add_theme_font_size_override("font_size", 17)
+		button.add_theme_stylebox_override("normal", _style(Color("122b36"), TEAL if pile == "draw" else GOLD, 12, 4, 2))
+		_at(button, Rect2(40 if pile in ["draw", "exhausted"] else 1300, 716 if pile in ["draw", "discard"] else 792, 100, 68))
+
+func _last_command_tip() -> String:
+	var battle: Dictionary = game.run.battle
+	var memory: Dictionary = battle.get("last_command", {})
+	var base: Dictionary = memory.get("base", battle.get("last_payload", {}))
+	var tip := "Previous command: none yet." if memory.is_empty() else _card_tip(memory.card)
+	if memory.is_empty() and not base.is_empty(): tip = "Previous card identity was not stored in this older save."
+	if not base.is_empty():
+		tip += "\nBase before organs and powerups: Damage %d · Repair %d · Disruption %d." % [int(base.get("damage", 0)), int(base.get("heal", 0)), int(base.get("disrupt", 0))]
+		tip += "\nRewrite adds half these base values, rounded down: Damage %d · Repair %d · Disruption %d (costs 2 Trace)." % [int(base.get("damage", 0)) / 2, int(base.get("heal", 0)) / 2, int(base.get("disrupt", 0)) / 2]
+		tip += "\nBase includes the card's upgrade, but excludes organ, resource and powerup bonuses."
+	if not memory.is_empty():
+		tip += "\nResolved: %d total damage · %d hull repaired · %d disruption applied." % [memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
+		tip += "\nKind: %s. The Choir compares this kind with the next command." % str(memory.kind).capitalize()
+	return tip
+
+func _last_command() -> void:
+	var battle: Dictionary = game.run.battle
+	var memory: Dictionary = battle.get("last_command", {})
+	var text := "LAST COMMAND · None yet"
+	if not memory.is_empty():
+		var instance: Dictionary = memory.card
+		text = "LAST COMMAND · %s%s · %s\nDealt %d · Repaired %d · Disruption %d" % [game.effective_card(instance).name, " +" if int(instance.level) > 0 else "", str(memory.kind).capitalize(), memory.resolved.damage, memory.resolved.heal, memory.resolved.disrupt]
+	elif not battle.get("last_payload", {}).is_empty() or not str(battle.get("last_command_kind", "")).is_empty():
+		text = "LAST COMMAND · Older save · Inspect stored memory"
+	var inspect := _button(text, func():
+		var body := _modal("Last command")
+		if not memory.is_empty():
+			var face := PanelContainer.new()
+			face.custom_minimum_size = Vector2(260, 350)
+			body.add_child(face)
+			_card_face(face, memory.card, true, true)
+		body.add_child(_text(_last_command_tip(), 17, CREAM)), _last_command_tip())
+	inspect.name = "LastCommand"
+	inspect.custom_minimum_size.y = 36
+	inspect.add_theme_font_size_override("font_size", 14)
+	for state in ["normal", "hover", "pressed"]:
+		inspect.add_theme_stylebox_override(state, _style(Color("10202d"), TEAL if state != "normal" else Color("344a5e"), 8, 1))
+	_at(inspect, Rect2(800, 129, 590, 36))
+
 func _ship_cutaway(battle: Dictionary) -> void:
-	player_art = _art(0, 344)
+	player_art = _float_art(0, Rect2(38, 184, 744, 344), 14.0, 1.0, 1.6)
 	player_art.name = "PlayerShip"
 	player_art.stretch_mode = TextureRect.STRETCH_SCALE
 	player_art.modulate = Color.WHITE
-	_at(player_art, Rect2(38, 184, 744, 344))
 	var hull := ShipAnatomy.new()
 	var ship_id := str(game.run.get("character", "cartographer"))
 	hull.tint = Color("bcb5ff") if ship_id == "hollow_choir" else GOLD if ship_id == "palimpsest" else TEAL
@@ -640,7 +762,7 @@ func _ship_cutaway(battle: Dictionary) -> void:
 	inspector.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inspector.z_index = 2
 	inspector.add_theme_stylebox_override("panel", _style(Color("081722"), Color.TRANSPARENT, 20, 0))
-	_at(inspector, Rect2(326, 332, 210, 66))
+	_at(inspector, Rect2(ShipAnatomy.ORIGIN + ShipAnatomy.INSPECTOR_RECT.position, ShipAnatomy.INSPECTOR_RECT.size))
 	anatomy_readout = _screen_text(resource, Rect2(10, 4, 190, 62), 14, TEAL, inspector)
 	_reading_plate(Rect2(42, 505, 742, 28))
 	var label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 509, 150, 23), 16, CREAM)
@@ -661,7 +783,7 @@ func _ship_console(battle: Dictionary) -> void:
 		resource_label.name = "CharacterResource"
 	else:
 		_screen_text("Living circuit · 6 organs\nFilled cells show strain", Rect2(48, 488, 266, 43), 14, MUTED)
-	player_art = _float_art(0, PLAYER_COMBAT_RECT)
+	player_art = _float_art(0, PLAYER_COMBAT_RECT, 16.0, 1.5, 1.5)
 	player_art.name = "PlayerShip"
 	_screen_text(str(game.character().name), Rect2(48, 438, 266, 29), 22, TEAL)
 	var player_hull_label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 466, 146, 23), 16, CREAM)
@@ -692,10 +814,12 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 	lines.tint = Color("bcb5ff") if ship_id == "hollow_choir" else GOLD if ship_id == "palimpsest" else TEAL
 	_at(lines, Rect2(Vector2.ZERO, ShipAnatomy.GRAPH_SIZE if anatomy_view else OrganCircuit.GRAPH_SIZE), graph)
 	var forecast: Array = []
+	var step_forecast := {}
 	if selected_card >= 0:
 		var preview: Dictionary = game.preview_card(selected_card, route, target)
 		if preview.get("ok", false):
 			forecast = preview.get("strain", [])
+		for step in preview.get("route_steps", []): step_forecast[int(step.organ)] = step
 	for i in range(6):
 		var organ: Dictionary = game.organ(i)
 		var strain: int = battle.strain[i]
@@ -709,14 +833,20 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var readout: Array = OrganVisuals.READOUTS[str(organ.id)]
 		var accent := Color(str(readout[2]))
 		var tip: String = str(organ.name) + " [" + ORGAN_LETTERS[i] + "]\n" + str(organ.description)
-		tip += "\nStrain %d / %d. An organ's accumulated load; at capacity it cannot be used. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
-		tip += _keyword_definitions(str(organ.description))
+		tip += "\n\n" + Keywords.describe(Keywords.for_organ(str(organ.id)))
+		var step: Dictionary = step_forecast.get(i, {})
+		var effect_status := str(step.get("status", "unselected"))
+		if not step.is_empty():
+			tip += "\nPreview: %s · %s\nTrace %d → %d · Resonance %d → %d" % [effect_status.capitalize(), step.reason, step.trace_before, step.trace_after, step.resonance_before, step.resonance_after]
+			tip += "\nDamage %d → %d · Repair %d → %d · Disruption %d → %d" % [step.payload_before[0], step.payload_after[0], step.payload_before[1], step.payload_after[1], step.payload_before[2], step.payload_after[2]]
+		tip += "\nStrain %d / %d. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
 		tip += "\n" + ("Click to undo this organ and later steps." if selected else "Available next organ." if available else reason if selected_card >= 0 else "Choose a card to begin routing.")
 		var button := _button("", func(): _select_organ(i), tip)
 		button.name = "Organ%d" % i
 		button.set_meta("focus_key", "organ%d" % i)
 		button.set_meta("route_available", available)
 		button.set_meta("route_step", route.find(i) + 1)
+		button.set_meta("effect_status", effect_status)
 		button.mouse_entered.connect(func():
 			lines.hovered = i
 			_anatomy_inspect(i)
@@ -734,12 +864,17 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 			_anatomy_inspect(-1)
 			lines.queue_redraw())
 		var border := GOLD if selected else CORAL if saturated else TEAL if available else Color("425565")
+		if selected and not step.is_empty(): border = TEAL if effect_status == "active" else GOLD if effect_status == "fallback" else CORAL
 		button.add_theme_stylebox_override("normal", _style(Color("21332f") if selected else Color("11232c"), border, 14, 0, 2 if selected or available else 1))
 		button.add_theme_stylebox_override("hover", _style(Color("203642"), GOLD, 14, 0, 2))
 		button.add_theme_stylebox_override("pressed", _style(Color("284039"), GOLD, 14, 0, 2))
 		_at(button, Rect2(ShipAnatomy.POSITIONS[i] if anatomy_view else OrganCircuit.POSITIONS[i], ShipAnatomy.NODE_SIZE if anatomy_view else OrganCircuit.NODE_SIZE), graph)
 		if anatomy_view:
 			_anatomy_organ(button, i, organ, readout, border, strain, int(forecast[i]) if forecast.size() == 6 else strain, selected, available)
+			if not step.is_empty():
+				var effect_label: Label = button.find_child("OrganEffect", true, false)
+				effect_label.text = effect_status.to_upper()
+				effect_label.add_theme_color_override("font_color", border)
 			continue
 		var art := TextureRect.new()
 		art.name = "OrganSpecimen"
@@ -755,7 +890,7 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var title := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 5, 109, 24), 16, CREAM, button)
 		title.name = "OrganName"
 		_screen_text(str(readout[0]), Rect2(82, 27, 134, 23), 16, accent, button)
-		var condition := _screen_text(str(readout[1]), Rect2(82, 48, 134, 35), 14, MUTED, button)
+		var condition := _screen_text(effect_status.capitalize() if not step.is_empty() else str(readout[1]), Rect2(82, 48, 134, 35), 14, border if not step.is_empty() else MUTED, button)
 		condition.name = "OrganCondition"
 		condition.max_lines_visible = 2
 		if selected:
@@ -807,7 +942,8 @@ func _anatomy_organ(button: Button, index: int, organ: Dictionary, readout: Arra
 	_at(caption, Rect2(78, 12, 112, 71), button)
 	var name_label := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 14, 106, 23), 16, CREAM, button)
 	name_label.name = "OrganName"
-	_screen_text(str(readout[0]), Rect2(84, 37, 106, 22), 14, Color(str(readout[2])), button)
+	var effect_label := _screen_text(str(readout[0]), Rect2(84, 37, 106, 22), 14, Color(str(readout[2])), button)
+	effect_label.name = "OrganEffect"
 	var value := "%d/%d strain" % [strain, game.run.battle.capacity]
 	if strain != projected: value = "%d→%d/%d" % [strain, projected, game.run.battle.capacity]
 	var strain_label := _screen_text(value, Rect2(84, 60, 106, 21), 14, GOLD if strain != projected else MUTED, button)
@@ -849,6 +985,7 @@ func _preview() -> void:
 	strip.add_theme_stylebox_override("panel", _style(Color(0.025, 0.07, 0.11, 0.92), Color("577b83"), 12, 0))
 	_at(strip, Rect2(40, 536, 1360, 72))
 	var valid := false
+	var needs_choices := false
 	var heading := "SELECT A COMMAND · TRACE A ROUTE"
 	var summary := "Lit organs connect. Filled cells show strain; gold outlines preview the change."
 	var full_summary := summary
@@ -857,19 +994,22 @@ func _preview() -> void:
 		var names: Array[String] = []
 		for index in route:
 			names.append(str(game.organ(index).name))
-		heading = str(game.card(instance.id).name) + "  /  " + (" → ".join(names) if not names.is_empty() else "Choose an organ")
+		heading = str(game.effective_card(instance).name) + "  /  " + (" → ".join(names) if not names.is_empty() else "Choose an organ")
 		var result: Dictionary = game.preview_card(selected_card, route, target)
 		valid = result.get("ok", false)
+		needs_choices = result.get("selection_required",false) and not route.is_empty()
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
-		summary = "Damage %d · Hull %+d · Disruption %d · Command points %d → %d" % [int(result.get("damage", 0)), int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))] if valid else full_summary
+		full_summary += _resource_flow_text(result)
+		summary = _command_preview_summary(result) if valid else full_summary
 	_screen_text(heading, Rect2(58, 545, 700, 26), 19, TEAL)
 	var detail := _screen_text(summary.replace("\n", " · "), Rect2(58, 575, 700, 27), 17, CREAM if selected_card < 0 or valid else CORAL)
+	detail.name = "RoutePreviewSummary"
 	detail.max_lines_visible = 1
 	detail.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	detail.tooltip_text = full_summary + _keyword_definitions(full_summary)
 	detail.mouse_filter = Control.MOUSE_FILTER_STOP
-	var confirm := _button("Confirm [Space]", _confirm, full_summary, true)
-	confirm.disabled = not valid
+	var confirm := _button("Choose cards [Space]" if needs_choices else "Confirm [Space]", _confirm, full_summary, true)
+	confirm.disabled = not (valid or needs_choices)
 	_at(confirm, Rect2(790, 549, 184, 50))
 	_at(_button("Undo", func():
 		if not route.is_empty(): route.pop_back()
@@ -879,14 +1019,42 @@ func _preview() -> void:
 		_render(), "Clear command and route. [Esc]"), Rect2(1084, 549, 100, 50))
 	_at(_button("End turn [E]", _end_turn, "Enemies act, organs cool and a new hand arrives. Shift+E while routing."), Rect2(1194, 549, 190, 50))
 
+func _damage_breakdown(result: Dictionary) -> Dictionary:
+	var breakdown := {"primary":0, "secondary":[]}
+	for event in result.get("presentation", []):
+		if event.get("kind", "") != "damage": continue
+		if event.get("split", false):
+			breakdown.secondary.append({"target_index":int(event.target_index), "amount":int(event.amount)})
+		else: breakdown.primary += int(event.amount)
+	return breakdown
+
+func _command_preview_summary(result: Dictionary) -> String:
+	var breakdown := _damage_breakdown(result)
+	var text := "Damage %d" % int(breakdown.primary)
+	if int(result.get("conditional_damage",0))>0: text += " · Bonus +%d"%int(result.conditional_damage)
+	if not breakdown.secondary.is_empty():
+		var amounts: Array[String] = []
+		for hit in breakdown.secondary: amounts.append(str(int(hit.amount)))
+		var uniform := amounts.all(func(amount): return amount == amounts[0])
+		var count := amounts.size()
+		var values := amounts[0] + (" each" if count > 1 else "") if uniform else "/".join(amounts)
+		text += " · Split %s (%d %s)" % [values, count, "foe" if count == 1 else "foes"]
+	if result.has("flat_ward_requested"):
+		text += " · Ward %d/%d · Cool %d" % [result.flat_ward_applied,result.flat_ward_requested,result.command_cooling]
+	for event in result.get("presentation",[]):
+		if event.kind=="ward" and event.has("source_uid"): text += " · Install UID %d Ward +%d"%[event.source_uid,event.amount]
+	text += " · Hull %+d · Disrupt %d · CP %d→%d" % [int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))]
+	return text
+
 func _select_card(index: int) -> void:
-	if presentation_busy(): return
-	var card: Dictionary = game.card(game.run.battle.hand[index].id)
+	if presentation_busy() or game.selection_pending(): return
+	var card: Dictionary = game.effective_card(game.run.battle.hand[index])
 	var cost := int(card.get("cost", 1))
 	var remaining := int(game.run.battle.get("command_points", 3))
 	if cost > remaining:
 		notice = "This command costs %d command points; %d remain. End turn to refill to %d." % [cost, remaining, int(game.run.battle.get("max_command_points", 3))]
 		_render()
+		if index < hand_buttons.size(): hand_buttons[index]._show_focus_tip.call_deferred()
 		return
 	selected_card = index
 	route.clear()
@@ -894,7 +1062,7 @@ func _select_card(index: int) -> void:
 	_render()
 
 func _select_organ(index: int) -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	if selected_card < 0:
 		notice = "Choose a command from your hand first."
 	elif route.has(index):
@@ -913,33 +1081,92 @@ func _select_organ(index: int) -> void:
 	_render()
 
 func _select_target(index: int) -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	target = index
 	notice = ""
 	_render()
 
 func _confirm() -> void:
-	if presentation_busy(): return
+	if presentation_busy() or game.selection_pending(): return
 	if selected_card < 0:
 		return
 	var preview: Dictionary = game.preview_card(selected_card, route, target)
+	if preview.get("selection_required",false):
+		var result: Dictionary = game.begin_selection(game.run.battle.hand[selected_card].uid,route,target,game.run.battle.enemies[target].duplicate(true))
+		notice = "" if result.ok else str(result.error)
+		_render()
+		return
 	if not preview.get("ok", false):
 		notice = str(preview.get("error", "Choose a legal route."))
 		_render()
 		return
 	_perform(func(): return game.play_card(selected_card, route, target), "command")
 
+func _selection_chooser() -> void:
+	var body := _modal("Choose known cards · nothing spent yet")
+	var view: Dictionary = game.selection_view()
+	if not view.ok:
+		body.add_child(_text(str(view.error),18,CORAL))
+	else:
+		var p: Dictionary = view.context
+		var source: Dictionary = game.run.battle.hand[game.Selections.index(game.run.battle.hand,p.source_uid)]
+		body.add_child(_label("%s · UID %d · %d CP on confirm"%[p.definition.name,p.source_uid,p.definition.cost],22))
+		body.add_child(_text(game.card_text(source),18,CREAM))
+		body.add_child(_text("Ordered route: %s · Target: %s\nChoices: %s"%[str(p.route),p.target_guard.name,str(p.choices)],17))
+		if view.complete:
+			var preview: Dictionary = game.preview_selection()
+			body.add_child(_text(_command_preview_summary(preview) if preview.ok else str(preview.error),18,CREAM))
+			var commit := _button("Confirm · spend %d CP"%p.definition.cost,func():
+				selected_card=game.Selections.index(game.run.battle.hand,p.source_uid)
+				route=p.route.duplicate()
+				target=int(p.target_index)
+				_close_overlay()
+				_perform(func(): return game.confirm_selection(),"command"),"Apply all selected effects together.",true)
+			commit.disabled=not preview.ok
+			body.add_child(commit)
+			_focus_control.call_deferred(commit)
+		else:
+			body.add_child(_label("Choice %d: %s"%[view.step+1,view.operation.kind.replace("_"," ")],20))
+			var first: Button = null
+			for uid in view.eligible:
+				var label := "None (authored optional choice)"
+				var detail := "Skip only this authored optional operation."
+				if uid!=null:
+					var zone: String = "discard" if view.operation.kind=="return_discard" else "hand"
+					var instance: Dictionary = game.run.battle[zone][game.Selections.index(game.run.battle[zone],uid)]
+					label="UID %d · %s"%[uid,game.effective_card(instance).name]
+					detail=game.card_text(instance)
+				var choice := _button(label,func():
+					var result: Dictionary = game.select_uid(uid)
+					notice="" if result.ok else str(result.error)
+					_render())
+				body.add_child(choice)
+				body.add_child(_text(detail,16))
+				if first==null: first=choice
+			if first!=null: _focus_control.call_deferred(first)
+	body.add_child(_button("Cancel · spend nothing [Esc]",_cancel_choice))
+
+func _cancel_choice() -> void:
+	game.cancel_selection()
+	_clear_selection()
+	notice="Selection cancelled. No CP spent; no cards drawn."
+	_render()
+
+func _focus_control(control: Control) -> void:
+	if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
+
 func _end_turn() -> void:
 	if presentation_busy(): return
 	_perform(func(): return game.end_turn(), "enemy_phase")
 
 func _rewards() -> void:
-	_section("ENCOUNTER COMPLETE", "A signal worth keeping.", "Salvage recovered. Choose one discovery, or keep your deck lean and skip.")
+	_section("ENCOUNTER COMPLETE", "A signal worth keeping.")
+	_screen_text(game.Distribution.policy(game.run), Rect2(64, 216, 1312, 58), 17, TEAL)
 	var choices: Array = game.run.reward.get("choices", [])
 	var width := (1312.0 - 24 * (choices.size() - 1)) / maxf(1, choices.size())
 	for i in range(choices.size()):
 		var choice: Dictionary = choices[i]
-		var item: Dictionary = game.card(choice.id) if choice.kind == "card" else game.powerup(choice.id)
+		var item: Dictionary = game.effective_card({"id":choice.id}) if choice.kind == "card" else game.powerup(choice.id)
 		var box := _surface(Rect2(64 + i * (width + 24), 285, width, 500))
 		box.add_theme_constant_override("separation", 10)
 		box.add_child(_card_art({"id": choice.id, "level": 0}, 90 if choices.size() >= 4 else 130) if choice.kind == "card" else _art(int(item.get("art", 19)), 90 if choices.size() >= 4 else 130))
@@ -947,10 +1174,15 @@ func _rewards() -> void:
 		var item_name := _card_title(str(item.get("name", "Discovery")), 24)
 		item_name.max_lines_visible = 2
 		box.add_child(item_name)
+		if choice.kind == "card": box.add_child(_text(_draft_hint(choice.id), 16, TEAL))
 		var description := _text(game.card_text({"id": choice.id, "level": 0}) if choice.kind == "card" else str(item.get("description", "")), 18)
-		description.max_lines_visible = 8
+		description.max_lines_visible = 4 if choices.size() >= 5 else 5 if choices.size() >= 4 else 8
+		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		if choice.kind == "card":
+			description.tooltip_text = _card_tip({"id":choice.id,"level":0})
+			description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
-		box.add_child(_button("Take discovery", func(): _perform(func(): return game.choose_reward(i)), "Add this discovery to the expedition.", true))
+		box.add_child(_button("Take discovery", func(): _perform(func(): return game.choose_reward(i)), "Add this discovery to the expedition.", true, {"id":choice.id,"level":0} if choice.kind == "card" else {}))
 	_at(_button("Skip reward →", func(): _perform(func(): return game.choose_reward(-1))), Rect2(1080, 814, 296, 52))
 
 func _event() -> void:
@@ -973,29 +1205,34 @@ func _event() -> void:
 	_at(_button("Leave the signal behind →", func(): _perform(func(): return game.leave_location())), Rect2(1000, 814, 376, 52))
 
 func _shop() -> void:
-	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.", "Purchases last for this expedition. Upgrades and removals let you choose a command before paying.")
+	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.")
+	var policy := "Active reward generation v1 · distinct immediate-use + enabler/scaling stock when feasible; otherwise prefer immediate-use, then pool fill.\nBase prices: common 30 / uncommon 40 / rare 55; Bright Canon 40 (audit floor). Stock never adapts to deck or hull."
+	if game.run.reward_generation == 0: policy = "Active reward generation v0 · legacy uniform stock and 35 / 43 base card prices. No pity.\nAll displayed prices already include your discount; services charge only on confirmation."
+	_screen_text(policy, Rect2(64, 216, 1312, 62), 17, TEAL)
 	var items: Array = game.run.shop.get("items", [])
 	for i in range(items.size()):
 		var item: Dictionary = items[i]
 		var data: Dictionary = {}
-		if item.kind == "card": data = game.card(item.id)
+		if item.kind == "card": data = game.effective_card({"id":item.id})
 		elif item.kind == "powerup": data = game.powerup(item.id)
 		var box := _surface(Rect2(64 + (i % 3) * 448, 292 + floori(i / 3.0) * 250, 416, 240))
 		box.add_theme_constant_override("separation", 4)
 		box.add_child(_card_title(str(data.get("name", "Remove a command" if item.kind == "remove" else "Upgrade a command")), 24))
 		var desc := game.card_text({"id": item.id, "level": 0}) if item.kind == "card" else str(data.get("description", "Choose one command from your deck."))
-		if item.kind == "card": box.add_child(_printed_stats({"id": item.id, "level": 0}, true))
+		if item.kind == "card":
+			box.add_child(_printed_stats({"id": item.id, "level": 0}, true))
+			box.add_child(_text(_draft_hint(item.id), 15, TEAL))
 		var description := _text(desc, 19)
 		description.max_lines_visible = 3
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		description.tooltip_text = desc
+		description.tooltip_text = _card_tip({"id":item.id,"level":0}) if item.kind == "card" else desc
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
 		var sold: bool = item.get("sold", false)
-		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i)), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost)
+		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i)), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost, {"id":item.id,"level":0} if item.kind == "card" else {})
 		button.disabled = sold or game.run.salvage < item.cost
 		box.add_child(button)
 	_at(_button("Return to the chart →", func(): _perform(func(): return game.leave_location())), Rect2(1040, 814, 336, 52))
@@ -1010,20 +1247,52 @@ func _recovery() -> void:
 	_screen_text("Restore 30 hull, up to your maximum.\nCurrent hull: %d / %d." % [game.run.hull, game.run.max_hull], Rect2(90, 674, 570, 82), 24, CREAM)
 	_at(_button("Repair +30 hull", func(): _perform(func(): return game.recover("repair")), "Repair and return to the chart.", true), Rect2(90, 778, 570, 54))
 	_screen_text("Refine a command", Rect2(780, 614, 570, 48), 34, GOLD)
-	_screen_text("Damage +3. Repair +2. Vent and disrupt +1.\nChoose the exact command to evolve.", Rect2(780, 674, 570, 82), 24, CREAM)
+	var authored=false
+	for instance in game.run.deck:
+		if int(instance.level)==0 and game.card(instance.id).has("evolutions"): authored=true
+	var evolution_hint="Choose a command, then one permanent branch.\nCompare payload, CP and timing before confirming." if authored else "Damage +3. Repair +2. Vent and disrupt +1.\nChoose the exact command to evolve."
+	_screen_text(evolution_hint, Rect2(780, 674, 570, 82), 24, CREAM)
 	_at(_button("Choose an upgrade", func(): _perform(func(): return game.recover("upgrade")), "Inspect commands before choosing.", true), Rect2(780, 778, 570, 54))
 	_at(_button("Leave without resting", func(): _perform(func(): return game.leave_location())), Rect2(550, 845, 340, 44))
 
+func _choose_modification(index: int) -> void:
+	var instance: Dictionary = game.run.deck[index]
+	if game.run.modify_kind!="upgrade" or game.evolution_choices(instance).is_empty():
+		_perform(func(): return game.modify_card(index))
+		return
+	var uid: int = instance.uid
+	var body := _modal("Choose one evolution · UID %d" % uid)
+	var price := "Recovery evolution · no salvage cost"
+	if game.run.modify_return=="shop": price="Cost: %d salvage · charged only on confirm" % game.run.shop.items[int(game.run.modify_shop_index)].cost
+	body.add_child(_text(price, 20, GOLD))
+	body.add_child(_card_heading(instance, 22))
+	body.add_child(_printed_stats(instance, true))
+	body.add_child(_text("BEFORE\n" + game.card_text(instance), 19))
+	var options := _row(body)
+	for choice in game.evolution_choices(instance):
+		var after := instance.duplicate(true)
+		after.level=1
+		after.evolution=choice.id
+		var box := _panel(options)
+		box.add_child(_card_heading(after, 22))
+		box.add_child(_text("Branch: " + choice.id, 17, GOLD))
+		box.add_child(_printed_stats(after, true))
+		box.add_child(_text("AFTER\n" + game.card_text(after), 19))
+		box.add_child(_button("Confirm " + choice.name, func():
+			_close_overlay()
+			_perform(func(): return game.evolve_card(uid,choice.id))))
+	body.add_child(_button("Cancel · back to deck chooser", _close_overlay))
+
 func _modify() -> void:
 	var remove: bool = game.run.get("modify_kind", "upgrade") == "remove"
-	_section("DECK WORKSHOP", "Release a command." if remove else "Make a command your own.", "Choose the exact copy below. " + ("It will leave your deck." if remove else "Evolved commands gain stronger effects."))
+	_section("DECK WORKSHOP", "Release a command." if remove else "Make a command your own.", "Choose the exact copy below. " + ("It will leave your deck." if remove else "Compare available evolutions before committing this copy."))
 	var pages := maxi(1, ceili(game.run.deck.size() / 6.0))
 	modify_page = clampi(modify_page, 0, pages - 1)
 	for slot in range(6):
 		var i := modify_page * 6 + slot
 		if i >= game.run.deck.size(): break
 		var instance: Dictionary = game.run.deck[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var box := _surface(Rect2(64 + (slot % 3) * 448, 292 + floori(slot / 3.0) * 246, 416, 228))
 		box.add_theme_constant_override("separation", 7)
 		box.add_child(_card_title(str(card.name) + (" +" if instance.get("level", 0) > 0 else ""), 26))
@@ -1031,13 +1300,13 @@ func _modify() -> void:
 		var description := _text(game.card_text(instance), 19)
 		description.max_lines_visible = 2
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		description.tooltip_text = game.card_text(instance)
+		description.tooltip_text = _card_tip(instance)
 		description.mouse_filter = Control.MOUSE_FILTER_STOP
 		box.add_child(description)
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
-		var button := _button("Remove" if remove else "Upgrade", func(): _perform(func(): return game.modify_card(i)), "Select this copy.", true)
+		var button := _button("Remove" if remove else "Choose evolution" if game.card(instance.id).has("evolutions") else "Upgrade", func(): _choose_modification(i), "Select this copy.", true)
 		button.disabled = not remove and instance.get("level", 0) > 0
 		box.add_child(button)
 	_at(_button("Cancel selection", func(): _perform(func(): return game.cancel_modify())), Rect2(64, 814, 270, 52))
@@ -1074,13 +1343,23 @@ func _ending() -> void:
 	_screen_text("VICTORY" if won else "SHIP LOST", Rect2(175, 733, 440, 65), 42, TEAL if won else CORAL)
 	_reading_plate(Rect2(758, 270, 610, 444))
 	_screen_text("EXPEDITION RECORD", Rect2(780, 282, 560, 40), 20, GOLD)
-	_screen_text("Region %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
-	_screen_text("Discovery tier %d / 3. New possibilities; the same starting strength." % game.profile.get("unlocks", 0), Rect2(780, 622, 560, 75), 22, TEAL)
+	var record := _screen_text("Region %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
+	record.name = "ExpeditionRecord"
+	_screen_text("Seeded practice · no durable progression or unlocks." if game.run.get("seeded", false) else "Discovery tier %d / 3. New possibilities; the same starting strength." % game.profile.get("unlocks", 0), Rect2(780, 622, 560, 75), 22, TEAL)
+	if game.run.seed is String:
+		_at(_button("Retry seed · " + str(game.run.seed), _retry_seed, "Restart with the same ship and seed. Practice runs do not grant progression."), Rect2(780, 812, 560, 52))
 	_at(_button("New expedition", _request_new, "Begin again.", true), Rect2(780, 740, 270, 56))
 	_at(_button("Return to title", func():
 		menu = true
 		_clear_selection()
 		_render()), Rect2(1070, 740, 270, 56))
+
+func _retry_seed() -> void:
+	if not game.run.get("seed") is String: return
+	expedition_seed = str(game.run.seed)
+	selected_character = str(game.run.character)
+	_clear_selection()
+	_new_run()
 
 func _perform(action: Callable, action_kind: String = "") -> void:
 	if presentation_busy(): return
@@ -1121,6 +1400,8 @@ func _clear_selection() -> void:
 
 func _modal(title: String) -> VBoxContainer:
 	_close_overlay()
+	for button in page.find_children("*", "Button", true, false):
+		if button is CardTooltip: button._hide_focus_tip()
 	page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 	overlay = Control.new()
 	overlay.set_meta("mcp_title", title)
@@ -1143,7 +1424,9 @@ func _modal(title: String) -> VBoxContainer:
 	var heading := _row(stack)
 	heading.add_child(_label(title, 29))
 	_spacer(heading)
-	var close := _button("Close  [Esc]", _close_overlay)
+	var close := _button("Cancel  [Esc]" if game.selection_pending() else "Close  [Esc]", func():
+		if game.selection_pending(): _cancel_choice()
+		else: _close_overlay())
 	heading.add_child(close)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(0, minf(510, get_viewport_rect().size.y - 190))
@@ -1152,10 +1435,6 @@ func _modal(title: String) -> VBoxContainer:
 	var body := _column(scroll)
 	_focus_control.call_deferred(close)
 	return body
-
-func _focus_control(control: Control) -> void:
-	# Several validated local commands may replace a modal in the same frame.
-	if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
 
 func _close_overlay() -> void:
 	if is_instance_valid(overlay):
@@ -1275,6 +1554,7 @@ func _open_deck() -> void:
 	if game.run.is_empty():
 		body.add_child(_text("Begin an expedition to inspect your commands."))
 		return
+	body.add_child(_text(game.Distribution.policy(game.run), 17, TEAL))
 	body.add_child(_label("INSTALLED POWERUPS", 14, GOLD))
 	if game.run.powerups.is_empty():
 		body.add_child(_text("No powerups installed yet."))
@@ -1294,14 +1574,22 @@ func _deck_grid(parent: Node, selectable: bool, preview_instances: Array = []) -
 	var instances: Array = game.run.deck if preview_instances.is_empty() else preview_instances
 	for i in range(instances.size()):
 		var instance: Dictionary = instances[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var box := _panel(grid)
 		box.custom_minimum_size.x = 240
-		box.add_child(_card_title(str(card.name) + (" +" if instance.get("level", 0) > 0 else ""), 19))
+		box.add_child(_card_heading(instance, 19))
+		if game.retained(instance):
+			box.add_child(_text(_retain_marker(instance), 17, GOLD))
+			box.add_child(_text(_retain_detail(instance), 17, GOLD))
+		if card.has("install") and game.run.get("battle", {}).get("installed", []).any(func(source): return source.uid == instance.get("uid", -1)):
+			box.add_child(_text(Game.Engines.detail(game,instance), 17, GOLD))
 		box.add_child(_printed_stats(instance, true))
-		box.add_child(_text(game.card_text(instance), 17))
+		var description := _text(game.card_text(instance), 17)
+		description.tooltip_text = _card_tip(instance)
+		description.mouse_filter = Control.MOUSE_FILTER_STOP
+		box.add_child(description)
 		if selectable:
-			var button := _button("Remove" if game.run.modify_kind == "remove" else "Upgrade", func(): _perform(func(): return game.modify_card(i)), "Select this exact copy of the card.", true)
+			var button := _button("Remove" if game.run.modify_kind == "remove" else "Choose evolution" if game.card(instance.id).has("evolutions") else "Upgrade", func(): _choose_modification(i), "Select this exact copy of the card.", true)
 			button.disabled = game.run.modify_kind == "upgrade" and instance.get("level", 0) > 0
 			box.add_child(button)
 
@@ -1314,6 +1602,8 @@ func _open_history() -> void:
 		var box := _panel(body)
 		var outcome := "Victory" if record.get("won", false) else "Defeat"
 		box.add_child(_label(outcome + "  ·  Seed " + str(record.get("seed", "—")), 22, TEAL if outcome.to_lower() == "victory" else CORAL))
+		if record.get("seeded", false): box.add_child(_text("Seeded practice · no durable progression or unlocks", 17, GOLD))
+		box.add_child(_text("Reward generation v%d" % record.get("reward_generation", 0), 17, TEAL))
 		var seconds := int(record.get("seconds", 0))
 		box.add_child(_text(str(game.character(str(record.get("character", "cartographer"))).name), 18, TEAL))
 		box.add_child(_text("Region %d · %d turns · %d battles · %d:%02d elapsed" % [int(record.get("region", 0)) + 1, int(record.get("turns", 0)), int(record.get("battles", 0)), seconds / 60, seconds % 60], 17))
@@ -1321,7 +1611,7 @@ func _open_history() -> void:
 func _open_unlocks() -> void:
 	var body := _modal("Discoveries")
 	var tier := int(game.profile.get("unlocks", 0))
-	body.add_child(_text("Discovery tier %d / 3. Each concluded expedition reveals more possibilities. Your starting hull and strength stay the same." % tier, 20, CREAM))
+	body.add_child(_text("Discovery tier %d / 3. Ordinary expeditions reveal more possibilities; entered-seed practice does not grant progression. Your starting hull and strength stay the same." % tier, 20, CREAM))
 	for kind in ["cards", "powerups"]:
 		body.add_child(_label(kind.to_upper(), 14, GOLD))
 		for item in game.catalog.get(kind, []):
@@ -1344,7 +1634,9 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if event.keycode == KEY_ESCAPE:
-		if is_instance_valid(overlay):
+		if game.selection_pending():
+			_cancel_choice()
+		elif is_instance_valid(overlay):
 			_close_overlay()
 		elif choosing_character:
 			choosing_character = false
@@ -1401,7 +1693,7 @@ func _audio_setup() -> void:
 			var stream = load(path)
 			if stream != null:
 				sounds[cue] = stream
-	var combat_cues: Array[String] = ["repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw"]
+	var combat_cues: Array[String] = ["repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw", "discard"]
 	for family in ["kinetic", "plasma", "fracture", "sonic", "memory", "beam"]:
 		combat_cues.append(family + "_launch")
 		combat_cues.append(family + "_hit")
@@ -1436,17 +1728,21 @@ func _sound(cue: String) -> void:
 
 func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 	var kind := str(cue.get("kind", ""))
+	if kind in ["draw_card", "retrieve_card", "shuffle"]: kind = "draw"
+	if kind == "discard_card": kind = "discard"
 	var sound := ""
 	if kind in ["shot", "beam", "enemy_shot"]:
 		var family := str(cue.get("style", "kinetic"))
 		if kind == "beam" and family == "kinetic": family = "beam"
 		sound = family + ("_launch" if launch else "_hit")
 	elif not launch:
-		sound = {"repair":"repair", "shield":"shield", "disrupt":"disrupt", "vent":"vent", "sever":"sever", "link":"link", "phase":"phase", "ready":"ready", "draw":"draw", "mark":"disrupt", "incubate":"link"}.get(kind, "")
+		if kind == "discard": sound = "discard"
+		else:
+			sound = {"repair":"repair", "shield":"shield", "disrupt":"disrupt", "vent":"vent", "sever":"sever", "link":"link", "phase":"phase", "ready":"ready", "draw":"draw", "mark":"disrupt", "incubate":"link"}.get(kind, "")
 	if sound.is_empty() or not sounds.has("combat_" + sound) or combat_voices.is_empty(): return
 	var now := Time.get_ticks_msec()
 	# Six cooling organs / simultaneous split targets should not multiply loudness.
-	if now - int(combat_sound_times.get(sound, -1000)) < 65: return
+	if now - int(combat_sound_times.get(sound, -1000)) < (140 if sound in ["draw", "discard"] else 65): return
 	combat_sound_times[sound] = now
 	var voice := combat_voices[combat_voice_cursor % combat_voices.size()]
 	combat_voice_cursor += 1
@@ -1506,20 +1802,33 @@ func _layout_stage() -> void:
 	page.scale = Vector2(factor, factor)
 	page.position = (viewport_size - Vector2(1440, 900) * factor) * 0.5
 
-func _float_art(slot: int, rect: Rect2) -> TextureRect:
+func _float_art(slot: int, rect: Rect2, amplitude: float = 7.0, sway: float = 0.0, duration: float = 3.3) -> TextureRect:
 	var image := _art(slot, rect.size.y)
 	_at(image, rect)
-	image.set_meta("idle_y", rect.position.y)
+	_idle_art(image, amplitude, sway, duration)
+	return image
+
+func _idle_art(image: TextureRect, amplitude: float = 7.0, sway: float = 0.0, duration: float = 3.3) -> void:
+	image.set_meta("idle_y", image.position.y)
+	image.set_meta("idle_amplitude", amplitude)
+	image.set_meta("idle_sway", sway)
+	image.set_meta("idle_duration", duration)
+	# Keep the artwork anchored while it drifts, so hit reactions can shake it freely.
+	image.pivot_offset = image.size * 0.5
 	if not game.profile.get("settings", {}).get("reduced_motion", false):
 		_animate_art(image)
-	return image
 
 func _animate_art(image: TextureRect) -> void:
 	var y := float(image.get_meta("idle_y"))
+	var amplitude := float(image.get_meta("idle_amplitude", 7.0))
+	var sway := float(image.get_meta("idle_sway", 0.0))
+	var duration := float(image.get_meta("idle_duration", 3.3))
 	var tween := image.create_tween().set_loops()
 	image.set_meta("idle_tween", tween)
-	tween.tween_property(image, "position:y", y - 7, 3.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(image, "position:y", y, 3.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(image, "position:y", y - amplitude, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(image, "rotation", deg_to_rad(sway), duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(image, "position:y", y, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(image, "rotation", 0.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _sync_motion() -> void:
 	var reduced: bool = game.profile.get("settings", {}).get("reduced_motion", false)
@@ -1537,6 +1846,13 @@ func _sync_motion() -> void:
 		if not image.has_meta("idle_y"): continue
 		var old_tween = image.get_meta("idle_tween") if image.has_meta("idle_tween") else null
 		if old_tween != null and old_tween.is_valid(): old_tween.kill()
+		for key in ["action_tween", "pulse_tween", "impact_tween"]:
+			var motion_tween = image.get_meta(key) if image.has_meta(key) else null
+			if motion_tween != null and motion_tween.is_valid(): motion_tween.kill()
+		image.position.y = float(image.get_meta("idle_y"))
+		image.rotation = 0.0
+		if image.has_meta("action_x"): image.position.x = float(image.get_meta("action_x"))
+		image.scale = Vector2.ONE
 		if not reduced: _animate_art(image)
 
 func _map_details(node: Dictionary) -> void:
@@ -1574,13 +1890,15 @@ func _hand() -> void:
 	var points := int(game.run.battle.get("command_points", 3))
 	for i in range(hand.size()):
 		var instance: Dictionary = hand[i]
-		var card: Dictionary = game.card(instance.id)
+		var card: Dictionary = game.effective_card(instance)
 		var cost := int(card.get("cost", 1))
 		var affordable := cost <= points
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
+		if game.retained(instance): tip += "\n" + _retain_detail(instance)
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
-		var button := _button("", func(): _select_card(i), tip, selected_card == i)
+		var button := _button("", func(): _select_card(i), tip, selected_card == i, instance)
 		button.name = "Hand%d" % i
+		button.set_meta("card_uid", int(instance.uid))
 		button.set_meta("focus_key", "hand%d" % i)
 		button.clip_contents = true
 		button.disabled = not affordable
@@ -1612,12 +1930,12 @@ func _hand() -> void:
 
 func _arrange_hand() -> void:
 	var raised := hover_card if hover_card >= 0 else selected_card
-	var step := minf(182, 1180.0 / maxf(1, hand_buttons.size() - 1))
+	var step := minf(182, 940.0 / maxf(1, hand_buttons.size() - 1))
 	var left := (1440.0 - 160 - step * (hand_buttons.size() - 1)) * 0.5
 	for i in range(hand_buttons.size()):
 		var button: Button = hand_buttons[i]
 		var lifted := i == raised
-		button.position = Vector2(clampf(left + i * step - (20 if lifted else 0), 40, 1200 if lifted else 1240), 630 if lifted else 670)
+		button.position = Vector2(clampf(left + i * step - (20 if lifted else 0), 150, 1090 if lifted else 1110), 630 if lifted else 670)
 		button.size = Vector2(200, 250) if lifted else Vector2(160, 210)
 		button.z_index = 50 if lifted else i
 		var title: Label = button.get_meta("title_label")
@@ -1626,15 +1944,15 @@ func _arrange_hand() -> void:
 		title.add_theme_font_size_override("font_size", 17 if lifted else 15)
 		description.add_theme_font_size_override("font_size", 16)
 		description.max_lines_visible = 3 if lifted else 2
-		art.custom_minimum_size.y = 90 if lifted else 70
+		art.custom_minimum_size.y = 24
 
 func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordable: bool) -> Dictionary:
-	var card: Dictionary = game.card(instance.id)
+	var card: Dictionary = game.effective_card(instance)
 	var text := game.card_text(instance)
 	var long_text := text.length() > 95 or text.contains("\n")
 	var body := VBoxContainer.new()
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_theme_constant_override("separation", 4)
+	body.add_theme_constant_override("separation", 3)
 	body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	body.offset_left = 6
 	body.offset_right = -6
@@ -1664,7 +1982,15 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(title)
-	var art := _card_art(instance, 90 if expanded else 70)
+	if game.retained(instance):
+		# A dedicated full-width line keeps duration and card names independently readable.
+		var marker := _text(_retain_marker(instance), 14, GOLD)
+		marker.name = "RetainMarker"
+		marker.max_lines_visible = 1
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		body.add_child(marker)
+	var art := _card_art(instance, 24)
+	art.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(art)
 	var description := _text(text, 16, CREAM)
 	description.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1672,7 +1998,8 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	body.add_child(description)
 	var footer := _printed_stats(instance, false)
-	footer.add_theme_constant_override("separation", 6)
+	footer.name = "CardEffects"
+	footer.add_theme_constant_override("h_separation", 6)
 	for token in footer.get_children():
 		token.add_theme_constant_override("separation", 2)
 		for item in token.get_children():
@@ -1718,10 +2045,62 @@ func _feedback(before: Dictionary, result: Dictionary, action_kind: String, play
 					else: _play_cue(cue))
 
 func _static_cue(cue: Dictionary) -> void:
+	if str(cue.get("kind", "")) in ["draw_card", "retrieve_card", "discard_card", "zone_card", "shuffle"]:
+		_card_transition(cue, false)
+		return
 	_combat_sound(cue, true)
 	_apply_cue_impact(cue, false)
 	if not str(cue.get("label", "")).is_empty():
 		_cue_label(str(cue.label), cue.get("to", Vector2(720, 250)), cue.get("color", CREAM), false)
+
+func _card_transition(cue: Dictionary, animated: bool) -> void:
+	_combat_sound(cue)
+	var counters := page.find_child("CombatCounters", true, false)
+	if counters != null:
+		counters.text = "TURN %d   WARD %d   DRAW %d   DISCARD %d" % [int(counters.get_meta("turn")), int(counters.get_meta("ward")), int(cue.draw_count), int(cue.discard_count)]
+	for pile in ["draw", "discard"]:
+		var button := page.find_child("DrawPile" if pile == "draw" else "DiscardPile", true, false)
+		if button != null: button.text = "%s\n%d" % [pile.to_upper(), int(cue[pile + "_count"])]
+	var kind := str(cue.kind)
+	var leaving := kind in ["discard_card", "zone_card"]
+	if kind == "shuffle":
+		_cue_label("RESHUFFLE", Vector2(90, 700), GOLD, animated)
+		return
+	var start := Vector2(60, 740)
+	var destination := Vector2(1320, 740)
+	if kind == "retrieve_card":
+		start = Vector2(1320,740)
+		_cue_label("RETRIEVE",start,GOLD,animated)
+	if leaving:
+		if kind == "zone_card":
+			destination = Vector2(60 if cue.zone == "exhausted" else 1320, 816)
+			_cue_label(str(cue.zone).to_upper(), destination, GOLD, animated)
+		for button in hand_buttons:
+			if int(button.get_meta("card_uid", -1)) == int(cue.card.uid):
+				start = button.position
+				button.hide()
+		if not animated: return
+	else:
+		var count := int(game.run.battle.hand.size()) if game.run.get("mode", "") == "combat" else int(cue.hand_index) + 1
+		var step := minf(182, 940.0 / maxf(1, count - 1))
+		var left := (1440.0 - 160 - step * (count - 1)) * 0.5
+		destination = Vector2(left + int(cue.hand_index) * step, 670)
+	var card := Panel.new()
+	card.name = "CardTransition"
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.clip_contents = true
+	card.z_index = 60 + int(cue.hand_index)
+	card.add_theme_stylebox_override("panel", _style(Color("10202d"), GOLD, 12, 0, 2))
+	_at(card, Rect2(start if animated else destination, Vector2(160, 210)))
+	_card_face(card, cue.card, false, true)
+	if not animated: return
+	card.scale = Vector2.ONE if leaving else Vector2(0.3, 0.3)
+	var tween := card.create_tween().set_parallel(true)
+	tween.tween_property(card, "position", destination, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "scale", Vector2(0.3, 0.3) if leaving else Vector2.ONE, 0.35)
+	if leaving:
+		tween.tween_property(card, "modulate:a", 0.0, 0.35)
+		tween.chain().tween_callback(card.queue_free)
 
 func _attack_style(card: Dictionary) -> String:
 	if card.get("character", "") == "hollow_choir": return "sonic"
@@ -1749,22 +2128,28 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	var locations := _enemy_layout(old_enemies.size())
 	var records: Array = result.get("presentation", [])
 	var enemy_phase := action_kind == "enemy_phase"
-	var attack_style := _attack_style(game.card(str(played_card.get("id", "")))) if not played_card.is_empty() else "kinetic"
+	var attack_style := _attack_style(game.effective_card(played_card)) if not played_card.is_empty() else "kinetic"
 	var phase_tail := old_enemies.size() * 0.32 + 0.1 if enemy_phase else 0.0
 	var command_impact := 0.3 if not enemy_phase and int(result.get("damage", 0)) > 0 else 0.0
 	var cooling: Array = []
 	var phase_source := 0
 	var signaled_sources: Array[int] = []
+	var discard_clock := 0.0
+	var draw_clock := phase_tail + 0.55 if enemy_phase else command_impact + 0.2
 	if enemy_phase:
 		cues.append({"kind":"phase", "to":Vector2(1100, 190), "color":CORAL, "label":"ENEMY PHASE"})
 		if game.run.get("mode", "") == "combat":
 			cues.append({"kind":"ready", "to":ship + Vector2(0, 100), "color":TEAL, "label":"COMMAND POINTS REFILLED", "delay":phase_tail + 0.35})
-	elif not played_card.is_empty():
-		var definition: Dictionary = game.card(str(played_card.id))
-		if int(definition.get("draw", 0)) > 0:
-			cues.append({"kind":"draw", "to":ship + Vector2(0, 80), "color":GOLD, "delay":command_impact})
 	for event in records:
 		var kind := str(event.get("kind", ""))
+		if event.get("engine", "") == "redirect_retaliation":
+			# These are phase-entry snapshot indices, never surviving-array fallbacks.
+			var recipient := int(event.get("target_index", -1))
+			var actor := int(event.get("source_index", -1))
+			if recipient < 0 or recipient >= old_enemies.size() or recipient >= locations.size() or actor < 0 or actor >= old_enemies.size() or actor >= locations.size(): continue
+			if int(event.amount) > 0:
+				cues.append({"kind":"beam", "from":ship, "to":_enemy_effect_point(locations[recipient], old_enemies.size()), "label":"INSTALL UID %d −%d" % [event.source_uid,event.amount], "color":GOLD, "target_index":recipient, "source_index":actor, "source_uid":event.source_uid, "hp_delta":-int(event.amount), "delay":actor * 0.32 + 0.3, "echo":false})
+			continue
 		if event.has("source_index"): phase_source = int(event.source_index)
 		var source_index := int(event.get("source_index", -1))
 		var index := int(event.get("target_index", 0))
@@ -1774,10 +2159,16 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 		var amount := int(event.get("amount", 0))
 		if enemy_phase and source_index >= 0 and not signaled_sources.has(source_index):
 			signaled_sources.append(source_index)
-			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay})
+			cues.append({"kind":"charge", "to":origin, "color":CORAL, "delay":delay, "source_index":source_index})
 		match kind:
+			"discard_card", "zone_card", "draw_card", "retrieve_card", "shuffle":
+				var cue: Dictionary = event.duplicate(true)
+				cue.delay = discard_clock if kind in ["discard_card", "zone_card"] else draw_clock
+				cues.append(cue)
+				if kind in ["discard_card", "zone_card"]: discard_clock += 0.08
+				else: draw_clock += 0.12
 			"damage":
-				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
+				if amount > 0: cues.append({"kind":"beam" if uses_lens or source_index >= 0 else "shot", "from":origin, "to":point, "label":"−%d" % amount, "color":GOLD if source_index >= 0 or event.get("split", false) else CORAL, "target_index":index, "source_index":source_index, "hp_delta":-amount, "delay":source_index * 0.32 if source_index >= 0 else 0.0, "echo":uses_echo})
 				if amount > 0 and source_index < 0:
 					cues[-1]["style"] = attack_style
 					cues[-1]["color"] = _style_color(attack_style)
@@ -1785,7 +2176,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 				var absorbed := int(event.get("absorbed", 0))
 				var redirected := int(event.get("redirected", 0))
 				if amount > 0:
-					cues.append({"kind":"enemy_shot", "from":origin, "to":ship, "label":"HULL −%d" % amount, "color":CORAL, "delay":delay, "player":true, "hp_delta":-amount})
+					cues.append({"kind":"enemy_shot", "from":origin, "to":ship, "label":"HULL −%d" % amount, "color":CORAL, "delay":delay, "player":true, "source_index":source_index, "hp_delta":-amount})
 					var region := int(game.enemy(str(old_enemies[source_index].id)).get("region", 0)) if source_index >= 0 else 0
 					var style := str(["plasma", "kinetic", "fracture", "sonic", "memory", "fracture"][clampi(region, 0, 5)])
 					cues[-1]["style"] = style
@@ -1804,7 +2195,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 				var heal_delay := phase_source * 0.32 + 0.3 if enemy_phase and emergency else phase_tail if enemy_phase else command_impact
 				cues.append({"kind":"repair", "to":ship, "label":("REIGNITED +" if emergency else "REPAIR +") + str(amount), "color":GOLD if emergency else TEAL, "player":true, "hp_delta":amount, "delay":heal_delay})
 			"enemy_heal":
-				if amount > 0: cues.append({"kind":"repair", "to":point, "label":"REPAIR +%d" % amount, "color":TEAL, "target_index":index, "hp_delta":amount, "delay":delay})
+				if amount > 0: cues.append({"kind":"repair", "to":point, "label":"REPAIR +%d" % amount, "color":TEAL, "target_index":index, "source_index":source_index, "hp_delta":amount, "delay":delay})
 			"interrupted":
 				cues.append({"kind":"disrupt", "to":origin, "label":"INTERRUPTED", "color":TEAL, "delay":delay})
 			"disrupt":
@@ -1829,7 +2220,7 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 			"trace", "resonance":
 				cues.append({"kind":"link", "to":Vector2(180, 492), "label":"%s %d → %d" % [kind.to_upper(), int(event.get("before", 0)), int(event.get("after", 0))], "color":TEAL if kind == "trace" else GOLD, "delay":command_impact})
 			"ward":
-				if amount > 0: cues.append({"kind":"shield", "to":ship, "label":"WARD +%d" % amount, "color":TEAL, "player":true, "delay":command_impact})
+				if amount > 0: cues.append({"kind":"shield", "to":ship, "label":("INSTALL UID %d "%event.source_uid if event.has("source_uid") else "")+"WARD +%d" % amount, "color":TEAL, "player":true, "delay":command_impact})
 			"link": cues.append({"kind":"link", "to":ship, "label":"LINKS RESTORED", "color":TEAL, "player":true, "delay":command_impact})
 	if not enemy_phase:
 		var after: Array = result.get("strain", [])
@@ -1842,10 +2233,14 @@ func _feedback_plan(before: Dictionary, result: Dictionary, action_kind: String,
 	return cues
 
 func _play_cue(cue: Dictionary) -> void:
+	if str(cue.get("kind", "")) in ["draw_card", "retrieve_card", "discard_card", "zone_card", "shuffle"]:
+		_card_transition(cue, not game.profile.get("settings", {}).get("reduced_motion", false))
+		return
 	if game.profile.get("settings", {}).get("reduced_motion", false):
 		_static_cue(cue)
 		return
 	_combat_sound(cue, true)
+	_animate_cue_actor(cue)
 	var effect := SpaceCanvas.new()
 	effect.stars = false
 	effect.effect_kind = str(cue.get("kind", "shot"))
@@ -1868,6 +2263,54 @@ func _play_cue(cue: Dictionary) -> void:
 		var serial := feedback_serial
 		get_tree().create_timer(impact_delay).timeout.connect(func():
 			if serial == feedback_serial: _apply_cue_impact(cue, true))
+
+func _animate_cue_actor(cue: Dictionary) -> void:
+	if game.profile.get("settings", {}).get("reduced_motion", false): return
+	var kind := str(cue.get("kind", ""))
+	var source_index := int(cue.get("source_index", -1))
+	var source: TextureRect = enemy_art[source_index] if source_index >= 0 and source_index < enemy_art.size() else null
+	var target_index := int(cue.get("target_index", -1))
+	var target: TextureRect = enemy_art[target_index] if target_index >= 0 and target_index < enemy_art.size() else null
+	match kind:
+		"charge":
+			if is_instance_valid(source): _actor_pulse(source, 1.06)
+		"enemy_shot":
+			if is_instance_valid(source): _actor_lunge(source, -1.0, 22.0)
+		"shot", "beam":
+			# Enemy-phase damage carries a source index; player commands do not.
+			if source_index < 0 and not cue.get("player", false): _actor_lunge(player_art, 1.0, 12.0)
+		"route":
+			_actor_pulse(player_art, 1.025)
+		"repair":
+			if cue.get("player", false): _actor_pulse(player_art, 1.04)
+			elif is_instance_valid(target): _actor_pulse(target, 1.04)
+		"shield", "link", "vent", "ready", "draw":
+			if cue.get("player", false): _actor_pulse(player_art, 1.04)
+		"incubate":
+			if is_instance_valid(source): _actor_pulse(source, 1.05)
+
+func _actor_lunge(image: TextureRect, direction: float, distance: float) -> void:
+	if not is_instance_valid(image): return
+	_kill_motion(image, "action_tween")
+	var base_x := float(image.get_meta("action_x", image.position.x))
+	image.set_meta("action_x", base_x)
+	var tween := image.create_tween()
+	image.set_meta("action_tween", tween)
+	tween.tween_property(image, "position:x", base_x + distance * direction, 0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(image, "position:x", base_x, 0.24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+func _actor_pulse(image: TextureRect, amount: float) -> void:
+	if not is_instance_valid(image): return
+	_kill_motion(image, "pulse_tween")
+	var tween := image.create_tween()
+	image.set_meta("pulse_tween", tween)
+	tween.tween_property(image, "scale", Vector2.ONE * amount, 0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(image, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+func _kill_motion(image: TextureRect, key: String) -> void:
+	if not image.has_meta(key): return
+	var tween = image.get_meta(key)
+	if tween != null and tween.is_valid(): tween.kill()
 
 func _apply_cue_impact(cue: Dictionary, animated: bool) -> void:
 	_combat_sound(cue)
@@ -1903,11 +2346,18 @@ func _impact_art(image: TextureRect, color: Color, shake: bool) -> void:
 	tween.tween_interval(0.11)
 	tween.tween_property(image, "self_modulate", Color.WHITE, 0.4)
 	if shake:
-		var original_x := image.position.x
+		var original_x := float(image.get_meta("action_x", image.position.x))
+		image.set_meta("action_x", original_x)
 		var movement := image.create_tween()
 		movement.tween_property(image, "position:x", original_x + 14, 0.06)
 		movement.tween_property(image, "position:x", original_x - 10, 0.08)
 		movement.tween_property(image, "position:x", original_x, 0.16)
+		# A brief squash makes the hit land even when the artwork is large.
+		_kill_motion(image, "impact_tween")
+		var squash := image.create_tween()
+		image.set_meta("impact_tween", squash)
+		squash.tween_property(image, "scale", Vector2(1.05, 0.95), 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		squash.tween_property(image, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 func _cue_label(text: String, point: Vector2, color: Color, animated: bool, prominent: bool = false) -> void:
 	var position := Vector2(clampf(point.x - 85, 20, 1210), clampf(point.y - 25, 160, 480))
@@ -1997,11 +2447,14 @@ func _enemy_target(index: int, enemy: Dictionary, rect: Rect2, count: int) -> vo
 		title.add_theme_color_override("font_color", TEAL if selected else CREAM))
 	title.max_lines_visible = 2
 	title.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-	var art_rect := Rect2(6, 4, 110, 78) if small else Rect2(10, 4, rect.size.x - 20, 194)
+	# Leave room above and below the artwork for visible drift and banking.
+	var art_rect := Rect2(6, 12, 110, 66) if small else Rect2(10, 18, rect.size.x - 20, 174)
 	var image := _enemy_image(str(enemy.id), art_rect.size.y)
 	image.name = "EnemyArt%d" % index
 	image.flip_h = true
 	_at(image, art_rect, button)
+	# Stagger the drift so a group of enemies never breathes in lockstep.
+	_idle_art(image, 8.0 if small else 14.0, 1.5 if small else 1.0, 1.4 + (index % 4) * 0.18)
 	enemy_art.append(image)
 	var hp := _hull_bar(enemy.hp, enemy.max_hp, CORAL)
 	hp.name = "EnemyHullBar%d" % index
@@ -2087,12 +2540,16 @@ func _compact_intent(enemy: Dictionary, enemy_index: int) -> String:
 	return str(intent.get("label", "Unknown"))
 
 func _card_art(instance: Dictionary, height: float) -> TextureRect:
-	var definition: Dictionary = game.card(str(instance.id))
+	var definition: Dictionary = game.effective_card(instance)
 	var slot := 0
 	for i in range(game.catalog.cards.size()):
 		if game.catalog.cards[i].id == instance.id:
 			slot = i
 			break
+	# Expansion prototype coverage explicitly names an ORIGINAL card-atlas slot;
+	# do not clamp every new catalog index to the same last illustration.
+	if game.card(instance.id).get("introduced_revision",0)>0:
+		slot=int(definition.art)
 	var image := TextureRect.new()
 	image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	image.custom_minimum_size.y = height
@@ -2120,20 +2577,24 @@ func _card_art(instance: Dictionary, height: float) -> TextureRect:
 	image.texture = texture
 	return image
 
-func _printed_stats(instance: Dictionary, include_cost: bool) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	var definition: Dictionary = game.card(str(instance.id))
+func _printed_stats(instance: Dictionary, include_cost: bool) -> HFlowContainer:
+	var row := HFlowContainer.new()
+	row.add_theme_constant_override("h_separation", 8)
+	row.add_theme_constant_override("v_separation", 2)
+	var definition: Dictionary = game.effective_card(instance)
 	if include_cost:
 		_stat_token(row, "cost", "%d CP" % int(definition.get("cost", 1)), "Command points spent to play this card. Each turn refills to 3.")
 	for kind in ["damage", "heal", "disrupt"]:
 		var value := int(definition.get(kind, 0))
 		if value <= 0: continue
-		if instance.get("level", 0) > 0:
-			value += 3 if kind == "damage" else 2 if kind == "heal" else 1
 		_stat_token(row, kind, str(value), {"damage":"Damage before organs and powerups.", "heal":"Hull repaired before organs and powerups.", "disrupt":"Reduce the chosen enemy's next attack."}[kind])
-	var first_free: bool = instance.get("level", 0) > 0 and int(definition.get("damage", 0)) == 0 and int(definition.get("heal", 0)) == 0 and int(definition.get("vent", 0)) == 0 and int(definition.get("disrupt", 0)) == 0
-	_stat_token(row, "strain", "0 / +1" if first_free else "+1", "Each routed organ gains 1 strain; vent cools first. Evolved pure utility commands spare the first organ.")
+	for field in ["ward", "vent", "draw", "trace", "resonance"]:
+		if int(definition.get(field, 0)) > 0:
+			var label := _label("%s %s%d" % [field.capitalize(), "+" if field in ["trace", "resonance"] else "", int(definition[field])], 15, CREAM)
+			row.add_child(label)
+	for field in ["link", "rewrite", "concert"]:
+		if definition.get(field, false): row.add_child(_label(field.capitalize(), 15, GOLD))
+	_stat_token(row, "strain", "0 / +1" if definition.first_free else "+1", "Each routed organ gains 1 strain; vent cools first. First-free commands spare the first organ.")
 	return row
 
 func _stat_token(parent: Node, kind: String, value: String, tip: String) -> void:
@@ -2205,12 +2666,28 @@ func _character_image(id: String, height: float) -> TextureRect:
 
 func _character_resource_text(battle: Dictionary) -> String:
 	var id := str(game.run.get("character", "cartographer"))
+	var forecast: Dictionary = game.preview_card(selected_card, route, target) if selected_card >= 0 else {}
+	var previewing := forecast.has("resource_preview")
 	if id == "palimpsest":
 		var payload: Dictionary = battle.get("last_payload", {})
-		return "TRACE %d / 6\n%s" % [int(battle.get("trace", 0)), "Previous command in memory" if not payload.is_empty() else "Play a command to store memory"]
+		var value := "%d → %d" % [int(battle.get("trace", 0)), int(forecast.trace)] if previewing else str(int(battle.get("trace", 0)))
+		if previewing: return "TRACE %s / 6 · PREVIEW" % value
+		return "TRACE %s / 6%s\n%s" % [value, " · PREVIEW" if previewing else "", "Previous command in memory" if not payload.is_empty() else "Play a command to store memory"]
 	if id == "hollow_choir":
-		return "RESONANCE %d / 3\nLast command: %s" % [int(battle.get("resonance", 0)), (str(battle.get("last_command_kind", "")).capitalize() if not str(battle.get("last_command_kind", "")).is_empty() else "None")]
+		var value := "%d → %d" % [int(battle.get("resonance", 0)), int(forecast.resonance)] if previewing else str(int(battle.get("resonance", 0)))
+		if previewing: return "RESONANCE %s / 3 · PREVIEW" % value
+		return "RESONANCE %s / 3%s\nLast command: %s" % [value, " · PREVIEW" if previewing else "", (str(battle.get("last_command_kind", "")).capitalize() if not str(battle.get("last_command_kind", "")).is_empty() else "None")]
 	return ""
+
+func _resource_flow_text(result: Dictionary) -> String:
+	if not result.has("resource_preview"): return ""
+	var resource := "trace" if game.run.character == "palimpsest" else "resonance" if game.run.character == "hollow_choir" else ""
+	if resource.is_empty(): return ""
+	var values: Dictionary = result.resource_preview
+	var text := "\n%s preview: card %d → %d" % [resource.capitalize(), int(values[resource + "_before"]), int(values["card_" + resource])]
+	for step in result.get("route_steps", []):
+		text += "\n%s: %d → %d · %s (%s)" % [game.organ(int(step.organ)).name, int(step[resource + "_before"]), int(step[resource + "_after"]), step.status, step.reason]
+	return text
 
 func _enemy_image(id: String, height: float) -> TextureRect:
 	var image := _art(int(game.enemy(id).get("art", 19)), height)

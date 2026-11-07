@@ -1,0 +1,6 @@
+[mcp_servers.astral-wake]
+command = "python3"
+args = ["/absolute/path/to/astral-wake/tools/astral_mcp.py", "--port", "REPLACE_WITH_GAME_PORT"]
+env_vars = ["ASTRAL_MCP_TOKEN"]
+tool_timeout_sec = 45
+enabled = false

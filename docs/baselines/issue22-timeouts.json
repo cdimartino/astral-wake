@@ -1,0 +1,62 @@
+[
+  {
+    "batch": "representative",
+    "case": {
+      "seed": "0093CJ",
+      "character": "hollow_choir",
+      "unlocks": 3,
+      "policy": "tactical"
+    },
+    "process_seconds": 180.188,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROGRESS actions=100 region=1 layer=5 hull=92 mode=combat\nPROGRESS actions=200 region=1 layer=11 hull=104 mode=modify\nPROGRESS actions=300 region=2 layer=1 hull=96 mode=combat\n",
+    "stderr": ""
+  },
+  {
+    "batch": "representative",
+    "case": {
+      "seed": "0093CJ",
+      "character": "hollow_choir",
+      "unlocks": 3,
+      "policy": "no-bonuses"
+    },
+    "process_seconds": 180.414,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROGRESS actions=100 region=1 layer=5 hull=86 mode=combat\n",
+    "stderr": ""
+  },
+  {
+    "batch": "full",
+    "case": {
+      "seed": "0093CG",
+      "character": "cartographer",
+      "unlocks": 0,
+      "policy": "balanced"
+    },
+    "process_seconds": 180.167,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROGRESS actions=100 region=1 layer=12 hull=37 mode=combat\nPROGRESS actions=200 region=2 layer=10 hull=53 mode=map\n",
+    "stderr": ""
+  },
+  {
+    "batch": "full",
+    "case": {
+      "seed": "0093CG",
+      "character": "cartographer",
+      "unlocks": 0,
+      "policy": "tactical"
+    },
+    "process_seconds": 180.187,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROGRESS actions=100 region=1 layer=12 hull=68 mode=combat\nPROGRESS actions=200 region=2 layer=12 hull=84 mode=combat\n",
+    "stderr": ""
+  },
+  {
+    "batch": "full",
+    "case": {
+      "seed": "0093CG",
+      "character": "cartographer",
+      "unlocks": 0,
+      "policy": "no-bonuses"
+    },
+    "process_seconds": 180.161,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROGRESS actions=100 region=1 layer=12 hull=100 mode=combat\nPROGRESS actions=200 region=2 layer=4 hull=54 mode=combat\nPROGRESS actions=300 region=2 layer=12 hull=68 mode=combat\n",
+    "stderr": ""
+  }
+]

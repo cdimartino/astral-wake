@@ -38,7 +38,11 @@ func _run() -> void:
 		capture.clear_buffer()
 		# The capture contains the actual imported decoder crossing end -> beginning.
 		player.play(length - .6)
-		await create_timer(1.2).timeout
+		# Hosted runners can mix slower than wall time. Wait for actual samples,
+		# retaining a bounded timeout so a stalled mixer still fails the test.
+		var deadline := Time.get_ticks_msec() + 10000
+		while capture.get_frames_available() < mix_rate * 1.1 and Time.get_ticks_msec() < deadline:
+			await create_timer(.02).timeout
 		check(player.playing, "Region %d continues after wrapping" % region)
 		var frames := capture.get_buffer(capture.get_frames_available())
 		check(frames.size() > mix_rate * .9, "Audio mixer produced a full seam capture")
@@ -75,11 +79,14 @@ func _run() -> void:
 		capture.clear_buffer()
 		player.play()
 		await create_timer(stream.get_length() + .12).timeout
+		var deadline := Time.get_ticks_msec() + 5000
+		while player.playing and Time.get_ticks_msec() < deadline:
+			await create_timer(.02).timeout
 		var frames := capture.get_buffer(capture.get_frames_available())
 		var peak := 0.0
 		for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
 		check(peak > .02 and peak < .99, filename + " must decode audibly without clipping")
 		check(not player.playing, filename + " must end without looping")
-	check(combat_count == 21, "All 21 combat cues were mixed")
+	check(combat_count == 22, "All 22 combat cues were mixed")
 	print("AUDIO SMOKE: %d failures" % failures)
 	quit(1 if failures else 0)

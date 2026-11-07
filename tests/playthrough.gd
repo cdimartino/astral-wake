@@ -1,5 +1,9 @@
 extends SceneTree
 const Game=preload("res://scripts/game.gd")
+const EVOLUTION_POLICY_VERSION="cartographer-branches-v1"
+const PALIMPSEST_EVOLUTION_POLICY_VERSION="palimpsest-branches-v1"
+const CHOIR_EVOLUTION_POLICY_VERSION="choir-branches-v1"
+const EXPANSION_POLICY_VERSION="cartographer-content1-setup-v1"
 var game
 var cards_played=0
 var cards_this_turn=0
@@ -17,16 +21,34 @@ func _initialize() -> void:
 	var seed_value=424242
 	var hp_scale=1.0
 	var character_id="cartographer"
+	var unlocks=0
+	var save_directory=""
+	var content_pool_revision=Game.CONTENT_POOL_REVISION
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--seed="): seed_value=int(arg.trim_prefix("--seed="))
+		if arg.begins_with("--code="): seed_value=arg.trim_prefix("--code=")
 		if arg.begins_with("--character="): character_id=arg.trim_prefix("--character=")
 		if arg.begins_with("--hp-scale="): hp_scale=float(arg.trim_prefix("--hp-scale="))
 		if arg.begins_with("--policy="): policy=arg.trim_prefix("--policy=")
 		if arg=="--no-bonuses": no_bonuses=true
 		if arg=="--allow-defeat": allow_defeat=true
-	game=Game.new("/tmp/astral-playthrough-%d-%d"%[seed_value,Time.get_ticks_usec()])
+		if arg.begins_with("--unlocks="): unlocks=int(arg.trim_prefix("--unlocks="))
+		if arg.begins_with("--save-dir="): save_directory=arg.trim_prefix("--save-dir=")
+		if arg.begins_with("--content-pool="): content_pool_revision=int(arg.trim_prefix("--content-pool="))
+	if unlocks<0 or unlocks>3 or not content_pool_revision in [0,1] or not policy in ["balanced","aggressive","tactical"]:
+		printerr("Invalid unlock tier or policy")
+		quit(1)
+		return
+	if save_directory.is_empty(): save_directory=OS.get_environment("TMPDIR").path_join("astral-playthrough-%s-%d"%[seed_value,Time.get_ticks_usec()])
+	game=Game.new(save_directory)
+	game.profile.unlocks=unlocks
 	for definition in game.catalog.enemies: definition.hp=int(round(definition.hp*hp_scale))
-	game.new_run(seed_value,character_id)
+	var beginning=game.new_run(seed_value,character_id)
+	game.run.content_pool_revision=content_pool_revision
+	if not beginning.ok:
+		printerr(beginning.error)
+		quit(1)
+		return
 	prepare_routes()
 	while not game.run.mode in ["victory","defeat"] and actions<4000:
 		var outcome={"ok":true}
@@ -53,7 +75,14 @@ func _initialize() -> void:
 		if actions%100==0: print("PROGRESS actions=%d region=%d layer=%d hull=%d mode=%s"%[actions,game.run.region+1,game.run.layer+1,game.run.hull,game.run.mode])
 	var result={"seed":seed_value,"character":game.run.character,"route_regions":game.run.route_regions,"mode":game.run.mode,"region":game.run.region+1,"layer":game.run.layer+1,"turns":game.run.turns,"battles":game.run.battles,"cards_played":cards_played,"max_cards_per_turn":max_cards_per_turn,"actions":actions,"hull":game.run.hull,"deck":game.run.deck,"powerups":game.run.powerups,"checkpoints":checkpoints,"wall_seconds":(Time.get_ticks_msec()-started)/1000.0,"save_directory":game.store.directory}
 	result.policy=policy
+	result.evolution_policy_version=evolution_policy_version()
 	result.no_bonuses=no_bonuses
+	result.profile_unlocks=unlocks
+	result.pool_tier=game.run.get("pool_tier",unlocks)
+	result.rng_version=game.run.get("rng_version",0)
+	result.reward_generation=game.run.reward_generation
+	result.content_pool_revision=game.run.content_pool_revision
+	result.seeded=game.run.get("seeded",false)
 	print("PLAYTHROUGH "+JSON.stringify(result))
 	quit(0 if game.run.mode=="victory" or (allow_defeat and game.run.mode=="defeat") else 2)
 
@@ -96,7 +125,8 @@ func plan_combat_action() -> Dictionary:
 	var battle=game.run.battle
 	if int(battle.command_points)<=0: return {"end_turn":true}
 	for card_index in range(battle.hand.size()):
-		if int(game.card(battle.hand[card_index].id).cost)>int(battle.command_points): continue
+		var definition=game.effective_card(battle.hand[card_index])
+		if int(definition.cost)>int(battle.command_points): continue
 		for route in route_options:
 			if not game._validate_route(game.run,route).is_empty(): continue
 			for target in range(battle.enemies.size()):
@@ -112,7 +142,6 @@ func plan_combat_action() -> Dictionary:
 					if effect.kind=="trace": score+=int(effect.amount)*0.6
 					if effect.kind=="resonance": score+=int(effect.amount)*0.8
 					if effect.kind=="ward": score+=int(effect.amount)*1.1
-				var definition=game.card(battle.hand[card_index].id)
 				score+=int(definition.get("draw",0))*2
 				var net=0
 				for i in range(6):
@@ -125,6 +154,13 @@ func plan_combat_action() -> Dictionary:
 					score+=(maxi(0,int(forecast.heal))+maxi(0,int(forecast.get("attack_reduction",0))))*urgency
 					score/=float(definition.cost)
 				if policy=="aggressive": score=float(forecast.damage)-net*1.2
+				if expansion_policy() and definition.has("engine"):
+					# Named small setup heuristic, not a future-turn planner. Never
+					# assumes guaranteed triggers; a lone target gives Loom no value.
+					var setup=setup_value(definition)
+					var danger=maxi(0,game._incoming_damage(game.run)-int(battle.ward))
+					if danger>=game.run.hull: setup=0.0
+					score+=setup/float(definition.cost)
 				if score>best_score:
 					best_score=score
 					best={"hand":card_index,"route":route,"target":target}
@@ -152,22 +188,87 @@ func choose_reward() -> Dictionary:
 		var score=0.0
 		if choice.kind=="powerup": score=25.0
 		else:
-			var definition=game.card(choice.id)
+			var definition=game.effective_card({"id":choice.id})
 			score=float(definition.get("damage",0))+float(definition.get("heal",0))*0.8+float(definition.get("vent",0))*5+float(definition.get("draw",0))*3+float(definition.get("disrupt",0))
 			score-=game.owned_card_count(choice.id)*5
+			if expansion_policy(): score+=expansion_printed_value(definition)
 			if game.run.deck.size()>18: score-=10
 		if score>best_score:
 			best_score=score
 			best=i
 	return game.choose_reward(best)
 
-func modify() -> Dictionary:
+func evolution_policy_version() -> String:
+	if expansion_policy(): return EXPANSION_POLICY_VERSION
+	if game.run.character=="hollow_choir": return CHOIR_EVOLUTION_POLICY_VERSION
+	return PALIMPSEST_EVOLUTION_POLICY_VERSION if game.run.character=="palimpsest" else EVOLUTION_POLICY_VERSION
+
+func expansion_policy() -> bool:
+	return game.run.get("content_pool_revision",0)==1 and game.run.character=="cartographer"
+
+func setup_value(definition: Dictionary) -> float:
+	var kind=definition.get("engine",{}).get("type","")
+	if kind=="novel_route": return 7.0
+	if kind=="cooling_ward": return 5.0
+	if kind=="redirect_retaliation":
+		if game.run.mode=="combat":
+			return 5.0 if game.run.battle.enemies.filter(func(foe): return foe.hp>0).size()>1 else 0.0
+		return 3.0
+	return 0.0
+
+func expansion_printed_value(definition: Dictionary) -> float:
+	return float(definition.get("ward",0))*1.1+setup_value(definition)+float(definition.get("conditional_damage",{}).get("amount",0))*0.5+float(definition.get("conditional_ward",{}).get("amount",0))*0.5
+
+func branch_score(definition: Dictionary) -> float:
+	# Existing goals only; printed output per CP, not a promised optimal strategy.
+	var damage=float(definition.get("damage",0))
+	var heal=float(definition.get("heal",0))*(2.1 if game.run.hull<60 else 1.1)
+	var vent=float(definition.get("vent",0))*5.0
+	var disrupt=float(definition.get("disrupt",0))*1.6
+	var draw=float(definition.get("draw",0))*2.0
+	var value=damage+heal+vent+disrupt+draw
+	if expansion_policy(): value+=expansion_printed_value(definition)
+	if policy=="aggressive": value=damage
+	if policy=="tactical": value+=heal+disrupt
+	# Same modest printed-resource valuation as combat forecasts. Do not alter
+	# Cartographer ranking or pretend this models thresholds/retained timing.
+	if game.run.character=="palimpsest":
+		var stored=int(game.run.battle.get("trace",0)) if game.run.mode=="combat" else 0
+		value+=float(mini(6-stored,int(definition.get("trace",0))))*0.6
+	if game.run.character=="hollow_choir":
+		var stored=0
+		if game.run.mode=="combat":
+			var previous=str(game.run.battle.get("last_command_kind",""))
+			stored=int(game.run.battle.get("resonance",0))
+			if not previous.is_empty(): stored=mini(3,stored+1) if previous!=definition.kind else 0
+		value+=float(mini(3-stored,int(definition.get("resonance",0))))*0.8
+	return value/float(definition.cost)
+
+func plan_modify_branches() -> Dictionary:
+	var choices={}
+	for instance in game.run.deck:
+		if int(instance.level)>0: continue
+		var best_score=-INF
+		var best_id=""
+		for branch in game.card(instance.id).get("evolutions",[]):
+			var effective=game.effective_card({"id":instance.id,"level":1,"evolution":branch.id})
+			var score=branch_score(effective)
+			# Stable identity tie-break, never branch array order.
+			if score>best_score or (score==best_score and str(branch.id)<best_id):
+				best_score=score
+				best_id=branch.id
+		if not best_id.is_empty(): choices[instance.uid]=best_id
+	return choices
+
+func modify(explicit_branches: Dictionary = {}) -> Dictionary:
 	if no_bonuses: return game.cancel_modify()
 	var best=-1
 	var score=-10000.0
 	for i in range(game.run.deck.size()):
 		var instance=game.run.deck[i]
-		var definition=game.card(instance.id)
+		# Freeze the existing policy's intrinsic (unevolved) removal/upgrade ranking.
+		# Actual plays and affordability use the owned instance above.
+		var definition=game.effective_card({"id":instance.id})
 		if game.run.modify_kind=="upgrade" and int(instance.level)>0: continue
 		var current=float(definition.get("damage",0))+float(definition.get("vent",0))*5+float(definition.get("heal",0))
 		if game.run.modify_kind=="remove": current=-current
@@ -175,6 +276,11 @@ func modify() -> Dictionary:
 			score=current
 			best=i
 	if best<0: return game.cancel_modify()
+	var uid=game.run.deck[best].uid
+	if game.run.modify_kind=="upgrade" and explicit_branches.has(uid): return game.evolve_card(uid,explicit_branches[uid])
+	if game.run.modify_kind=="upgrade":
+		var choices=plan_modify_branches()
+		if choices.has(uid): return game.evolve_card(uid,choices[uid])
 	return game.modify_card(best)
 
 func shop() -> Dictionary:

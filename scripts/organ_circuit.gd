@@ -14,6 +14,7 @@ var organic := false
 var reduced_motion := false
 var tint := Color("7be0ca")
 var phase := 0.0
+var _anatomy_paths := {}
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -33,17 +34,7 @@ func _has_edge(list: Array, a: int, b: int) -> bool:
 
 func _path(a: int, b: int) -> PackedVector2Array:
 	if organic:
-		var anatomy = preload("res://scripts/ship_anatomy.gd")
-		var p: Vector2 = anatomy.POSITIONS[a] + Vector2(43, 48)
-		var q: Vector2 = anatomy.POSITIONS[b] + Vector2(43, 48)
-		var direction := (q - p).normalized()
-		p += direction * 40
-		q -= direction * 40
-		var bend := direction.orthogonal() * (22 if (a + b) % 2 == 0 else -28)
-		var nerve := Curve2D.new()
-		nerve.add_point(p, Vector2.ZERO, direction * 48 + bend)
-		nerve.add_point(q, -direction * 48 + bend, Vector2.ZERO)
-		return nerve.get_baked_points()
+		return _anatomy_path(a, b)
 	var start: Vector2 = POSITIONS[a] + NODE_SIZE * 0.5
 	var end: Vector2 = POSITIONS[b] + NODE_SIZE * 0.5
 	var curve := Curve2D.new()
@@ -72,6 +63,65 @@ func _path(a: int, b: int) -> PackedVector2Array:
 		curve.add_point(start, Vector2.ZERO, Vector2(sign_x * 12, 0))
 		curve.add_point(end, Vector2(-sign_x * 12, 0), Vector2.ZERO)
 	return curve.get_baked_points()
+
+func _clear_segment(a: Vector2, b: Vector2, obstacles: Array[Rect2]) -> bool:
+	for rect in obstacles:
+		if rect.has_point(a.lerp(b, 0.5)): return false
+		var corners := [rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)]
+		for i in range(4):
+			if Geometry2D.segment_intersects_segment(a, b, corners[i], corners[(i + 1) % 4]) != null: return false
+	return true
+
+func _anatomy_path(a: int, b: int) -> PackedVector2Array:
+	var key := Vector2i(a, b)
+	if _anatomy_paths.has(key): return _anatomy_paths[key]
+	var anatomy = preload("res://scripts/ship_anatomy.gd")
+	var obstacles: Array[Rect2] = []
+	var vertices: Array[Vector2] = []
+	# Ports surround the whole tile, including its opaque caption, not just
+	# the specimen. Route around other tiles and the central inspector too.
+	for position in anatomy.POSITIONS:
+		var rect := Rect2(position, anatomy.NODE_SIZE)
+		obstacles.append(rect.grow(1))
+		var center := rect.get_center()
+		vertices.append_array([Vector2(center.x, rect.position.y - 3), Vector2(rect.end.x + 3, center.y), Vector2(center.x, rect.end.y + 3), Vector2(rect.position.x - 3, center.y)])
+	obstacles.append(anatomy.INSPECTOR_RECT.grow(1))
+	for obstacle in obstacles:
+		var rect := obstacle.grow(2)
+		vertices.append_array([rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)])
+	var distances: Array[float] = []
+	var previous: Array[int] = []
+	var visited: Array[int] = []
+	for i in range(vertices.size()):
+		distances.append(0.0 if i / 4 == a and i < 24 else INF)
+		previous.append(-1)
+	var end := -1
+	for unused in range(vertices.size()):
+		var current := -1
+		for i in range(vertices.size()):
+			if not visited.has(i) and (current < 0 or distances[i] < distances[current]): current = i
+		if current < 0 or is_inf(distances[current]): break
+		if current < 24 and current / 4 == b:
+			end = current
+			break
+		visited.append(current)
+		for i in range(vertices.size()):
+			var distance := distances[current] + vertices[current].distance_to(vertices[i])
+			if distance < distances[i] and _clear_segment(vertices[current], vertices[i], obstacles):
+				distances[i] = distance
+				previous[i] = current
+	var points: Array[Vector2] = []
+	while end >= 0:
+		points.push_front(vertices[end])
+		end = previous[end]
+	var curve := Curve2D.new()
+	for point in points: curve.add_point(point)
+	var path := curve.get_baked_points()
+	_anatomy_paths[key] = path
+	var reverse := path.duplicate()
+	reverse.reverse()
+	_anatomy_paths[Vector2i(b, a)] = reverse
+	return path
 
 func _cable(path: PackedVector2Array, color: Color, active: bool, broken: bool = false) -> void:
 	if path.size() < 2: return

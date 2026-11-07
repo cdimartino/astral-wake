@@ -11,6 +11,19 @@ import uuid
 
 MAX_LINE = 1024 * 1024
 VERSIONS = ("2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05")
+INSTRUCTIONS = """Control Astral Wake only through this MCP connection. Read get_state first,
+then choose a semantic action and arguments from that state's legal_actions. Call
+act with that exact state's revision as expected_revision; refresh state after
+stale_revision. Stage combat through visible card, route and target selections,
+then preview the live selection before confirming. Use wait_for_state with
+after_revision and timeout_ms <= 30000 for presentation completion; refresh state
+and legal_actions before the next action. Never automatically retry a mutation
+after disconnect or an uncertain outcome: read fresh state first. Do not inspect
+secrets, credentials, save files or hidden game data to choose actions. Blind-play
+protection depends on the connected game's state projection: the old v0.2.0 app
+still exposes hidden data, so this host alone does not make that app fully blind.
+Use only information the current game intentionally makes visible to the player.
+The astral://state resource supports read/subscription updates."""
 
 
 class BridgeError(Exception):
@@ -217,6 +230,7 @@ class Server:
             self.initialized = True
             version = params["protocolVersion"]
             return {"protocolVersion": version if version in VERSIONS else VERSIONS[0],
+                    "instructions": INSTRUCTIONS,
                     "capabilities": {"tools": {}, "resources": {"subscribe": True}},
                     "serverInfo": {"name": "astral-wake", "version": "1.0.0"}}
         if not self.initialized:

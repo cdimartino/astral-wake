@@ -21,7 +21,13 @@ func capture(name: String) -> void:
  await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png(output.path_join(name+".png"))
 func finish() -> void:
- while ui.presentation_busy(): await process_frame
+ var started=Time.get_ticks_msec()
+ while ui.presentation_busy():
+  if Time.get_ticks_msec()-started>10000:
+   require(false,"Presentation never finished")
+   ui._render()
+   break
+  await process_frame
  await settle()
 func fixture(count: int, card_id: String, reduced: bool=false) -> void:
  ui.game.new_run(7163)

@@ -3,6 +3,7 @@ extends Control
 const ORIGIN := Vector2(60, 220)
 const NODE_SIZE := Vector2(190, 96)
 const GRAPH_SIZE := Vector2(680, 286)
+const INSPECTOR_RECT := Rect2(266, 112, 210, 66)
 const POSITIONS := [Vector2(270, 0), Vector2(480, 40), Vector2(475, 167), Vector2(270, 185), Vector2(65, 157), Vector2(25, 25)]
 var tint := Color("bcb5ff")
 

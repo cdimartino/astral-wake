@@ -33,7 +33,7 @@ for path in tracks:
         print(f'{path.name} channel {channel}: RMS {middle:.1f}, seam RMS {edges[0]:.1f}/{edges[1]:.1f}, boundary step {seam}')
 
 combat = sorted((Path(__file__).resolve().parents[1] / 'audio').glob('combat_*.wav'))
-assert len(combat) == 21, 'all combat launches, impacts and support cues must exist'
+assert len(combat) == 22, 'all combat launches, impacts and support cues must exist'
 digests = set()
 for path in combat:
     with wave.open(str(path)) as cue:
@@ -43,9 +43,13 @@ for path in combat:
         raw = cue.readframes(count)
         samples = struct.unpack(f'<{count * 2}h', raw)
     assert max(map(abs, samples)) < 32000, (path.name, 'clipping')
-    assert rms(samples) > 700, (path.name, 'inaudible cue')
+    if path.stem in ('combat_draw', 'combat_discard'):
+        assert 250 < rms(samples) < 1800, (path.name, 'paper Foley must stay subtle but audible')
+        assert count / 22050 < .35, (path.name, 'paper Foley must stay brief')
+    else:
+        assert rms(samples) > 700, (path.name, 'inaudible cue')
     assert max(map(abs, samples[:2] + samples[-2:])) < 4, (path.name, 'edge click')
     assert any(a != b for a, b in zip(samples[::2], samples[1::2])), (path.name, 'stereo reflection missing')
     digests.add(hashlib.sha256(raw).digest())
 assert len(digests) == len(combat), 'combat cues must not be duplicate recordings'
-print('PASS: 21 distinct stereo combat cues, audible levels, clean edges and no clipping')
+print('PASS: 22 distinct stereo combat cues, subtle paper Foley, clean edges and no clipping')
