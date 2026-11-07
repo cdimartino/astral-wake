@@ -225,6 +225,12 @@ Use the on-screen **Undo** and **Cancel** buttons to edit a route. **Deck** insp
 | Split damage | Damage to secondary enemies, normally half the final command damage, rounded down; Forked Rib adds to each secondary hit. |
 | Trace | The Palimpsest's combat resource, capped at 6; its systems can spend it and reuse part of a previous command's base payload. |
 | Resonance | The Hollow Choir's combat resource, capped at 3. Changing command kinds builds it; repeating a kind resets it before card/organ gains. |
+| Enemy phase | After you end your turn: enemies act, organs cool, and you draw for the next turn. |
+| Saturated / full | An organ at capacity. It cannot take another command until it cools. |
+| Overload | Extra damage for each saturated organ when an enemy's overload attack lands. |
+| Interrupt threshold | An enemy's interruptible action is cancelled if you meet its shown disruption during that turn. |
+| Mark | A hull penalty for repeating your last exact route. |
+| Resource gate | Splice and Chorus split damage only at 2 or more Trace or Resonance; otherwise they add a small bonus. |
 | Salvage | Expedition currency spent at shops and some events. |
 | Evolution | A once-per-copy command upgrade that lasts for the voyage. |
 | Powerup | An installed expedition-wide passive effect. |

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "astral-wake": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["/absolute/path/to/astral-wake/tools/astral_mcp.py", "--port", "${ASTRAL_MCP_PORT}"],
+      "env": {"ASTRAL_MCP_TOKEN": "${ASTRAL_MCP_TOKEN}"},
+      "timeout": 45000
+    }
+  }
+}

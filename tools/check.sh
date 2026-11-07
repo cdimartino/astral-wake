@@ -9,6 +9,7 @@ python3 tests/production_evolutions_test.py
 python3 tests/route_effects_validator_test.py
 python3 tests/check_audio.py
 python3 tests/check_art.py
+python3 tests/test_astral_mcp.py
 "$engine" --headless --path . --editor --import --quit
 "$engine" --headless --path . --script tests/run_tests.gd
 "$engine" --headless --path . --script tests/effective_card_test.gd
@@ -60,6 +61,9 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/actor_motion_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd
+"$engine" --headless --path . --script tests/mcp_controller_test.gd
+"$engine" --headless --path . --script tests/mcp_blind_test.gd
+"$engine" --headless --path . --script tests/mcp_settings_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd
 "$engine" --headless --path . --script tests/intro_test.gd
 "$engine" --headless --path . --script tests/intro_test.gd -- --skip

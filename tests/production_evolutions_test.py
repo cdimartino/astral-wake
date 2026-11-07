@@ -4,10 +4,12 @@ import hashlib
 import json
 from pathlib import Path
 from validate_content import validate, validate_evolutions
+from catalog_fingerprint import historical_display_labels
 
 data = json.loads(Path('data/catalog.json').read_text())
 # Additive draft metadata is validated separately, never part of combat hashes.
 validate(data)
+data = historical_display_labels(data)
 expansion = [c for c in data['cards'] if c.get('introduced_revision', 0) == 1]
 assert len(expansion) == 9
 data['cards'] = [c for c in data['cards'] if c.get('introduced_revision', 0) == 0]

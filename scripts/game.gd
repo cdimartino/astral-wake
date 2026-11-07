@@ -1278,6 +1278,14 @@ func set_settings(settings: Dictionary) -> void:
 			profile.settings[key]=clampf(float(settings[key]),0.0,1.0)
 	save()
 
+func set_mcp_settings(enabled: bool, port: int, token: String) -> bool:
+	if port < 0 or port > 65535 or token.length() < 32 or token.length() > 4096: return false
+	profile.settings["mcp_enabled"] = enabled
+	profile.settings["mcp_port"] = port
+	profile.settings["mcp_token"] = token
+	save()
+	return true
+
 func run_exists() -> bool:
 	return not run.is_empty() and not run.get("finished",false)
 
