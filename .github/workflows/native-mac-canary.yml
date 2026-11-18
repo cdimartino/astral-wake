@@ -1,0 +1,48 @@
+name: Native Mac canary
+on:
+  workflow_dispatch:
+    inputs:
+      architecture:
+        description: Native macOS guest architecture
+        type: choice
+        required: true
+        options:
+          - arm64
+          - x64
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Native macOS (${{ inputs.architecture }})
+    runs-on: [self-hosted, macOS, '${{ inputs.architecture }}', 'homelab-macos-${{ inputs.architecture }}']
+    timeout-minutes: 45
+    env:
+      ASTRAL_AUDIO_DRIVER: Dummy
+      EXPECTED_CPU: ${{ inputs.architecture == 'arm64' && 'arm64' || 'x86_64' }}
+    steps:
+      - name: Verify native execution before checkout
+        run: |
+          set -eu
+          test "$(uname -s)" = Darwin
+          test "$(uname -m)" = "$EXPECTED_CPU"
+          test "$(sysctl -in sysctl.proc_translated)" != 1
+          sw_vers
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - run: bash tools/bootstrap.sh
+      - run: bash tools/check.sh
+      - run: bash tools/export_macos.sh && bash tools/package_release.sh
+      - name: Launch the extracted universal app natively
+        run: |
+          set -eu
+          archives=(dist/Astral-Wake-*-macos.zip)
+          test "${#archives[@]}" -eq 1
+          staging=$(mktemp -d "$RUNNER_TEMP/astral-canary.XXXXXX")
+          trap 'rm -rf "$staging"' EXIT
+          ditto -x -k "${archives[0]}" "$staging"
+          export ASTRAL_SAVE_DIR="$staging/saves"
+          mkdir "$ASTRAL_SAVE_DIR"
+          app="$staging/Astral Wake.app"
+          codesign --verify --deep --strict "$app"
+          /usr/bin/arch -"$EXPECTED_CPU" "$app/Contents/MacOS/Astral Wake" --headless --quit-after 5
