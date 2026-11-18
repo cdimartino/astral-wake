@@ -1,5 +1,7 @@
 name: Native Mac canary
 on:
+  pull_request:
+    types: [synchronize]
   workflow_dispatch:
     inputs:
       architecture:
@@ -13,12 +15,13 @@ permissions:
   contents: read
 jobs:
   native:
-    name: Native macOS (${{ inputs.architecture }})
-    runs-on: [self-hosted, macOS, '${{ inputs.architecture }}', 'homelab-macos-${{ inputs.architecture }}']
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'ci/native-mac-canary')
+    name: Native macOS (${{ inputs.architecture || 'arm64' }})
+    runs-on: [self-hosted, macOS, '${{ inputs.architecture || ''arm64'' }}', 'homelab-macos-${{ inputs.architecture || ''arm64'' }}']
     timeout-minutes: 45
     env:
       ASTRAL_AUDIO_DRIVER: Dummy
-      EXPECTED_CPU: ${{ inputs.architecture == 'arm64' && 'arm64' || 'x86_64' }}
+      EXPECTED_CPU: ${{ inputs.architecture == 'x64' && 'x86_64' || 'arm64' }}
     steps:
       - name: Verify native execution before checkout
         run: |
