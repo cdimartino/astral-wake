@@ -1,0 +1,178 @@
+[
+  {
+    "cohort": "fresh",
+    "seed": "02T4I0",
+    "ship": "palimpsest",
+    "policy": "balanced",
+    "arm": "trial-a",
+    "switch_at": "2/r1-l6-c2",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      2,
+      2
+    ],
+    "entry": "3f5db755451d97f20ce7f3c7d4e9c8e9761ebaa744eca93d4def37ed57d9af34"
+  },
+  {
+    "cohort": "fresh",
+    "seed": "02VDB4",
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l7-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      5,
+      5
+    ],
+    "entry": "9fc563a6f0e019d861a86b69e52a7cad909242eb0306d50c8697daafafdc8621"
+  },
+  {
+    "cohort": "full",
+    "seed": "0420OB",
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l0-c2",
+    "rescued": true,
+    "threshold_plays": 2,
+    "effective_bonus": 6,
+    "turns": [
+      7,
+      9
+    ],
+    "entry": "8f55123f739a07f635f4e40f624571c5ecf898d249ae45c0d8bbb798026acdae"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 424242,
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l6-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      5,
+      5
+    ],
+    "entry": "11302b96757bd1a1d42c68033baded17776fb1d5ba09f7b6bcd7de01f1497d26"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 61579,
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l6-c0",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      2,
+      2
+    ],
+    "entry": "4309218df583e3166a9470c4d7d2a80b9c80056915f23624ae5a4b2228e07ae6"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 777,
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l4-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      3,
+      3
+    ],
+    "entry": "679181186d662b95b3d2d36273ae1579cbfc6722c155fd85cf5f3851047191a6"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 11057,
+    "ship": "palimpsest",
+    "policy": "balanced",
+    "arm": "trial-a",
+    "switch_at": "2/r1-l6-c3",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      5,
+      5
+    ],
+    "entry": "80ea29b9e43d9b021a3347ba2a0b5338f3706994c31aa99524a08fa8640ec4ad"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 2102,
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l1-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      2,
+      2
+    ],
+    "entry": "7d53e23c7080da56c80922e5e8e40b65dccc0ae01e654ff4a061b44944467972"
+  },
+  {
+    "cohort": "fresh",
+    "seed": "034CJK",
+    "ship": "palimpsest",
+    "policy": "balanced",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l0-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      4,
+      4
+    ],
+    "entry": "647575548c3c9d78ac78d8a8494a299a6dafa335c3f276d5b802e814b06c59d3"
+  },
+  {
+    "cohort": "legacy",
+    "seed": 96327,
+    "ship": "palimpsest",
+    "policy": "tactical",
+    "arm": "trial-a",
+    "switch_at": "3/r2-l6-c0",
+    "rescued": false,
+    "threshold_plays": 1,
+    "effective_bonus": 3,
+    "turns": [
+      4,
+      4
+    ],
+    "entry": "511f0ca1295c04f41234f50daf04a03a7bcb3bd3bda0511df75a4ab1b4db97fe"
+  },
+  {
+    "cohort": "full",
+    "seed": "04FHIZ",
+    "ship": "hollow_choir",
+    "policy": "tactical",
+    "arm": "trial-b",
+    "switch_at": "3/r2-l4-c1",
+    "rescued": false,
+    "threshold_plays": 0,
+    "effective_bonus": 0,
+    "turns": [
+      6,
+      6
+    ],
+    "entry": "df7e6c008401b6be3f40b9c961df344dc759eb999278313f669ddcab31f0cd1c"
+  }
+]

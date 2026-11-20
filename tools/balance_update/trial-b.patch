@@ -1,0 +1,10 @@
+--- a/scripts/game.gd
++++ b/scripts/game.gd
+@@ -435,6 +435,7 @@
+ 			var spent=int(battle.resonance)
+ 			battle.resonance=0
+ 			damage+=spent*2
++			if str(instance.id)=="crescendo" and spent==3: damage+=4
+ 			heal+=spent
+ 	var resource_preview={"trace_before":trace_before,"resonance_before":resonance_before,"card_trace":int(battle.get("trace",0)),"card_resonance":int(battle.get("resonance",0))}
+ 	if route.is_empty():

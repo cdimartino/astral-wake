@@ -282,8 +282,7 @@ func check() -> void:
 		ui.game=game
 		ui._render()
 	else:
-		ui.ambience.stop()
-		ui.audio.stop()
+		ui.hull_audio.stop_all()
 		# Let the audio mixer release WAV playback before disposing the fixture UI.
 		await create_timer(0.25).timeout
 		ui.queue_free()

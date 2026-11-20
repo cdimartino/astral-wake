@@ -10,6 +10,10 @@ static func capture(game) -> Dictionary:
 	for ship in ["cartographer", "palimpsest", "hollow_choir"]:
 		game.new_run("A1B2C3", ship)
 		game.run.content_pool_revision=0
+		game.run.rules_revision=0
+		# This oracle predates Ascension; exercise the absent-field A0 identity.
+		game.run.erase("ascension_rank")
+		game.run.erase("modifier_revision")
 		game.choose_node(game.run.map[0][0].id)
 		var initial = Session.snapshot(game.run)
 		initial.hull = 30
@@ -34,6 +38,10 @@ static func capture(game) -> Dictionary:
 					state.battle.hand[0].level = level
 					var result = game._simulate_card(state, 0, route, 0)
 					assert(result.ok)
+					# The compact forecast now names the ward applied. Keep the
+					# original ward state/events in this historical fingerprint.
+					assert(result.ward_gained==result.next.battle.ward-initial.battle.ward)
+					result.erase("ward_gained")
 					# PR28 adds only these presentation records. Keep the original hashes
 					# and every state/RNG field; card_piles_test checks the new records.
 					result.presentation = result.presentation.filter(func(event): return event.kind not in ["discard_card", "draw_card", "shuffle"])
@@ -44,6 +52,8 @@ static func capture(game) -> Dictionary:
 					result.next.erase("schema_revision")
 					assert(result.next.content_pool_revision==0)
 					result.next.erase("content_pool_revision")
+					assert(result.next.rules_revision==0)
+					result.next.erase("rules_revision")
 					assert(result.next.pending_selection.is_empty())
 					result.next.erase("pending_selection")
 					assert(result.next.battle.engine_routes==[route])

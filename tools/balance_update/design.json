@@ -1,0 +1,111 @@
+{
+  "legacy": [
+    424242,
+    777,
+    61579,
+    11057,
+    2102,
+    96327
+  ],
+  "modern": {
+    "fresh": [
+      {
+        "family": 40,
+        "seed": "02QVOW",
+        "tier": 0
+      },
+      {
+        "family": 41,
+        "seed": "02T4I0",
+        "tier": 0
+      },
+      {
+        "family": 42,
+        "seed": "02VDB4",
+        "tier": 0
+      },
+      {
+        "family": 43,
+        "seed": "02XM48",
+        "tier": 0
+      },
+      {
+        "family": 44,
+        "seed": "02ZUXC",
+        "tier": 0
+      },
+      {
+        "family": 45,
+        "seed": "0323QG",
+        "tier": 0
+      },
+      {
+        "family": 46,
+        "seed": "034CJK",
+        "tier": 0
+      },
+      {
+        "family": 47,
+        "seed": "036LCO",
+        "tier": 0
+      }
+    ],
+    "full": [
+      {
+        "family": 60,
+        "seed": "03ZRV7",
+        "tier": 3
+      },
+      {
+        "family": 61,
+        "seed": "0420OB",
+        "tier": 3
+      },
+      {
+        "family": 62,
+        "seed": "0449HF",
+        "tier": 3
+      },
+      {
+        "family": 63,
+        "seed": "046IAJ",
+        "tier": 3
+      },
+      {
+        "family": 64,
+        "seed": "048R3N",
+        "tier": 3
+      },
+      {
+        "family": 65,
+        "seed": "04AZWR",
+        "tier": 3
+      },
+      {
+        "family": 66,
+        "seed": "04D8PV",
+        "tier": 3
+      },
+      {
+        "family": 67,
+        "seed": "04FHIZ",
+        "tier": 3
+      }
+    ]
+  },
+  "legacy_policies": [
+    "balanced",
+    "tactical",
+    "aggressive",
+    "starter_only"
+  ],
+  "modern_policies": [
+    "balanced",
+    "tactical"
+  ],
+  "starter_only": "tactical plus --no-bonuses",
+  "content_pool": 1,
+  "hp_scale": 1,
+  "modern_primary": "report fresh and full separately; tactical and balanced separately",
+  "b_gate": "Relative change in median encounter turns (one-based final active turn) across exact matched node, region, roster identities; also report paired differences, all fights, and late encounters (region 3). Compare within cohort and policy; no pooling across seed versions."
+}

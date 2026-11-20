@@ -1,5 +1,12 @@
 # Required follow-up: Choir base dominance before new cards
 
+**Balance candidate update:** The comparison below documents the original rules,
+which still apply to expeditions saved before the update. New voyages test a
+full-spend Crescendo card: 10/20 pre-organ damage at zero/three Resonance,
+versus Bright Canon's 12/18. That creates distinct uses at equal CP without
+changing the organ or the shop price floor. It does not establish faster
+Choir voyages. See the [ship guide](ships.md#the-hollow-choir).
+
 **Open design prerequisite for any future Choir card expansion. Not resolved by
 #19 distribution, and not permission to rebalance bases in this candidate.**
 

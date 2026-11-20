@@ -54,8 +54,7 @@ func show_demo() -> void:
 	print("NATIVE_REDIRECT "+JSON.stringify({"result":phase,"counters":ui.game.run.battle.engine_counters,"enemies":ui.game.run.battle.enemies}))
 	await capture(ui,"redirect-retaliation")
 	await capture(ui,"redirect-source-counters",true)
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	ui.queue_free()
 	for ignored in range(5): await process_frame
 	quit()

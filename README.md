@@ -2,6 +2,8 @@
 
 An offline deck-building roguelike about a sentient spacecraft finding its way through a strange cosmic frontier. Commands travel through a living circuit: their route changes their effects, and their strain shapes what you can do next.
 
+Hear the universe through the ship’s hull: each region has its own acoustic score, and cards, organs and combat have distinct sounds. The [Sound Desk and composer pack](docs/sound-workshop.md) let you change the mix live or take the original multitrack MIDI into a sequencer.
+
 ![The Cartographer routing Needle of Dawn through Lens, Fork, and Echo, previewing damage before committing](docs/screenshots/cartographer-combat.png)
 
 *Every command follows a route. Organ order changes its effects; strain and command points shape your next move.*
@@ -13,6 +15,8 @@ An offline deck-building roguelike about a sentient spacecraft finding its way t
 ## Learn to play
 
 Start with the [gameplay guide](docs/gameplay.md), then explore the [ships and organs guide](docs/ships.md) for each vessel’s network, resource mechanics, starting deck, and example routes. The [documentation hub](docs/README.md) brings the guides together.
+
+Win an ordinary expedition to unlock the next **Ascension** for that ship, up to A11. A0 keeps the original difficulty, and seeded practice never unlocks a rank. See the [rank rules and playtest results](docs/ascension-playtest.md).
 
 ## Install on macOS
 
@@ -117,7 +121,7 @@ bash tools/package_release.sh
 
 To block merging when tests fail, configure a GitHub branch protection rule or ruleset for `main` requiring the **Godot 4.7.2 checks** status check after its first workflow run.
 
-Packaging creates `dist/Astral-Wake-0.2.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
+Packaging creates `dist/Astral-Wake-0.3.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
 
 The bootstrap downloads approximately 1.5GB of editor/export archives into ignored `.tools/`. Only the Mac template is extracted. On macOS, editor import/export needs permission to write Godot's normal user-data/editor settings folder; restricted automation sandboxes may require an approved native launch.
 
@@ -135,7 +139,7 @@ local-only; control is disabled until enabled in Settings, and that preference p
 - `scripts/main.gd`, `scripts/space_canvas.gd`, `scripts/intro_cinematic.gd`: native presentation, opening film, input and audio.
 - `data/catalog.json`: authored content, stable IDs, balance values.
 - `art/`: original backgrounds, vessel/enemy artwork, and 72 command illustrations; prompts and provenance live alongside the assets and in `art/PROMPTS.md`.
-- `audio/`: original synthesized region music and effects; reproducible with `python3 tools/make_audio.py`. Rebuild the 22 combat cues separately with `python3 tools/make_combat_audio.py`; attack families have distinct launches and impacts, with overlapping voices and subtle pitch variation. Use `--cards-only` to rebuild the brief, dry paper draw/discard sounds.
+- `audio/hull/`: the Living Hull sample bank and six regional arrangements. Use **Settings → Enter admin mode · Sound Desk** to audition and swap sounds while playing a separate copy of your expedition. See [the sound workshop](docs/sound-workshop.md) for the editable SoundFont/MIDI pack and listening comparison. Run `python3 tools/hull_score/build.py --pack` to rebuild it.
 - `tests/`: headless rules/regression checks, native scene smoke and deterministic full-run policy.
 - `docs/`: gameplay guide, ship and organ reference, and reproducible native screenshots.
 
@@ -175,4 +179,4 @@ The Godot project launches `main.tscn`, whose root control uses `scripts/main.gd
 
 ### System verification
 
-Run `bash tools/check.sh` from the repository root with the cached Godot engine installed. It validates authored content and media, imports the project, runs headless rules/UI/audio checks, and executes a seeded tactical expedition. It isolates saves with `ASTRAL_SAVE_DIR`; its audio smoke check explicitly requires CoreAudio. This does not verify Homebrew installation, notarization, or human playtime. Check cask syntax separately with `ruby -c Casks/astral-wake.rb`.
+Run `bash tools/check.sh` from the repository root with the cached Godot engine installed. It validates authored content and media, imports the project, runs headless rules/UI/audio checks, and executes a seeded tactical expedition. It isolates saves with `ASTRAL_SAVE_DIR`; it defaults to CoreAudio, while CI uses `ASTRAL_AUDIO_DRIVER=Dummy`. This does not verify Homebrew installation, notarization, or human playtime. Check cask syntax separately with `ruby -c Casks/astral-wake.rb`.

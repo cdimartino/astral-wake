@@ -275,8 +275,7 @@ func check() -> void:
 	if OS.get_cmdline_user_args().has("--demo"):
 		print("TEST FIXTURE DEMO ONLY: inspect four piles, [R] EVERY TURN and [R1] NEXT DISCARD. Close window to exit.")
 		return
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

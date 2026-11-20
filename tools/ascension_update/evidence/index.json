@@ -1,0 +1,29 @@
+{
+  "counts": {
+    "defeat": 369,
+    "victory": 93
+  },
+  "matrix": {
+    "bytes": 8387330,
+    "files": 1894,
+    "original_sha256": "16ef63c8e31dea6a835b30161050a3f6ccb4c10e545440e3e4e684adf3a0369a",
+    "path": "ascension-v1-matrix.tar.gz",
+    "saves_excluded": true,
+    "sha256": "6e88edb60a99fbd722438469090b1e23b61d651158322ee861749a9bf8732860"
+  },
+  "original_candidate_fingerprint": "fc454e1a1ef46005f2fbea2bb7ad5a0a25bf76893630504cdf4b2fa23f7db32a",
+  "original_finalizer_sha256": "15ab245e9219a90a65f73572ed01961593baa4bc0280fc4f3d2e0694039c77ac",
+  "original_passed": true,
+  "parity24": {
+    "bytes": 754334,
+    "files": 116,
+    "original_sha256": "301675904226af9ee6d89aa31bb37fe18206e4f76655a2a4d1075c89ae2a47d4",
+    "path": "ascension-v1-parity24.tar.gz",
+    "saves_excluded": true,
+    "sha256": "b13c1d211ed9abc53449b1956293cec6eb90e86c57623580eac6ff78ca947f04"
+  },
+  "public_copy_notice": "All embedded manifest, fingerprint, row, command, capture, file and chain digests describe unmodified originals only. Original audits applied only to those originals. Public copies are not certified replay/hash-chain inputs. This proof certifies byte equality after the declared prefix substitution, including nested gzip; gameplay data is otherwise unchanged.",
+  "public_proof": "public-proof.json",
+  "unresolved": 0,
+  "witnesses": 36
+}

@@ -71,8 +71,7 @@ func check() -> void:
 	start("palimpsest", "margin_knife")
 	forecast = ui.game.preview_card(0, [1], 0)
 	require(forecast.route_steps[0].status == "fallback", "Splice fallback indistinguishable")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

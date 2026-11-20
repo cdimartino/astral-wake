@@ -42,7 +42,9 @@ func run_checks() -> void:
 	require(AudioServer.is_bus_mute(AudioServer.get_bus_index("Music")), "Music mute applies immediately")
 	require(not AudioServer.is_bus_mute(AudioServer.get_bus_index("Combat")), "Music mute does not mute combat")
 	require(is_equal_approx(db_to_linear(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Combat"))), 0.35), "Combat gain applies independently")
-	require(ui.ambience.bus == "Music" and ui.audio.bus == "Interface" and ui.combat_voices.all(func(voice): return voice.bus == "Combat"), "All players route to their category buses")
+	require(ui.hull_audio.bank.cues.click.bus == "Interface" and ui.hull_audio.bank.cues.combat_shield.bus == "Combat", "Cues keep separate interface and combat routing")
+	for event in ui.hull_audio.bank.scores.title.events:
+		require(ui.hull_audio.bank.cues[event.cue].bus == "Music", "Title music obeys Music mute")
 	var restored := Game.new(OS.get_environment("ASTRAL_SAVE_DIR"))
 	for key in ["volume", "music_volume", "combat_volume", "interface_volume"]:
 		require(is_equal_approx(float(restored.profile.settings[key]), float(ui.game.profile.settings[key])), "Volume survives reload: " + key)
@@ -50,8 +52,7 @@ func run_checks() -> void:
 	require(AudioServer.is_bus_mute(0), "Master zero mutes all categories")
 	ui.game.set_settings({"volume":0.5, "music_volume":1.0, "combat_volume":1.0, "interface_volume":1.0})
 	ui._apply_settings()
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	await create_timer(0.15).timeout
 	ui.queue_free()

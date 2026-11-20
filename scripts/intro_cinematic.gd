@@ -1,10 +1,11 @@
 extends Control
 ## A local, skippable film. It never changes expedition or profile state.
 signal finished
+signal fading_out
 var ending := false
 var video: VideoStreamPlayer
 
-func start(volume: float) -> void:
+func start() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	z_index = 100
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -16,7 +17,8 @@ func start(volume: float) -> void:
 	video.bus = "Music" if AudioServer.get_bus_index("Music") >= 0 else "Master"
 	video.expand = true
 	video.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	video.volume_db = linear_to_db(maxf(0.001, volume))
+	# The live bank supplies the score; never mix the legacy embedded soundtrack.
+	video.volume = 0.0
 	add_child(video)
 	if not ResourceLoader.exists("res://art/cinematic/opening.ogv"):
 		skip.call_deferred()
@@ -46,9 +48,9 @@ func _input(event: InputEvent) -> void:
 func skip() -> void:
 	if ending: return
 	ending = true
+	fading_out.emit()
 	var fade := create_tween().set_parallel()
 	fade.tween_property(self, "modulate:a", 0.0, 0.7)
-	if is_instance_valid(video): fade.tween_property(video, "volume_db", -60.0, 0.7)
 	fade.chain().tween_callback(func():
 		finished.emit()
 		queue_free())

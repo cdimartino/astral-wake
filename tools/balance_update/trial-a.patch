@@ -1,0 +1,27 @@
+--- a/scripts/game.gd
++++ b/scripts/game.gd
+@@ -449,6 +449,7 @@
+ 		if route.size()==1: damage+=_effect(state,"short_route")
+ 		if route.size()==3: damage+=_effect(state,"long_route")
+ 	if heal>0: heal+=_effect(state,"heal")
++	var recall_primary_bonus=0
+ 	var split=false
+ 	var redirect=0
+ 	var route_steps=[]
+@@ -476,6 +477,7 @@
+ 				elif damage>0: damage+=2
+ 			"recall":
+ 				if damage>0:
++					if vessel_id=="palimpsest" and int(battle.trace)==6: recall_primary_bonus=3
+ 					damage+=int(battle.trace)*2+_effect(state,"echo")
+ 					battle.trace=0
+ 			"palimend":
+@@ -549,7 +551,7 @@
+ 		if hull_delta>0: events.append("Repeated route triggers your last ember: hull restored to %d."%int(state.hull))
+ 		else: events.append("Repeated route: %d hull lost."%-hull_delta)
+ 	if damage>0:
+-		var dealt=_damage_enemy(state,target_index,damage,route.size())
++		var dealt=_damage_enemy(state,target_index,damage+recall_primary_bonus,route.size())
+ 		actual_damage+=dealt
+ 		presentation.append({"kind":"damage","target_index":target_index,"amount":dealt,"split":false})
+ 		events.append("%s: %d damage." % [target.name,dealt])

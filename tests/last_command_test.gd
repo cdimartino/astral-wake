@@ -67,8 +67,7 @@ func run_checks() -> void:
 		game.run.battle.erase("last_command")
 		game.save()
 		require(restored.load_saved(), "Old saves without command snapshots rejected")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

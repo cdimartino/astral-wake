@@ -28,6 +28,11 @@ func _init(owner):
 
 func _command(button: Button) -> String:
 	var n := str(button.name)
+	if main.choosing_character and button.get_meta("mcp_control", "") == "select_ascension" and n.begins_with("AscensionRank") and n.trim_prefix("AscensionRank").is_valid_int():
+		return "select_ascension"
+	if button.get_meta("map_node", false):
+		return "choose_node" if button.get_meta("reachable_destination", false) else "inspect_node"
+	if button.has_meta("purchase_slot"): return "buy"
 	if n in ["DrawPile", "DiscardPile", "ExhaustedPile", "InstalledPile"]: return "inspect_pile"
 	if n == "LastCommand": return "inspect_last_command"
 	if button.text == "Choose cards [Space]": return "confirm"
@@ -39,7 +44,7 @@ func _command(button: Button) -> String:
 	if is_instance_valid(main.overlay) and main.overlay.get_meta("mcp_title", "").begins_with("Choose one evolution") and button.text.begins_with("Confirm "): return "choose_evolution"
 	if button.text.begins_with("Retry seed · "): return "retry_expedition"
 	if button.text == "Travel here →": return "choose_node"
-	for pair in [["CharacterChoice", "select_character"], ["CharacterDetails", "character_details"], ["Destination", "choose_node"], ["Organ", "select_organ"], ["Hand", "select_card"], ["EnemyTarget", "select_target"]]:
+	for pair in [["CharacterChoice", "select_character"], ["CharacterDetails", "character_details"], ["Organ", "select_organ"], ["Hand", "select_card"], ["EnemyTarget", "select_target"]]:
 		if n.begins_with(pair[0]) and n.trim_prefix(pair[0]).is_valid_int(): return pair[1]
 	if button.text.begins_with("Deck ·"): return "open_deck"
 	if button.text.begins_with("Buy ·"): return "buy"
@@ -55,9 +60,15 @@ func snapshot() -> Dictionary:
 	var root = main.overlay if is_instance_valid(main.overlay) else main.page
 	var hidden_pile: bool = root.get_meta("mcp_title", "") == "Draw pile"
 	var busy: bool = main.presentation_busy() or is_instance_valid(main.opening_film)
+	var has_map_destinations := false
 	for node in root.find_children("*", "", true, false):
-		if node is Label and node.is_visible_in_tree() and not _private(node) and not hidden_pile: texts.append(node.text)
+		if node is Button and node.is_visible_in_tree() and not _private(node) and node.get_meta("map_node", false):
+			has_map_destinations = true
+	for node in root.find_children("*", "", true, false):
+		if _private(node): continue
+		if node is Label and node.is_visible_in_tree() and not hidden_pile: texts.append(node.text)
 		if not node is Button or node is CheckBox or not node.is_visible_in_tree(): continue
+		if has_map_destinations and node.text == "Travel here →" and not node.get_meta("map_node", false): continue
 		var command := _command(node)
 		if hidden_pile and command != "close_overlay": continue
 		if command.is_empty(): continue
@@ -68,7 +79,7 @@ func snapshot() -> Dictionary:
 			var options: Array = []
 			for i in range(bindings[command].size()):
 				var button: Button = bindings[command][i]
-				if not button.disabled: options.append({"index":i, "label":button.text, "description":button.tooltip_text, "control":str(button.name)})
+				if not button.disabled: options.append(_option(button, i))
 			if not options.is_empty(): legal.append({"action":command, "args":{"index":{"type":"integer", "options":options}}, "description":"Activate the corresponding visible " + command + " control. index defaults to 0."})
 		if is_instance_valid(main.overlay) and main.overlay.get_meta("mcp_title", "") == "Settings":
 			legal.append({"action":"set_setting", "args":{"key":{"options":["reduced_motion", "fullscreen", "volume", "music_volume", "combat_volume", "interface_volume"]}, "value":{"description":"boolean for motion/fullscreen; finite number 0..1 for volume"}}})
@@ -80,6 +91,27 @@ func snapshot() -> Dictionary:
 		fingerprint = encoded
 	state["revision"] = revision
 	return state
+
+func _option(button: Button, index: int) -> Dictionary:
+	var option := {"index":index, "label":button.text, "description":button.tooltip_text, "control":str(button.name)}
+	if button.get_meta("mcp_control", "") == "select_ascension":
+		option["ascension_rank"] = button.get_meta("ascension_rank", 0)
+		option["ship"] = str(button.get_meta("ship", ""))
+		option["locked"] = bool(button.get_meta("locked", false))
+	if button.get_meta("map_node", false):
+		var identity := str(button.get_meta("focus_key", ""))
+		# The authored destination focus key contains the public map node ID.
+		# Dispatch still uses the current revision's validated visible binding.
+		if identity.begins_with("destination_"):
+			option["node_id"] = identity.trim_prefix("destination_")
+		else:
+			option["map_control"] = str(button.name)
+	if button.has_meta("purchase_name"):
+		option["name"] = str(button.get_meta("purchase_name"))
+		option["price"] = button.get_meta("purchase_price", 0)
+		option["slot"] = button.get_meta("purchase_slot", index)
+		option.label = "%s · %s salvage · slot %s" % [option.name, str(option.price), str(option.slot)]
+	return option
 
 func error(code: String, message: String) -> Dictionary:
 	return {"ok":false, "error":{"code":code, "message":message}, "state":snapshot()}
@@ -144,6 +176,8 @@ func _public_run() -> Dictionary:
 	var run: Dictionary = main.game.run
 	var result := _fields(run, ["character", "region", "layer", "mode", "hull", "max_hull", "salvage", "deck", "powerups", "current_node", "visited", "log", "turns", "elapsed_seconds", "tutorial_step", "modify_return", "modify_kind", "finished", "battles", "reward_generation", "rare_offer_misses", "seeded", "pool_tier", "content_pool_revision"])
 	if run.is_empty(): return result
+	result.ascension_rank = run.get("ascension_rank", 0)
+	result.modifier_revision = run.get("modifier_revision", 0)
 	result.map = []
 	for layer in run.get("map", []):
 		var visible: Array = []
@@ -160,17 +194,20 @@ func _public_run() -> Dictionary:
 	return result
 
 func _public_profile() -> Dictionary:
-	var result := _fields(main.game.profile, ["version", "unlocks"])
+	var result := _fields(main.game.profile, ["version", "unlocks", "ascension_unlocks"])
 	result.settings = _fields(main.game.profile.get("settings", {}), ["reduced_motion", "fullscreen", "volume", "music_volume", "combat_volume", "interface_volume", "mcp_enabled", "mcp_port"])
 	result.history = []
 	for record in main.game.profile.get("history", []):
-		result.history.append(_fields(record, ["character", "won", "region", "turns", "seeded", "battles", "seconds", "date", "deck_size", "reward_generation", "content_pool_revision"]))
+		var visible := _fields(record, ["character", "won", "region", "turns", "seeded", "battles", "seconds", "date", "deck_size", "reward_generation", "content_pool_revision"])
+		visible.ascension_rank = record.get("ascension_rank", 0)
+		visible.modifier_revision = record.get("modifier_revision", 0)
+		result.history.append(visible)
 	return result
 
 func _public_preview(result: Dictionary) -> Dictionary:
 	# In particular omit next, presentation (including future draw identities),
 	# events and summary. Return only the deterministic, player-facing forecast.
-	return _blind(_fields(result, ["ok", "error", "damage", "heal", "disrupt", "cost", "attack_reduction", "command_points", "strain", "resource_preview", "trace", "resonance", "route_steps", "ward", "conditional_damage", "command_cooling", "selection_required"]))
+	return _blind(_fields(result, ["ok", "error", "damage", "heal", "disrupt", "cost", "attack_reduction", "command_points", "strain", "resource_preview", "trace", "resonance", "route_steps", "ward", "ward_gained", "conditional_damage", "command_cooling", "selection_required"]))
 
 # Scrub replay codes repeated in public UI labels/history, not arbitrary keys.
 func _blind(value):

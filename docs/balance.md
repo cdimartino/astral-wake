@@ -1,5 +1,7 @@
 # Difficulty tuning
 
+For the newer balance candidate, see the [720-expedition release check](balance-playtest.md#release-candidate-720-expeditions). The frozen issue-22 results below are a historical measurement, not its control arm.
+
 ## Latest frozen baseline: all cases recorded, 35 unresolved timeouts
 
 The [completed cumulative report](baselines/issue22-complete-resumed.md) and

@@ -1,0 +1,42 @@
+{
+  "format": "astral-wake/scenario-v1",
+  "checkpoint": {
+    "run": {},
+    "unlocks": 0,
+    "ui": {
+      "menu": true,
+      "choosing_character": false,
+      "selected_character": "cartographer",
+      "expedition_seed": "",
+      "anatomy_view": true,
+      "selected_card": -1,
+      "target": 0,
+      "route": [],
+      "modify_page": 0
+    }
+  },
+  "sequence": [
+    "run start cartographer GLASS1",
+    "region jump pale_aperture 0",
+    "scenario wait 5",
+    "encounter battle glass_auditor",
+    "foe spawn absence_kite",
+    "player set hull 75",
+    "card add glass_murmur hand",
+    "stage card 11",
+    "stage organ 0",
+    "stage organ 1",
+    "stage organ 2",
+    "act confirm",
+    "player set ward 25",
+    "phase end",
+    "card add hull_stitch hand",
+    "stage card 12",
+    "stage organ 3",
+    "act confirm",
+    "resolve battle",
+    "act skip_reward",
+    "scenario wait 2",
+    "encounter boss witness_array"
+  ]
+}

@@ -7,3 +7,6 @@ dist/
 recordings/
 __pycache__/
 *.pyc
+.slim/deepwork/
+/tests/artifacts/
+/tools/ascension_update/*.log

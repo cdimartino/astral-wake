@@ -119,7 +119,7 @@ func _process(_delta: float) -> void:
 			var sent := peer.put_partial_data(client.output.slice(0, 65536))
 			if sent[0] != OK: _drop(client)
 			else: client.output = client.output.slice(sent[1])
-	var state: Dictionary = controller.snapshot()
+	var state: Dictionary = _network_state()
 	if state.revision != last_revision:
 		last_revision = state.revision
 		for client in clients:
@@ -128,6 +128,13 @@ func _process(_delta: float) -> void:
 func _drop(client: Dictionary) -> void:
 	client.peer.disconnect_from_host()
 	clients.erase(client)
+
+# The local desk may inspect an experimental game, but remote clients may not.
+# Use the same redacted state for subscriptions, reads and command errors.
+func _network_state() -> Dictionary:
+	if controller.main.hull_admin.active:
+		return {"revision":controller.revision, "busy":true, "ui":{"screen":"local_workshop","overlay":"","selection":{},"notice":"Local workshop in use.","text":[]}, "run":{}, "profile":{}, "legal_actions":[]}
+	return controller.snapshot()
 
 func _queue(client: Dictionary, message: Dictionary) -> void:
 	client.output.append_array((JSON.stringify(message) + "\n").to_utf8_buffer())
@@ -148,6 +155,13 @@ func _handle(client: Dictionary, line: String) -> void:
 	client.authenticated = true
 	if not id is String or id.is_empty() or id.length() > 256 or request.size() != 4 or not request.get("method") is String or not request.get("params") is Dictionary:
 		_queue(client, _failure(id if id is String else null, "invalid_request", "Expected id, token, method and params"))
+		return
+	if controller.main.hull_admin.active:
+		var parked := _network_state()
+		if request.method == "get_state" and request.params.is_empty():
+			_queue(client, {"id":id,"ok":true,"state":parked,"result":{}})
+		else:
+			_queue(client, {"id":id,"ok":false,"state":parked,"error":{"code":"busy","message":"Local workshop in use."}})
 		return
 	if client.cache.has(id):
 		var cached: Dictionary = client.cache[id]

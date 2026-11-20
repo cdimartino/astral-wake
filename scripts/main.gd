@@ -59,6 +59,7 @@ var menu := true
 var choosing_character := false
 var selected_character := "cartographer"
 var expedition_seed := ""
+var selected_ascension := 0
 var ship_atlas: Texture2D
 var card_atlas: Texture2D
 var player_hd: Texture2D
@@ -71,19 +72,25 @@ var expansion_enemies: Dictionary = {}
 var map_icons: Dictionary = {}
 var region_textures: Array = []
 var background: TextureRect
-var audio: AudioStreamPlayer
-var combat_voices: Array[AudioStreamPlayer] = []
+# These services outlive a redraw of the game stage.
+var services := Node.new()
+var hull_audio = preload("res://scripts/hull_audio.gd").new()
+var hull_admin = preload("res://scripts/hull_admin.gd").new()
+var desk_layer := CanvasLayer.new()
+var hull_desk: Control
+var desk_key := KEY_QUOTELEFT
+var desk_settings := ConfigFile.new()
+var desk_settings_path: String
 var combat_sound_times := {}
 var combat_voice_cursor := 0
-var ambience: AudioStreamPlayer
-var sounds: Dictionary = {}
 var focus_key := ""
 var hand_buttons: Array[Button] = []
 var hover_card := -1
 var modify_page := 0
 var map_detail: VBoxContainer
-var tracks: Dictionary = {}
-var music_region := -99
+var cinematic_active := false
+var pending_stinger := ""
+var pending_stinger_key := ""
 var heading_font: Font
 var title_font: Font
 var player_art: TextureRect
@@ -130,15 +137,21 @@ func _ready() -> void:
 	mcp_bridge = preload("res://scripts/mcp_bridge.gd").new()
 	mcp_bridge.controller = mcp_controller
 	# Keep the listener outside the presentation children rebuilt by _render.
-	audio.add_child(mcp_bridge)
+	services.add_child(mcp_bridge)
+	hull_admin.setup(self, hull_audio)
 	if DisplayServer.get_name() != "headless" and OS.get_environment("ASTRAL_SKIP_INTRO") != "1" and not game.profile.get("settings", {}).get("reduced_motion", false):
-		opening_film = OpeningFilm.new()
-		add_child(opening_film)
-		ambience.stop()
-		opening_film.finished.connect(func():
-			opening_film = null
-			ambience.play())
-		opening_film.start(1.0)
+		_start_opening()
+
+func _start_opening() -> void:
+	cinematic_active = true
+	opening_film = OpeningFilm.new()
+	add_child(opening_film)
+	opening_film.fading_out.connect(func():
+		cinematic_active = false
+		_soundtrack())
+	opening_film.finished.connect(func(): opening_film = null)
+	opening_film.start()
+	if cinematic_active: _soundtrack()
 
 func _build_theme() -> void:
 	var t := Theme.new()
@@ -226,7 +239,9 @@ func _button(text: String, callback: Callable, tip: String = "", accent: bool = 
 	button.focus_mode = Control.FOCUS_ALL
 	button.set_meta("focus_key", text)
 	button.pressed.connect(func():
-		_tick()
+		# Cards, organs and ship selectors supply the same material sound for
+		# keyboard and pointer activation; avoid a second generic menu click.
+		if not (button.name.begins_with("Hand") or button.name.begins_with("Organ") or button.name.begins_with("CharacterChoice")): _tick()
 		callback.call()
 	)
 	if accent:
@@ -334,7 +349,7 @@ func _render() -> void:
 	if is_instance_valid(focused):
 		focus_key = str(focused.get_meta("focus_key", ""))
 	for child in get_children():
-		if child != audio and child != ambience:
+		if child != services:
 			remove_child(child)
 			child.queue_free()
 	overlay = null
@@ -397,10 +412,13 @@ func _render() -> void:
 		banner.add_theme_stylebox_override("normal", _style(Color(0.03, 0.06, 0.10, 0.95), CORAL, 8, 10))
 	_soundtrack()
 	if not menu and game.selection_pending(): _selection_chooser()
+	if is_instance_valid(hull_desk):
+		page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+		if is_instance_valid(overlay): overlay.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 	_focus_first.call_deferred()
 
 func _focus_first() -> void:
-	if not is_instance_valid(page) or is_instance_valid(overlay):
+	if not is_instance_valid(page) or is_instance_valid(overlay) or is_instance_valid(hull_desk):
 		return
 	var buttons := page.find_children("*", "Button", true, false)
 	if not menu and game.run.get("mode", "") == "map":
@@ -424,6 +442,10 @@ func _header() -> void:
 	_at(bar, Rect2(0, 0, 1440, 78))
 	_screen_text("A / W", Rect2(38, 22, 94, 40), 30, TEAL)
 	_screen_text("ASTRAL WAKE", Rect2(138, 27, 260, 32), 21, CREAM)
+	if hull_admin.active:
+		var desk_button := _button("Sound Desk", _show_desk, "Local sandbox · your expedition is parked.")
+		desk_button.set_meta("mcp_private", true)
+		_at(desk_button, Rect2(383, 17, 151, 46))
 	if not menu and not game.run.is_empty():
 		var header_hull := _screen_text("HULL  %d / %d" % [game.run.hull, game.run.max_hull], Rect2(550, 28, 220, 30), 20, CORAL if game.run.hull < 30 else TEAL)
 		header_hull.name = "HeaderHull"
@@ -455,6 +477,7 @@ func _title() -> void:
 
 func _request_new() -> void:
 	expedition_seed = ""
+	selected_ascension = 0
 	choosing_character = true
 	menu = true
 	selected_character = str(game.run.get("character", selected_character))
@@ -468,7 +491,7 @@ func _begin_character_run() -> void:
 		return
 	if game.run_exists() or (game.run.is_empty() and not game.save_error.is_empty()):
 		var body := _modal("Replace this expedition?")
-		body.add_child(_text("Begin a new voyage aboard %s. The active expedition will be replaced and its current progress cannot be resumed." % str(game.character(selected_character).name), 19, CREAM))
+		body.add_child(_text("Begin an A%d voyage aboard %s. The active expedition will be replaced and its current progress cannot be resumed." % [selected_ascension, str(game.character(selected_character).name)], 19, CREAM))
 		var row := _row(body)
 		row.add_child(_button("Keep expedition", _close_overlay))
 		row.add_child(_button("Replace and begin", _new_run, "Replace the saved expedition.", true))
@@ -478,11 +501,11 @@ func _begin_character_run() -> void:
 func _new_run() -> void:
 	choosing_character = false
 	menu = false
-	_perform(func(): return game.new_run(expedition_seed, selected_character))
+	_perform(func(): return game.new_run(expedition_seed, selected_character, selected_ascension))
 
 func _character_selection() -> void:
 	_reading_plate(Rect2(44, 118, 1352, 84))
-	_screen_text("Select your ship", Rect2(60, 130, 1320, 66), 43, CREAM)
+	_screen_text("Select your ship", Rect2(60, 126, 500, 66), 43, CREAM)
 	_screen_text("Seed (optional)", Rect2(600, 137, 180, 29), 18, CREAM)
 	var seed_input := LineEdit.new()
 	seed_input.name = "ExpeditionSeed"
@@ -502,25 +525,75 @@ func _character_selection() -> void:
 		var x := 50.0 + i * 456
 		var pick := _button("", func():
 			selected_character = id
+			if selected_ascension > int(game.ascension_unlocked(id)): selected_ascension = 0
+			_sound("ship_select")
 			_render(), "Select " + str(character.name), selected)
 		pick.name = "CharacterChoice%d" % i
 		pick.set_meta("focus_key", "character_" + id)
+		pick.set_meta("mcp_control", "select_ship")
+		pick.set_meta("ship", id)
 		pick.add_theme_stylebox_override("normal", _style(Color(0.025, 0.07, 0.11, 0.35), TEAL if selected else Color("41576b"), 18, 0, 2 if selected else 1))
-		_at(pick, Rect2(x, 225, 420, 530))
+		_at(pick, Rect2(x, 210, 420, 510))
 		var image := _character_image(id, 410)
-		_at(image, Rect2(20, 18, 380, 410), pick)
-		var name_label := _screen_text(("› " if selected else "") + str(character.name), Rect2(20, 450, 380, 52), 30, TEAL if selected else CREAM, pick)
+		_at(image, Rect2(20, 18, 380, 385), pick)
+		var name_label := _screen_text(("› " if selected else "") + str(character.name), Rect2(20, 425, 380, 52), 30, TEAL if selected else CREAM, pick)
 		name_label.add_theme_stylebox_override("normal", _style(Color("0b1926"), Color.TRANSPARENT, 8, 0))
 		name_label.max_lines_visible = 2
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var details := _button("Details", func(): _character_info(id), "Inspect this ship’s systems and starting deck.")
 		details.name = "CharacterDetails%d" % i
-		_at(details, Rect2(x + 110, 771, 200, 44))
+		_at(details, Rect2(x + 110, 718, 200, 40))
+	_ascension_selector()
 	_at(_button("Back", func():
 		choosing_character = false
 		menu = true
-		_render()), Rect2(60, 832, 220, 48))
-	_at(_button("Begin →", _begin_character_run, "Begin aboard the selected ship.", true), Rect2(1030, 826, 350, 54))
+		_render()), Rect2(60, 844, 220, 48))
+	_at(_button("Begin →", _begin_character_run, "Begin aboard the selected ship.", true), Rect2(1030, 844, 350, 48))
+
+func _ascension_selector() -> void:
+	var maximum := int(Game.Ascension.MAX_RANK)
+	var unlocked := int(game.ascension_unlocked(selected_character))
+	selected_ascension = clampi(selected_ascension, 0, unlocked)
+	_reading_plate(Rect2(50, 760, 1340, 80))
+	_screen_text("ASCENSION", Rect2(62, 770, 132, 28), 16, GOLD)
+	for rank in range(maximum + 1):
+		var button := _button("A%d" % rank, func():
+			if rank <= int(game.ascension_unlocked(selected_character)):
+				selected_ascension = rank
+				_render()
+			else:
+				notice = "A%d is locked. Win an ordinary A%d voyage aboard this ship to unlock it." % [rank, rank - 1]
+				_render(), "Choose Ascension %d" % rank)
+		button.name = "AscensionRank%d" % rank
+		button.set_meta("focus_key", "ascension_%d" % rank)
+		button.set_meta("mcp_control", "select_ascension")
+		button.set_meta("ascension_rank", rank)
+		button.set_meta("ship", selected_character)
+		button.set_meta("locked", rank > unlocked)
+		# Rank chips form a compact keyboard row; the global menu-button padding
+		# makes their actual minimum height exceed their allocated space.
+		button.add_theme_stylebox_override("normal", _style(Color("172a3d"), Color("344a5e"), 8, 2))
+		button.add_theme_stylebox_override("hover", _style(Color("20394c"), TEAL, 8, 2))
+		button.add_theme_stylebox_override("pressed", _style(Color("203f48"), TEAL, 8, 2))
+		button.add_theme_stylebox_override("focus", _style(Color(0, 0, 0, 0), GOLD, 8, 2, 2))
+		button.add_theme_stylebox_override("disabled", _style(Color("122030"), Color("233444"), 8, 2))
+		button.custom_minimum_size = Vector2(35, 36)
+		button.add_theme_font_size_override("font_size", 15)
+		if rank == selected_ascension: button.add_theme_color_override("font_color", TEAL)
+		elif rank > unlocked: button.add_theme_color_override("font_color", MUTED)
+		_at(button, Rect2(196 + rank * 56, 766, 35, 36))
+	var previous := game.ascension_delta(selected_ascension)
+	var summary := "A%d · %s" % [selected_ascension, "Current rules · no added pressure." if selected_ascension == 0 else "+ " + previous]
+	_screen_text(summary, Rect2(885, 766, 320, 36), 14, CREAM)
+	_at(_button("Rules", _show_ascension_rules, "Review all cumulative Ascension rules."), Rect2(1230, 766, 112, 36))
+	if unlocked < maximum:
+		_screen_text("Ordinary A%d voyage win unlocks A%d for this ship." % [unlocked, unlocked + 1], Rect2(196, 814, 460, 18), 14, GOLD)
+
+func _show_ascension_rules() -> void:
+	var body := _modal("Ascension A%d · rules" % selected_ascension)
+	body.add_child(_text("These pressures stack. Ascension 0 keeps the current rules unchanged.", 18, CREAM))
+	for rank in range(1, selected_ascension + 1):
+		body.add_child(_text("A%d · %s" % [rank, game.ascension_delta(rank)], 17, GOLD if rank == selected_ascension else MUTED))
 
 func _character_info(id: String) -> void:
 	var character: Dictionary = game.character(id)
@@ -545,7 +618,7 @@ func _section(kicker: String, title: String, description: String = "") -> void:
 func _map() -> void:
 	var region: Dictionary = game.region()
 	_reading_plate(Rect2(44, 94, 1352, 88))
-	_screen_text("REGION %d / 3  ·  %s" % [int(game.run.region) + 1, str(region.get("name", "Frontier")).to_upper()], Rect2(58, 103, 1100, 38), 27, CREAM)
+	_screen_text("A%d  ·  REGION %d / 3  ·  %s" % [int(game.run.get("ascension_rank", 0)), int(game.run.region) + 1, str(region.get("name", "Frontier")).to_upper()], Rect2(58, 103, 1100, 38), 27, CREAM)
 	_screen_text("Chart a course through the stars. Lit destinations are within reach.", Rect2(62, 149, 1250, 30), 20, TEAL)
 	var scroll := ScrollContainer.new()
 	scroll.name = "StarChartScroll"
@@ -646,7 +719,7 @@ func _combat() -> void:
 	var battle: Dictionary = game.run.battle
 	target = clampi(target, 0, maxi(0, battle.enemies.size() - 1))
 	_reading_plate(Rect2(34, 86, 1370, 82))
-	_screen_text(str(game.region().get("name", "Frontier")), Rect2(45, 95, 365, 32), 22, CREAM)
+	_screen_text("A%d · %s" % [int(game.run.get("ascension_rank", 0)), str(game.region().get("name", "Frontier"))], Rect2(45, 95, 365, 32), 22, CREAM)
 	var points := int(battle.get("command_points", 3))
 	var maximum := int(battle.get("max_command_points", 3))
 	var points_label := _screen_text("COMMAND POINTS  %d / %d" % [points, maximum], Rect2(430, 95, 345, 32), 20, GOLD if points > 0 else CORAL)
@@ -989,6 +1062,7 @@ func _preview() -> void:
 	var heading := "SELECT A COMMAND · TRACE A ROUTE"
 	var summary := "Lit organs connect. Filled cells show strain; gold outlines preview the change."
 	var full_summary := summary
+	var source_detail := ""
 	if selected_card >= 0 and selected_card < game.run.battle.hand.size():
 		var instance: Dictionary = game.run.battle.hand[selected_card]
 		var names: Array[String] = []
@@ -1001,12 +1075,13 @@ func _preview() -> void:
 		full_summary = str(result.get("summary", "")) if valid else str(result.get("error", "Choose a legal route."))
 		full_summary += _resource_flow_text(result)
 		summary = _command_preview_summary(result) if valid else full_summary
+		if valid: source_detail = "\n" + _command_preview_summary(result)
 	_screen_text(heading, Rect2(58, 545, 700, 26), 19, TEAL)
 	var detail := _screen_text(summary.replace("\n", " · "), Rect2(58, 575, 700, 27), 17, CREAM if selected_card < 0 or valid else CORAL)
 	detail.name = "RoutePreviewSummary"
 	detail.max_lines_visible = 1
 	detail.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	detail.tooltip_text = full_summary + _keyword_definitions(full_summary)
+	detail.tooltip_text = full_summary + source_detail + _keyword_definitions(full_summary)
 	detail.mouse_filter = Control.MOUSE_FILTER_STOP
 	var confirm := _button("Choose cards [Space]" if needs_choices else "Confirm [Space]", _confirm, full_summary, true)
 	confirm.disabled = not (valid or needs_choices)
@@ -1039,10 +1114,15 @@ func _command_preview_summary(result: Dictionary) -> String:
 		var count := amounts.size()
 		var values := amounts[0] + (" each" if count > 1 else "") if uniform else "/".join(amounts)
 		text += " · Split %s (%d %s)" % [values, count, "foe" if count == 1 else "foes"]
+	var ward_gained := int(result.get("ward_gained", 0))
+	var cadence_spent := false
+	for step in result.get("route_steps", []):
+		if str(game.organ(int(step.organ)).id) == "cadence" and int(step.resonance_before) >= 2: cadence_spent = true
+	if ward_gained > 0 or cadence_spent: text += " · Ward +%d total" % ward_gained
 	if result.has("flat_ward_requested"):
-		text += " · Ward %d/%d · Cool %d" % [result.flat_ward_applied,result.flat_ward_requested,result.command_cooling]
+		text += " · Printed %d/%d · Cool %d" % [result.flat_ward_applied,result.flat_ward_requested,result.command_cooling]
 	for event in result.get("presentation",[]):
-		if event.kind=="ward" and event.has("source_uid"): text += " · Install UID %d Ward +%d"%[event.source_uid,event.amount]
+		if event.kind=="ward" and event.has("source_uid"): text += " · Install UID %d" % event.source_uid
 	text += " · Hull %+d · Disrupt %d · CP %d→%d" % [int(result.get("heal", 0)), int(result.get("disrupt", 0)), int(game.run.battle.get("command_points", 3)), int(result.get("command_points", game.run.battle.get("command_points", 3)))]
 	return text
 
@@ -1057,6 +1137,7 @@ func _select_card(index: int) -> void:
 		if index < hand_buttons.size(): hand_buttons[index]._show_focus_tip.call_deferred()
 		return
 	selected_card = index
+	_sound("card_select")
 	route.clear()
 	notice = ""
 	_render()
@@ -1075,6 +1156,8 @@ func _select_organ(index: int) -> void:
 		var error: String = game._validate_route(game.run, candidate)
 		if error.is_empty():
 			route.append(index)
+			var vessel := str(game.run.get("character", "cartographer"))
+			hull_audio.play_cue("organ_" + ("choir" if vessel == "choir" or vessel == "hollow_choir" else vessel), 0.0, pow(2.0, (route.size() - 1) / 12.0))
 			notice = ""
 		else:
 			notice = error
@@ -1153,7 +1236,7 @@ func _cancel_choice() -> void:
 	_render()
 
 func _focus_control(control: Control) -> void:
-	if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
+	if not is_instance_valid(hull_desk) and is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()
 
 func _end_turn() -> void:
 	if presentation_busy(): return
@@ -1206,8 +1289,7 @@ func _event() -> void:
 
 func _shop() -> void:
 	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.")
-	var policy := "Active reward generation v1 · distinct immediate-use + enabler/scaling stock when feasible; otherwise prefer immediate-use, then pool fill.\nBase prices: common 30 / uncommon 40 / rare 55; Bright Canon 40 (audit floor). Stock never adapts to deck or hull."
-	if game.run.reward_generation == 0: policy = "Active reward generation v0 · legacy uniform stock and 35 / 43 base card prices. No pity.\nAll displayed prices already include your discount; services charge only on confirmation."
+	var policy := "Buy a command or powerup to take it immediately. For an upgrade or removal, choose the card before you pay. Prices include discounts."
 	_screen_text(policy, Rect2(64, 216, 1312, 62), 17, TEAL)
 	var items: Array = game.run.shop.get("items", [])
 	for i in range(items.size()):
@@ -1232,7 +1314,11 @@ func _shop() -> void:
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(spacer)
 		var sold: bool = item.get("sold", false)
-		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i)), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost, {"id":item.id,"level":0} if item.kind == "card" else {})
+		var purchase_name := str(data.get("name", "Remove a command" if item.kind == "remove" else "Upgrade a command"))
+		var button := _button("Sold" if sold else "Buy · %d salvage" % item.cost, func(): _perform(func(): return game.buy(i), "purchase"), "Spend %d salvage." % item.cost, not sold and game.run.salvage >= item.cost, {"id":item.id,"level":0} if item.kind == "card" else {})
+		button.set_meta("purchase_name", purchase_name)
+		button.set_meta("purchase_price", int(item.cost))
+		button.set_meta("purchase_slot", i)
 		button.disabled = sold or game.run.salvage < item.cost
 		box.add_child(button)
 	_at(_button("Return to the chart →", func(): _perform(func(): return game.leave_location())), Rect2(1040, 814, 336, 52))
@@ -1343,7 +1429,7 @@ func _ending() -> void:
 	_screen_text("VICTORY" if won else "SHIP LOST", Rect2(175, 733, 440, 65), 42, TEAL if won else CORAL)
 	_reading_plate(Rect2(758, 270, 610, 444))
 	_screen_text("EXPEDITION RECORD", Rect2(780, 282, 560, 40), 20, GOLD)
-	var record := _screen_text("Region %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
+	var record := _screen_text("Ascension  A%d\nRegion %d / 3\nTurns taken  %d\nCommands aboard  %d\nPowerups installed  %d\nSalvage remaining  %d\nSeed  %s" % [int(game.run.get("ascension_rank", 0)), game.run.region + 1, game.run.turns, game.run.deck.size(), game.run.powerups.size(), game.run.salvage, str(game.run.seed)], Rect2(780, 338, 560, 270), 27, CREAM)
 	record.name = "ExpeditionRecord"
 	_screen_text("Seeded practice · no durable progression or unlocks." if game.run.get("seeded", false) else "Discovery tier %d / 3. New possibilities; the same starting strength." % game.profile.get("unlocks", 0), Rect2(780, 622, 560, 75), 22, TEAL)
 	if game.run.seed is String:
@@ -1358,6 +1444,7 @@ func _retry_seed() -> void:
 	if not game.run.get("seed") is String: return
 	expedition_seed = str(game.run.seed)
 	selected_character = str(game.run.character)
+	selected_ascension = int(game.run.get("ascension_rank", 0))
 	_clear_selection()
 	_new_run()
 
@@ -1372,9 +1459,9 @@ func _perform(action: Callable, action_kind: String = "") -> void:
 		played_card = game.run.battle.hand[selected_card].duplicate()
 	var result: Dictionary = action.call()
 	if result.get("ok", false):
+		if hull_admin.active: hull_admin.record_player_action(before, action_kind, played_card, played_route, played_target)
 		var next_mode := str(game.run.get("mode", ""))
-		if previous_mode != "combat" or next_mode != "combat":
-			_sound("transition" if next_mode == "transition" else "reward" if next_mode in ["reward", "victory"] or previous_mode == "reward" else "play")
+		_spot_action(previous_mode, next_mode, action_kind, before)
 		notice = ""
 		_clear_selection()
 	else:
@@ -1507,7 +1594,8 @@ func _open_settings() -> void:
 	full.toggled.connect(update)
 	for volume in volumes.values(): volume.value_changed.connect(update)
 	body.add_child(_text("Settings save immediately on this Mac.", 16))
-	if ResourceLoader.exists("res://scripts/mcp_settings.gd"):
+	_add_admin_settings(body)
+	if not hull_admin.active and ResourceLoader.exists("res://scripts/mcp_settings.gd"):
 		load("res://scripts/mcp_settings.gd").populate(self, body)
 
 func _apply_settings() -> void:
@@ -1523,6 +1611,67 @@ func _apply_settings() -> void:
 		AudioServer.set_bus_mute(bus, level <= 0.0)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if settings.get("fullscreen", false) else DisplayServer.WINDOW_MODE_WINDOWED)
 	_sync_motion()
+
+func _add_admin_settings(body: Control) -> void:
+	var box := VBoxContainer.new()
+	box.set_meta("mcp_private", true)
+	body.add_child(box)
+	box.add_child(_label("LOCAL SOUND WORKSHOP", 16, GOLD))
+	if hull_admin.active:
+		box.add_child(_button("Open Sound Desk", _show_desk))
+		box.add_child(_button("Leave admin mode · restore expedition", _leave_admin))
+	else:
+		box.add_child(_button("Enter admin mode · Sound Desk", _enter_admin, "Tune audio and play a private copy of this expedition."))
+	var row := _row(box)
+	row.add_child(_label("Show / hide desk", 16))
+	var keys := OptionButton.new()
+	for code in [KEY_QUOTELEFT, KEY_F2, KEY_F8, KEY_F10]:
+		keys.add_item(OS.get_keycode_string(code), code)
+	keys.select(keys.get_item_index(desk_key))
+	keys.item_selected.connect(func(i: int):
+		desk_key = keys.get_item_id(i) as Key
+		desk_settings.set_value("desk", "key", desk_key)
+		DirAccess.make_dir_recursive_absolute(desk_settings_path.get_base_dir())
+		if desk_settings.save(desk_settings_path) != OK: push_warning("Sound Desk key could not be saved."))
+	row.add_child(keys)
+
+func _enter_admin() -> void:
+	if presentation_busy() or is_instance_valid(opening_film): return
+	if hull_admin.enter():
+		mcp_controller.revision += 1
+		_show_desk()
+
+func _show_desk() -> void:
+	if not hull_admin.active or is_instance_valid(hull_desk): return
+	_close_overlay()
+	hull_desk = preload("res://scripts/hull_desk.gd").new()
+	hull_desk.set_meta("mcp_private", true)
+	desk_layer.add_child(hull_desk)
+	hull_desk.close_requested.connect(_hide_desk)
+	hull_desk.setup(hull_admin, hull_audio)
+	page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+
+func _hide_desk() -> void:
+	if not is_instance_valid(hull_desk): return
+	desk_layer.remove_child(hull_desk)
+	hull_desk.queue_free()
+	hull_desk = null
+	if not is_instance_valid(overlay):
+		page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
+		_focus_first.call_deferred()
+	else:
+		overlay.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
+		var first := overlay.find_children("*", "Button", true, false)
+		if not first.is_empty(): _focus_control.call_deferred(first[0])
+
+func _leave_admin() -> void:
+	_hide_desk()
+	pending_stinger = ""
+	combat_sound_times.clear()
+	hull_audio.stop_all()
+	hull_admin.leave()
+	mcp_controller.revision += 1
+	_apply_settings()
 
 func _open_help() -> void:
 	var body := _modal("The art of routing")
@@ -1601,7 +1750,7 @@ func _open_history() -> void:
 	for record in history:
 		var box := _panel(body)
 		var outcome := "Victory" if record.get("won", false) else "Defeat"
-		box.add_child(_label(outcome + "  ·  Seed " + str(record.get("seed", "—")), 22, TEAL if outcome.to_lower() == "victory" else CORAL))
+		box.add_child(_label(outcome + "  ·  A%d  ·  Seed %s" % [int(record.get("ascension_rank", 0)), str(record.get("seed", "—"))], 22, TEAL if outcome.to_lower() == "victory" else CORAL))
 		if record.get("seeded", false): box.add_child(_text("Seeded practice · no durable progression or unlocks", 17, GOLD))
 		box.add_child(_text("Reward generation v%d" % record.get("reward_generation", 0), 17, TEAL))
 		var seconds := int(record.get("seconds", 0))
@@ -1627,6 +1776,12 @@ func _input(event: InputEvent) -> void:
 	if is_instance_valid(opening_film): return
 	if not event is InputEventKey or not event.pressed or event.echo:
 		return
+	if hull_admin.active and event.keycode == desk_key:
+		get_viewport().set_input_as_handled()
+		if is_instance_valid(hull_desk): _hide_desk()
+		else: _show_desk()
+		return
+	if is_instance_valid(hull_desk): return
 	if presentation_busy():
 		if event.keycode == KEY_ESCAPE:
 			_render()
@@ -1680,51 +1835,18 @@ func _audio_setup() -> void:
 		AudioServer.add_bus()
 		AudioServer.set_bus_name(index, category)
 		AudioServer.set_bus_send(index, "Master")
-	audio = AudioStreamPlayer.new()
-	audio.bus = "Interface"
-	add_child(audio)
-	ambience = AudioStreamPlayer.new()
-	ambience.bus = "Music"
-	ambience.volume_db = -3
-	add_child(ambience)
-	for cue in ["click", "play", "impact", "reward", "transition"]:
-		var path := "res://audio/%s.wav" % cue
-		if ResourceLoader.exists(path):
-			var stream = load(path)
-			if stream != null:
-				sounds[cue] = stream
-	var combat_cues: Array[String] = ["repair", "shield", "disrupt", "vent", "sever", "link", "phase", "ready", "draw", "discard"]
-	for family in ["kinetic", "plasma", "fracture", "sonic", "memory", "beam"]:
-		combat_cues.append(family + "_launch")
-		combat_cues.append(family + "_hit")
-	for cue in combat_cues:
-		var path := "res://audio/combat_%s.wav" % cue
-		if ResourceLoader.exists(path): sounds["combat_" + cue] = load(path)
-	# Independent voices preserve launch tails, split hits and defensive layers.
-	for i in range(12):
-		var voice := AudioStreamPlayer.new()
-		voice.bus = "Combat"
-		audio.add_child(voice)
-		combat_voices.append(voice)
-	for index in range(game.catalog.regions.size()):
-		var path := "res://audio/region_%d.wav" % index
-		if ResourceLoader.exists(path):
-			var stream: AudioStreamWAV = load(path)
-			if stream != null:
-				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
-				stream.loop_end = maxi(0, roundi(stream.get_length() * stream.mix_rate) - 1)
-				tracks[index] = stream
-	if tracks.is_empty() and ResourceLoader.exists("res://audio/ambient.wav"):
-		var fallback: AudioStreamWAV = load("res://audio/ambient.wav")
-		if fallback != null:
-			fallback.loop_mode = AudioStreamWAV.LOOP_FORWARD
-			fallback.loop_end = maxi(0, roundi(fallback.get_length() * fallback.mix_rate) - 1)
-			tracks[0] = fallback
+	add_child(services)
+	services.add_child(hull_audio)
+	hull_audio.initialize(game.store.directory)
+	desk_layer.layer = 12
+	services.add_child(desk_layer)
+	desk_settings_path = game.store.directory.path_join("sound-desk.cfg")
+	if desk_settings.load(desk_settings_path) == OK:
+		var key = desk_settings.get_value("desk", "key", KEY_QUOTELEFT)
+		if key in [KEY_QUOTELEFT, KEY_F2, KEY_F8, KEY_F10]: desk_key = key
 
 func _sound(cue: String) -> void:
-	if is_instance_valid(audio) and sounds.has(cue):
-		audio.stream = sounds[cue]
-		audio.play()
+	hull_audio.play_cue(cue)
 
 func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 	var kind := str(cue.get("kind", ""))
@@ -1739,24 +1861,19 @@ func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 		if kind == "discard": sound = "discard"
 		else:
 			sound = {"repair":"repair", "shield":"shield", "disrupt":"disrupt", "vent":"vent", "sever":"sever", "link":"link", "phase":"phase", "ready":"ready", "draw":"draw", "mark":"disrupt", "incubate":"link"}.get(kind, "")
-	if sound.is_empty() or not sounds.has("combat_" + sound) or combat_voices.is_empty(): return
+	if sound.is_empty(): return
 	var now := Time.get_ticks_msec()
 	# Six cooling organs / simultaneous split targets should not multiply loudness.
-	if now - int(combat_sound_times.get(sound, -1000)) < (140 if sound in ["draw", "discard"] else 65): return
+	var since := now - int(combat_sound_times.get(sound, -1000))
+	if since < (140 if sound in ["draw", "discard"] else 65): return
 	combat_sound_times[sound] = now
-	var voice := combat_voices[combat_voice_cursor % combat_voices.size()]
 	combat_voice_cursor += 1
-	for available in combat_voices:
-		if not available.playing:
-			voice = available
-			break
-	voice.stream = sounds["combat_" + sound]
 	var strength := clampf(absf(float(cue.get("hp_delta", 8))) / 20.0, 0, 1)
-	voice.volume_db = -10.0 + strength * 3.0 if cue.has("hp_delta") else -13.0
-	# Deterministic micro-variation never consumes the game's random seed.
-	voice.pitch_scale = 1.0 + (posmod(feedback_serial + combat_voice_cursor * 3, 7) - 3) * 0.016
-	if kind == "enemy_shot": voice.pitch_scale *= 0.88
-	voice.play()
+	var level := strength * 3.0 - 2.0 if cue.has("hp_delta") else 0.0
+	# An echoed beam is the continuation of a single gesture, not a second
+	# equally prominent attack. Keep its visual contact and soften the repeat.
+	if sound.begins_with("beam_") and since < 400: level -= 4.5
+	hull_audio.play_cue("combat_" + sound, level, 0.88 if kind == "enemy_shot" else 1.0)
 
 func _tick() -> void:
 	_sound("click")
@@ -2012,13 +2129,45 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	return {"title": title, "description": description, "art": art}
 
 func _soundtrack() -> void:
-	var index := 0 if menu else _area_index()
-	if music_region == index or tracks.is_empty(): return
-	var stream = tracks.get(index, tracks.get(0))
-	if stream == null: return
-	music_region = index
-	ambience.stream = stream
-	ambience.play()
+	if cinematic_active:
+		hull_audio.set_score("opening", false, false)
+		return
+	var mode := str(game.run.get("mode", ""))
+	if menu or mode.is_empty():
+		# Title and ship selection are deliberately quiet. Start music when a
+		# voyage begins, not while the player is choosing what to do.
+		hull_audio.set_score("")
+	elif mode in ["victory", "defeat"]:
+		# Endings are a one-shot over silence, not a fanfare loop.
+		hull_audio.set_score("")
+	else:
+		var battle: Dictionary = game.run.get("battle", {})
+		var tension: bool = mode == "combat" and (int(battle.get("turn", 1)) > 1 or not battle.get("last_route", []).is_empty())
+		hull_audio.set_score("region_%d" % _area_index(), tension)
+	if not pending_stinger.is_empty():
+		hull_audio.play_stinger(pending_stinger, pending_stinger_key)
+		pending_stinger = ""
+		pending_stinger_key = ""
+
+# Musical punctuation belongs to committed transitions, never redraws or loading.
+func _spot_action(previous: String, next: String, action_kind: String, before: Dictionary) -> void:
+	var mark := ""
+	var area := _area_index()
+	if previous != next and next in ["victory", "defeat"]: mark = next
+	elif previous == "reward" and next == "transition": mark = "clear_%d" % area
+	elif previous == "map" and next == "combat" and game.run.battle.kind == "boss": mark = "guardian_%d" % area
+	if not mark.is_empty():
+		pending_stinger = mark
+		pending_stinger_key = "%s:%s:%s" % [game.run.get("id", ""), game.run.get("current_node", ""), mark]
+		if hull_admin.active: pending_stinger_key = "workshop:%d:%s" % [Time.get_ticks_usec(), pending_stinger_key]
+		return
+	if previous == "combat" and action_kind == "command":
+		_sound("play")
+		if int(before.get("battle", {}).get("resonance", 0)) < 3 and int(game.run.get("battle", {}).get("resonance", 0)) == 3: _sound("choir_phrase")
+	elif previous == "map" and previous != next: _sound("recovery" if next == "recovery" else "map_travel")
+	elif action_kind == "purchase": _sound("shop_buy")
+	elif previous == "reward" or next == "reward": _sound("reward")
+	elif previous == "transition": _sound("transition")
 
 func _feedback(before: Dictionary, result: Dictionary, action_kind: String, played_route: Array, played_target: int, played_card: Dictionary) -> void:
 	last_feedback = _feedback_plan(before, result, action_kind, played_route, played_target, played_card)

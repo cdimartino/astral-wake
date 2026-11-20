@@ -84,8 +84,7 @@ func showcase() -> void:
  await wait(4.0)
  print("SHOWCASE_COMPLETE: actual damage, repair, disruption, cooling and enemy-phase actions; fixture, not full run")
  await wait(2.0)
- ui.ambience.stop()
- ui.audio.stop()
+ ui.hull_audio.stop_all()
  await wait(0.15)
  ui.queue_free()
  await process_frame

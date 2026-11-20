@@ -46,7 +46,9 @@ func _run() -> void:
 			await settle()
 			badge=ui.page.find_child("EnemyIntent%d"%(count-1),true,false)
 			check(badge.explanation.contains("INTERRUPTED"),"badge confirms that an action has been canceled")
+	ui.hull_audio.stop_all()
 	ui.queue_free()
 	await settle()
+	await create_timer(0.4).timeout
 	print("ENEMY TACTICS UI: %d checks, %d failures"%[checks,failures])
 	quit(1 if failures else 0)

@@ -58,14 +58,14 @@ func check() -> void:
  root.size=Vector2i(1440,900)
  await settle()
  # Duplicate enemy definitions make index-shift mistakes observable.
- require(ui.combat_voices.size()==12 and ui.sounds.has("combat_beam_launch") and ui.sounds.has("combat_repair"),"Combat sound bank and overlapping voices must load")
+ require(ui.hull_audio.options("cues").has("combat_beam_launch") and ui.hull_audio.options("cues").has("combat_repair"),"Combat sound bank must load")
  ui._combat_sound({"kind":"shot","style":"plasma"},true)
  ui._combat_sound({"kind":"shield"})
- require(ui.combat_voices.filter(func(voice):return voice.playing).size()==2,"Support sounds must not cut off attack launches")
+ require(ui.hull_audio.active_cues().has("combat_plasma_launch") and ui.hull_audio.active_cues().has("combat_shield"),"Support sounds must not cut off attack launches")
  var voices_before=ui.combat_voice_cursor
  ui._combat_sound({"kind":"shield"})
  require(ui.combat_voice_cursor==voices_before,"Simultaneous identical cues must not multiply volume")
- for voice in ui.combat_voices:voice.stop()
+ ui.hull_audio.stop_all()
  ui.combat_sound_times.clear()
  fixture(5,"needle")
  ui.game.run.battle.enemies[0].intent={"kind":"sever","amount":2,"label":"Cut two links"}
@@ -116,12 +116,12 @@ func check() -> void:
  require(ui.game.run.battle.enemies.size()==1 and ui.enemy_art.size()==2,"Removed actor was not retained through its hit")
  require(cues("beam").size()==1 and cues("beam")[0].hp_delta==-5,"Damage cue must use actual capped damage")
  require(ui.enemy_hulls[0].value==5,"HP changed before projectile impact")
- require(ui.combat_voices.any(func(voice):return voice.playing and voice.stream==ui.sounds.combat_beam_launch),"Lens launch must use its beam sound")
+ require(ui.hull_audio.active_cues().has("combat_beam_launch"),"Lens launch must use its beam sound")
  await create_timer(0.18).timeout
  require(ui.enemy_hulls[0].value==5,"Damage number/bar appeared at launch")
  await create_timer(0.22).timeout
  require(ui.enemy_hulls[0].value==0 and ui.enemy_hulls[1].value==peer_hp,"Impact changed the wrong duplicate enemy")
- require(ui.combat_voices.any(func(voice):return voice.playing and voice.stream==ui.sounds.combat_beam_hit),"Impact sound must arrive with the visible hit")
+ require(ui.hull_audio.trace.any(func(event):return event.cue=="combat_beam_hit"),"Impact sound must arrive with the visible hit")
  require(first_actor.modulate.a<1 and second_actor.self_modulate==Color.WHITE,"Removed-target flash/fade affected its shifted peer")
  var damage_label=ui.page.find_child("DamagePoints",true,false)
  require(damage_label!=null and damage_label.get_theme_font_size("font_size")>=36 and damage_label.get_theme_constant("outline_size")>=4,"Damage points need a large outlined font")
@@ -201,8 +201,7 @@ func check() -> void:
   if node.get_script()==Main.SpaceCanvas and not node.effect_kind.is_empty():animated+=1
  require(animated==0 and ui.last_feedback.size()>0,"Reduced motion must retain feedback without animated particles")
  await finish()
- ui.ambience.stop()
- ui.audio.stop()
+ ui.hull_audio.stop_all()
  # Fixed-FPS scene time can outrun the real audio mixer during teardown.
  OS.delay_msec(200)
  await create_timer(0.15).timeout

@@ -57,8 +57,7 @@ func check() -> void:
 					root.get_texture().get_image().save_png("res://docs/screenshots/split-damage-preview.png")
 			var played = ui.game.play_card(0, [1], 0)
 			require(ui._damage_breakdown(played) == breakdown, "Preview differs from resolved split damage")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

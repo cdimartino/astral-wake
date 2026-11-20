@@ -26,7 +26,7 @@ func check() -> void:
 		ui._render()
 		for unused in range(5): await process_frame
 		var label=ui.page.find_child("RoutePreviewSummary",true,false)
-		require(label.text.contains("Ward 5/5 · Cool 2") and label.get_line_count()==1,"Visible compact requested/applied ward and cooling")
+		require(label.text.contains("Printed 5/5 · Cool 2") and label.get_line_count()==1,"Visible compact requested/applied ward and cooling")
 		var stats=ui._printed_stats(ui.game.run.battle.hand[0],true)
 		require(stats.get_children().any(func(child): return child is Label and child.text=="Ward 5"),"Printed ward stat")
 		stats.free()
@@ -41,8 +41,7 @@ func check() -> void:
 	require(thermal.conditional_damage==6 and ui._command_preview_summary(thermal).contains("Bonus +6"),"Native conditional bonus is explicit, not only aggregate damage")
 	ui._render()
 	for unused in range(5): await process_frame
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame
