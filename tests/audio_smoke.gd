@@ -13,15 +13,41 @@ func _initialize() -> void:
 func capture_cue(hull: Node, id: String, capture: AudioEffectCapture) -> void:
 	hull.stop_all()
 	capture.clear_buffer()
+	var discarded_before := capture.get_discarded_frames()
 	hull.play_cue(id)
-	var timeout := Time.get_ticks_msec() + 15000
-	while not hull.active_cues().is_empty() and Time.get_ticks_msec() < timeout:
-		await create_timer(.02).timeout
-	check(hull.active_cues().is_empty(), "One-shot ends: " + id)
-	var frames := capture.get_buffer(capture.get_frames_available())
+	check(hull.voices.size() == 1, "Cue starts one decoded voice: " + id)
+	if hull.voices.is_empty(): return
+	var voice: AudioStreamPlayer = hull.voices[0]
+	var length := voice.stream.get_length()
+	check(is_finite(length) and length > 0, "Positive decoded stream length: " + id)
+	check(voice.stream.loop_mode == AudioStreamWAV.LOOP_DISABLED, "Source does not loop: " + id)
+	# Score source auditions have no timeline note-duration envelope. Their authored
+	# tails reach 8.4 seconds; Dummy mixing can advance slower than wall time on CI.
+	# Exercise a real half-second of mixer output, not a wall-clock sleep, then
+	# explicitly release long sources. Short one-shots must still finish naturally.
+	var windowed := id.begins_with("score_") and length > 2.0
+	var started := Time.get_ticks_msec()
+	var timeout := started + int(1000 * (15.0 if windowed else maxf(5.0, length * 3.0 + 2.0)))
+	var mixed_frames := 0
 	var peak := 0.0
-	for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
+	while Time.get_ticks_msec() < timeout:
+		await create_timer(.02).timeout
+		var frames := capture.get_buffer(capture.get_frames_available())
+		mixed_frames += frames.size()
+		for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
+		if windowed and mixed_frames >= ceili(AudioServer.get_mix_rate() * .5): break
+		# The audio thread can stop playback before the main thread delivers finished.
+		if not windowed and hull.voices.is_empty(): break
+	check(capture.get_discarded_frames() == discarded_before, "Capture retains entire tested window: " + id)
+	if windowed:
+		check(mixed_frames >= ceili(AudioServer.get_mix_rate() * .5), "Long source mixes bounded audible window: " + id)
+		hull.stop_all()
+		check(not voice.playing and voice.stream == null, "Long source stops and releases stream: " + id)
+	else:
+		check(hull.active_cues().is_empty(), "One-shot ends naturally: " + id)
+	check(hull.voices.is_empty(), "Cue releases voice ownership: " + id)
 	check(peak > .00001 and peak < .99, "Actual decoded cue is audible and unclipped: %s peak=%f" % [id, peak])
+	print("AUDIO CUE %s length=%.6f windowed=%s mixed_frames=%d peak=%.6f elapsed_ms=%d" % [id, length, windowed, mixed_frames, peak, Time.get_ticks_msec() - started])
 
 func _run() -> void:
 	var directory := OS.get_environment("ASTRAL_SAVE_DIR")
