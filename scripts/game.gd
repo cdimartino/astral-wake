@@ -8,10 +8,12 @@ const Engines = preload("res://scripts/install_engines.gd")
 const RouteEffects = preload("res://scripts/route_effects.gd")
 const Evolutions = preload("res://scripts/evolutions.gd")
 const Distribution = preload("res://scripts/reward_distribution.gd")
+const Ascension = preload("res://scripts/ascension.gd")
 const BASE_EDGES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4],[2,5]]
 const MODES = ["map","combat","reward","event","shop","recovery","modify","transition","victory","defeat"]
 const RUN_SCHEMA = 7
 const CONTENT_POOL_REVISION = 1
+const RULES_REVISION = 1
 const COMBAT_ZONES = ["hand","draw","discard","exhausted","installed"]
 # Normalize legacy area stats first, then apply expedition pressure consistently.
 const AREA_STRENGTH = [1.0,1.4,1.8]
@@ -41,10 +43,11 @@ func _init(save_directory: String = "") -> void:
 	for item in catalog.powerups: _powerups[item.id] = item
 	store = SaveStore.new(save_directory)
 	load_saved()
+	_migrate_ascension()
 
 func card(id: String) -> Dictionary: return _cards.get(id, {})
 func enemy(id: String) -> Dictionary:
-	if id == "_egg": return {"id":id,"name":"Ember Cocoon","description":"Cannot attack. Destroy it within two enemy phases to prevent a Newborn Flare; disruption does not delay hatching.","art":1,"hp":14,"pattern":[{"kind":"incubate","amount":0,"label":"Hatching"}]}
+	if id == "_egg": return {"id":id,"name":"Ember Cocoon","description":"Cannot attack. Hatches at the end of its second subsequent enemy phase, not its creation phase; disruption does not delay hatching.","art":1,"hp":14,"pattern":[{"kind":"incubate","amount":0,"label":"Hatching"}]}
 	if id == "_hatchling": return {"id":id,"name":"Newborn Flare","description":"Attacks every turn with no recovery phase. Its low hull makes it a priority for a quick kill or split damage.","art":2,"hp":22,"pattern":[{"kind":"attack","amount":7,"label":"Solar bite"}]}
 	return _enemies.get(id, {})
 func powerup(id: String) -> Dictionary: return _powerups.get(id, {})
@@ -135,6 +138,8 @@ func card_text(instance: Dictionary) -> String:
 	if effective.get("retain",false): text+="\nRetain: stays in hand at end of turn."
 	if effective.get("exhaust",false): text+="\nExhaust: leaves circulation for this combat."
 	if effective.has("install"): text+="\nInstall: "+Engines.detail(self,instance)
+	if int(run.get("rules_revision",0))>=1 and instance.get("id","")=="crescendo" and effective.get("concert",false):
+		text+="\nSpending all 3 Resonance with this card adds 4 damage, before organs."
 	return text
 
 # Direct fixture/helper operation; authored selection effects commit atomically below.
@@ -150,10 +155,32 @@ func retain_card(uid: int) -> Dictionary:
 func retained(instance: Dictionary) -> bool:
 	return effective_card(instance).get("retain",false) or instance.get("uid",-1) in run.get("battle",{}).get("temporary_retain",[])
 
-func new_run(seed_value = "", character_id: String = "cartographer") -> Dictionary:
+func ascension_unlocked(character_id: String) -> int:
+	return int(profile.get("ascension_unlocks",{}).get(character_id,0))
+
+func ascension_delta(rank: int) -> String:
+	return Ascension.DELTAS[clampi(rank,0,Ascension.MAX_RANK)]
+
+func ascension_rules(rank: int) -> Array[String]:
+	var result: Array[String] = []
+	for step in range(0,clampi(rank,0,Ascension.MAX_RANK)+1): result.append(ascension_delta(step))
+	return result
+
+func _migrate_ascension() -> void:
+	if profile.get("ascension_migrated",false): return
+	if not profile.has("ascension_unlocks"): profile.ascension_unlocks={}
+	for item in profile.history:
+		# Only explicit modern ordinary provenance is safe; numeric legacy records
+		# historically wrote seeded=false even when their origin was uncertain.
+		if item.get("won",false) and item.has("seeded") and item.seeded==false and item.get("seed") is String and SeedEngine.valid(item.seed) and item.has("character") and not character(item.character).is_empty() and int(item.get("ascension_rank",0))==0:
+			profile.ascension_unlocks[item.character]=maxi(1,ascension_unlocked(item.character))
+	profile.ascension_migrated=true
+
+func new_run(seed_value = "", character_id: String = "cartographer", rank = 0) -> Dictionary:
 	if selection_pending(): return _fail("Confirm or cancel the pending card selection first.")
 	var vessel=character(character_id)
 	if vessel.is_empty(): return _fail("Choose an available vessel.")
+	if not Ascension.valid_rank(rank) or rank>ascension_unlocked(character_id): return _fail("Win the preceding Ascension on this vessel to unlock that rank.")
 	var modern=seed_value is String or (seed_value is int and seed_value==0)
 	var seeded=false
 	if modern:
@@ -167,6 +194,9 @@ func new_run(seed_value = "", character_id: String = "cartographer") -> Dictiona
 	else: return _fail("Use exactly 6 letters or digits (A–Z, 0–9).")
 	run = {"id":"%s-%s" % [seed_value,Time.get_ticks_usec()],"seed":seed_value,"region":0,"layer":-1,"mode":"map","hull":100,"max_hull":100,"salvage":35,"deck":[],"powerups":[],"map":[],"current_node":"","visited":[],"battle":{},"reward":{},"event_id":"","shop":{},"log":[],"turns":0,"started_at":int(Time.get_unix_time_from_system()),"elapsed_seconds":0,"tutorial_step":0,"next_uid":1,"modify_return":"","modify_kind":"","finished":false,"battles":0}
 	run.schema_revision=RUN_SCHEMA
+	run.rules_revision=RULES_REVISION
+	run.ascension_rank=int(rank)
+	run.modifier_revision=Ascension.MODIFIER_REVISION
 	run.content_pool_revision=CONTENT_POOL_REVISION
 	run.reward_generation=1
 	run.rare_offer_misses=0
@@ -281,12 +311,17 @@ func _intent_for(id: String, turn: int) -> Dictionary:
 	# Long fights become dangerous even with a repair-heavy deck. The full damage
 	# is stored in the visible intent, so previews and resolution always agree.
 	if intent.kind=="attack": intent.amount=int(ceil(int(intent.amount)*ATTACK_PRESSURE))+int((turn-1)/4)
+	var premium=0
+	if intent.kind=="attack" and int(run.get("modifier_revision",0))==Ascension.MODIFIER_REVISION:
+		premium=Ascension.attack_bonus(int(run.get("ascension_rank",0)),int(run.get("region",0)),turn,str(run.get("battle",{}).get("kind","battle")))
+		intent.amount+=premium
 	var name=str(intent.get("label","")).get_slice(" · ",0)
 	match intent.kind:
 		"attack": intent.label=name+" · %d damage"%int(intent.amount)
 		"rebuild": intent.label=name+" · heal living enemies by %d"%int(intent.amount)
 		"mark": intent.label=name+" · repeated route costs %d hull"%int(intent.amount)
-		"incubate": intent.label=name+" · egg %d hull; hatches in 2 phases"%int(round(14*_enemy_scale("_egg")))
+		"incubate": intent.label=name+" · spawns a cocoon (%d hull); hatches after 2 subsequent enemy phases"%int(round(14*_enemy_scale("_egg")))
+	if premium>0: intent.label+=" · Ascension +%d"%premium
 	return intent
 
 func enemy_tactics_text(index: int) -> String:
@@ -318,7 +353,9 @@ func _stance_text(intent: Dictionary) -> String:
 func _make_enemy(id: String) -> Dictionary:
 	var definition=enemy(id)
 	var hp=maxi(1,int(round(int(definition.hp)*_enemy_scale(id))))
-	return {"id":id,"name":definition.name,"hp":hp,"max_hp":hp,"intent":_intent_for(id,1),"disrupt":0,"redirect":0,"egg_timer":2 if id=="_egg" else -1}
+	var intent=_intent_for(id,1)
+	if id=="_egg": intent.label="Hatches after 2 subsequent enemy phases"
+	return {"id":id,"name":definition.name,"hp":hp,"max_hp":hp,"intent":intent,"disrupt":0,"redirect":0,"egg_timer":2 if id=="_egg" else -1}
 
 func _start_battle(node: Dictionary) -> void:
 	run.mode = "combat"
@@ -384,6 +421,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	if not route_error.is_empty() and not (preview_only and route.is_empty()): return _fail(route_error)
 	if target_index<0 or target_index>=battle.enemies.size() or int(battle.enemies[target_index].hp)<=0: return _fail("Choose a living target.")
 	var incoming_before=_incoming_damage(state)
+	var ward_before=int(battle.ward)
 	var instance=battle.hand[hand_index]
 	var definition=effective_card(instance)
 	if not Engines.valid_definition(definition): return _fail("Invalid authored Install engine.")
@@ -435,6 +473,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 			var spent=int(battle.resonance)
 			battle.resonance=0
 			damage+=spent*2
+			if int(state.get("rules_revision",0))>=1 and instance.id=="crescendo" and spent==3: damage+=4
 			heal+=spent
 	var resource_preview={"trace_before":trace_before,"resonance_before":resonance_before,"card_trace":int(battle.get("trace",0)),"card_resonance":int(battle.get("resonance",0))}
 	if route.is_empty():
@@ -656,6 +695,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 		events.append("After combat: repair %d hull."%finish_heal)
 	_log(state,definition.name+": "+" ".join(events))
 	var result={"ok":true,"error":"","next":state,"summary":"\n".join(events),"damage":actual_damage,"heal":int(state.hull)-hull_before+finish_heal,"disrupt":disrupt,"cost":cost,"attack_reduction":incoming_before-_incoming_damage(state),"command_points":int(battle.command_points),"strain":battle.strain.duplicate(),"events":events,"presentation":presentation,"resource_preview":resource_preview,"trace":int(battle.get("trace",0)),"resonance":int(battle.get("resonance",0)),"route_steps":route_steps}
+	result.ward_gained=int(battle.ward)-ward_before
 	if ["ward","conditional_ward","conditional_damage","route_cooling"].any(func(key): return definition.has(key)):
 		result.flat_ward_requested=flat_ward
 		result.flat_ward_applied=applied_flat_ward
@@ -953,7 +993,7 @@ func end_turn() -> Dictionary:
 				if battle.enemies.size()<5:
 					battle.enemies.append(_make_enemy("_egg"))
 					presentation.append({"kind":"incubate","source_index":i,"target_index":battle.enemies.size()-1,"amount":int(battle.enemies[-1].hp)})
-					_log(run,foe.name+" incubates an Ember Cocoon. It hatches in two turns.")
+					_log(run,foe.name+" spawns an Ember Cocoon. It hatches after two subsequent enemy phases.")
 			"rebuild":
 				for j in range(battle.enemies.size()):
 					var other=battle.enemies[j]
@@ -985,7 +1025,7 @@ func end_turn() -> Dictionary:
 	run.tutorial_step=maxi(2,int(run.tutorial_step))
 	for foe in battle.enemies:
 		foe.intent=_intent_for(foe.id,int(battle.turn))
-		if foe.id=="_egg": foe.intent.label="Hatches in %d turn(s)"%int(foe.egg_timer)
+		if foe.id=="_egg": foe.intent.label="Hatches after %d remaining enemy phase(s)"%int(foe.egg_timer)
 	var before_finish=int(run.hull)
 	_check_battle_end()
 	if int(run.hull)>before_finish: presentation.append({"kind":"heal","amount":int(run.hull)-before_finish,"source":"repair_after"})
@@ -1242,9 +1282,20 @@ func _finish_run(won: bool) -> void:
 	run.finished=true
 	run.mode="victory" if won else "defeat"
 	if not run.get("seeded",false): profile.unlocks=mini(3,int(profile.unlocks)+1)
+	_migrate_ascension()
+	# Numeric legacy provenance cannot distinguish ordinary play from fixtures.
+	if won and run.get("seed") is String and run.has("seeded") and run.seeded==false:
+		var ship=str(run.get("character","cartographer"))
+		var rank=int(run.get("ascension_rank",0))
+		if rank<=ascension_unlocked(ship): profile.ascension_unlocks[ship]=maxi(ascension_unlocked(ship),mini(Ascension.MAX_RANK,rank+1))
 	profile.history.push_front({"id":run.id,"seed":run.seed,"seeded":run.get("seeded",false),"won":won,"region":run.region,"turns":run.turns,"battles":run.battles,"seconds":run.elapsed_seconds,"date":int(Time.get_unix_time_from_system()),"deck_size":run.deck.size(),"character":run.get("character","cartographer"),"route_regions":run.get("route_regions",[0,1,2]).duplicate()})
 	profile.history[0].reward_generation=run.reward_generation
 	profile.history[0].content_pool_revision=run.content_pool_revision
+	profile.history[0].rules_revision=int(run.get("rules_revision",0))
+	# Preserve absence for legacy runs; absence is the immutable A0/revision-0 identity.
+	if run.has("ascension_rank"):
+		profile.history[0].ascension_rank=run.ascension_rank
+		profile.history[0].modifier_revision=run.modifier_revision
 	if profile.history.size()>30: profile.history.resize(30)
 	_log(run,"The signal answers. You are no longer alone." if won else "Your wake fades. Something remembers the route.")
 
@@ -1370,6 +1421,7 @@ func load_saved() -> bool:
 			continue
 		store.primary_verified=not candidate.backup
 		profile=saved.profile
+		_migrate_ascension()
 		run=_restore_integers(saved.run)
 		_last_clock=Time.get_ticks_msec()
 		if candidate.backup: save_error="Recovered your previous save from the backup."
@@ -1452,12 +1504,19 @@ func _valid_profile(value) -> bool:
 	if not value is Dictionary or not _number(value.get("unlocks")) or not value.get("history") is Array or not value.get("settings") is Dictionary: return false
 	if int(value.unlocks)<0 or int(value.unlocks)>3: return false
 	if value.history.size()>30: return false
+	if value.has("ascension_migrated") and not value.ascension_migrated is bool: return false
+	if value.has("ascension_unlocks"):
+		if not value.ascension_unlocks is Dictionary: return false
+		for ship in value.ascension_unlocks:
+			if not ship is String or character(ship).is_empty() or not Ascension.valid_rank(value.ascension_unlocks[ship]): return false
 	for item in value.history:
 		if not item is Dictionary: return false
+		if not Ascension.valid_identity(item): return false
 		if not _number(item.get("seed")) and not (item.get("seed") is String and SeedEngine.valid(item.seed)): return false
 		if item.has("seeded") and not item.seeded is bool: return false
 		if item.has("reward_generation") and (not _number(item.reward_generation) or not int(item.reward_generation) in [0,1]): return false
 		if item.has("content_pool_revision") and (not _number(item.content_pool_revision) or not int(item.content_pool_revision) in [0,CONTENT_POOL_REVISION]): return false
+		if item.has("rules_revision") and (not _number(item.rules_revision) or not int(item.rules_revision) in [0,RULES_REVISION]): return false
 		for key in ["region","turns","battles","seconds","date","deck_size"]:
 			if not _number(item.get(key)): return false
 		if not item.get("won") is bool: return false
@@ -1470,8 +1529,11 @@ func _valid_profile(value) -> bool:
 	return settings.get("reduced_motion") is bool and settings.get("fullscreen") is bool and (settings.get("volume") is float or settings.get("volume") is int) and is_finite(float(settings.volume)) and float(settings.volume)>=0 and float(settings.volume)<=1
 
 func _valid_run(value) -> bool:
+	# Missing is deliberately legacy: do not alter pending guards or checkpoints.
+	if value is Dictionary and value.has("rules_revision") and (not _number(value.rules_revision) or not int(value.rules_revision) in [0,RULES_REVISION]): return false
 	if not value is Dictionary: return false
 	if value.is_empty(): return true
+	if not Ascension.valid_identity(value): return false
 	if not _number(value.get("schema_revision")) or value.schema_revision!=RUN_SCHEMA: return false
 	if not _number(value.get("content_pool_revision")) or not int(value.content_pool_revision) in [0,CONTENT_POOL_REVISION]: return false
 	if not _number(value.get("reward_generation")) or not int(value.reward_generation) in [0,1]: return false

@@ -2,7 +2,13 @@
 
 - [Gameplay](gameplay.md): learn a turn, route commands, read enemy intentions, plan a voyage, and understand rewards, saves and controls.
 - [Ships](ships.md): compare the three vessels, their starting decks, organ networks and distinct mechanics.
+- [Sound workshop](sound-workshop.md): listen to the living hull, edit the MIDI score, or audition another mix in a private expedition.
 - [Balance notes](balance.md): difficulty changes and reproducible policy comparisons.
+- [Balance playtest build](balance-playtest.md): what changes when you start a voyage, what an existing save keeps, and export verification.
+- [Ascension update design](ascension-update-design.md): the approved 0–11 ladder, 100 considered options, and release gates; not a list of shipped changes.
+- [Ascension playtest](ascension-playtest.md): rank rules, compatibility and current validation status.
+- [0.3.0 release notes](release-0.3.0.md): Ascension 11, Living Hull audio and live-control changes.
+- [Balance update design](balance-update-options.md): the 100 options considered, the selected experiments, and the evidence required to adopt them. This is a design record, not a list of shipped changes.
 - [Enemy field guide](enemies.md): repeating patterns, strengths, and counters for every enemy.
 - [Seeds and reproducible practice](seeds.md): replay six-character codes, understand progression restrictions and RNG compatibility.
 - [Effect foundations](effect-foundations.md): developer compatibility contract and regression fixtures for the first #14/#15 slice.

@@ -79,17 +79,23 @@ than waiting forever.
 - **Title/character:** discover new/continue actions, select a vessel, inspect
   character details if needed, then begin. Replacing or abandoning an existing
   expedition requires explicit user intent; do not automatically confirm it.
-- **Map:** choose from the advertised reachable destination controls. Use option
-  descriptions and the map in `run` to reason about encounters.
+- **Map:** `choose_node` travels; `inspect_node` shows details for a visible
+  destination that cannot currently be reached. Match the advertised `node_id`
+  to the public map, then submit the option's current `index`.
 - **Combat:** select a hand card, build a connected organ route using available
   controls, select a living target, and call `preview`. Read its `ok`, error,
   resource cost, strain, and deterministic forecast fields. Preview deliberately
   omits simulation snapshots, presentation records, event strings, and summaries
-  that could reveal future draws. Undo/cancel or change selections
+  that could reveal future draws. A successful forecast's `ward_gained` is the
+  actual total added by this command, including capped Cadence, printed ward and
+  active installs; it is not the amount of damage that enemies will deal or that
+  the ward will eventually absorb. Undo/cancel or change selections
   if necessary. Confirm only when satisfied. Read post-action `run` immediately,
   then wait for animation completion. End turn when strategically appropriate.
 - **Rewards/events/shop/recovery:** select the corresponding visible choice,
-  purchase, repair, upgrade, skip, or leave action. Handle any follow-up modify
+  purchase, repair, upgrade, skip, or leave action. Buy options identify the
+  item or service by `name`, displayed `price` and stable shop `slot`. Act with
+  the advertised `index`, not its position in the filtered array. Handle any follow-up modify
   selection and pagination; do not assume a purchase completes the whole flow.
   Multi-stage known-card choices and evolution confirmation require their own
   advertised selections and confirmation; preview again before committing.

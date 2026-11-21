@@ -24,7 +24,7 @@ func run_test() -> void:
 	ui.game._make_shop()
 	ui._render()
 	text = all_text(ui.page)
-	require("generation v1" in text and "otherwise" in text, "shop active generation and fallback transparent")
+	require("take it immediately" in text and "choose the card before you pay" in text and "Prices include discounts" in text, "shop explains immediate purchases, service selection, and displayed prices")
 	for item in ui.game.run.shop.items:
 		if item.kind == "card": require("Primary: " + ui.game.card(item.id).primary_role in text and str(item.cost) + " salvage" in text, "shop roles/actual prices visible")
 	ui.game.run.reward_generation = 0

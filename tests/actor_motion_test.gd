@@ -91,8 +91,7 @@ func check() -> void:
 	ui.game.profile.settings.reduced_motion = false
 	ui._sync_motion()
 	require(ui.player_art.get_meta("idle_tween").is_running(), "Re-enabling motion did not restart ship idle movement")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	await create_timer(0.15).timeout
 	ui.queue_free()

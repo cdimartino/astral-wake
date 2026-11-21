@@ -145,18 +145,15 @@ func check():
    require(ui.expansion_enemies.has(definition.id),"Missing original expansion enemy artwork: "+str(definition.id))
  for texture in ui.expansion_cards.values():require(minf(texture.region.size.x,texture.region.size.y)>=600,"Expansion command artwork lacks native detail")
  for texture in ui.expansion_enemies.values():require(minf(texture.region.size.x,texture.region.size.y)>=700,"Expansion enemy artwork lacks native detail")
- require(ui.tracks.size()==ui.game.catalog.regions.size(),"Region music missing")
- for track in ui.tracks.values():
-  require(track.loop_end==maxi(0,roundi(track.get_length()*track.mix_rate)-1),"Loop length uses compressed bytes")
-  require(absf(track.loop_end/float(track.mix_rate)-track.get_length())<=1.01/track.mix_rate,"Loop truncates soundtrack")
-  print("MUSIC_LOOP format=",track.format," length=",track.get_length()," loop_end=",track.loop_end)
- var player_id=ui.ambience.get_instance_id()
+ for i in range(ui.game.catalog.regions.size()):
+  require(ui.hull_audio.options("scores").has("region_%d"%i),"Region music missing")
+ var player_id=ui.hull_audio.get_instance_id()
  await create_timer(0.15).timeout
- var playback=ui.ambience.get_playback_position()
+ var playback=ui.hull_audio.score_time
  ui._render()
  await settle()
- require(ui.ambience.get_instance_id()==player_id,"Rerender replaced music player")
- require(ui.ambience.get_playback_position()>=playback-0.03,"Rerender restarted soundtrack")
+ require(ui.hull_audio.get_instance_id()==player_id,"Rerender replaced music player")
+ require(ui.hull_audio.score_time>=playback-0.03,"Rerender restarted soundtrack")
  for viewport_size in [Vector2i(1440,900),Vector2i(1100,720)]:
   root.size=viewport_size
   await settle()
@@ -314,12 +311,11 @@ func check():
   var found=[]
   for label in ui.overlay.find_children("*","Label",true,false):
    if "Seed " in label.text:found.append(label.text)
-  require(found==["Victory  ·  Seed 1111","Defeat  ·  Seed 2222"])
+  require(found==["Victory  ·  A0  ·  Seed 1111","Defeat  ·  A0  ·  Seed 2222"],"Legacy history displays its unchanged A0 rank")
   ui._close_overlay()
  print("UI_FAILURE_COUNT ",failures)
  print("UI_GEOMETRY_PASS " if failures==0 else "UI_GEOMETRY_FAIL ",checks," button bounds, all screens, both sizes, overmap-only vertical scrolling, small cards+actual hover enlargement, no text/controls covered, disabled hover+keyboard inspection, command points, atlas crops, modal focus, history, invalid route")
- ui.ambience.stop()
- ui.audio.stop()
+ ui.hull_audio.stop_all()
  OS.delay_msec(200)
  ui.queue_free()
  await settle()

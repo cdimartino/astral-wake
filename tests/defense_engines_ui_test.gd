@@ -30,7 +30,8 @@ func check() -> void:
 		ui._render()
 		for unused in range(5): await process_frame
 		var label=ui.page.find_child("RoutePreviewSummary",true,false)
-		require(label.text.contains("Install UID 1 Ward +5"),"Native preview shows actual triggered cooling source")
+		require(label.text.contains("Install UID 1"),"Native preview shows actual triggered cooling source")
+		require(label.tooltip_text.contains("Ward +5 total") and label.tooltip_text.contains("Install UID 1"),"Hover detail retains the total ward and its installed source")
 		var detail=ui.game.Engines.detail(ui.game,ui.game.run.battle.installed[0])
 		require(detail.contains("at least 2 actual strain") and detail.contains("+5 flat ward") and detail.contains("available this player turn") and not detail.contains("Dormant"),"Cooling installed detail has threshold/ward/latch")
 	ui.game.play_card(1,[4],0)
@@ -61,8 +62,7 @@ func check() -> void:
 	synthetic.presentation[0].target_index=99
 	cues=ui._feedback_plan(before,synthetic,"enemy_phase",[],-1,{})
 	require(not cues.any(func(cue): return cue.has("source_uid")),"Invalid snapshot index has no unsafe fallback")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

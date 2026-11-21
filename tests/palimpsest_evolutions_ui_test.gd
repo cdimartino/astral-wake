@@ -43,11 +43,9 @@ func run_test() -> void:
 	require(text.contains("2 CP") and text.contains("1 CP") and text.contains("35 salvage"),"Actual Blank Page CP tradeoff and exact service price")
 	button(ui.overlay,"Confirm Loose Leaf").pressed.emit()
 	require(ui.game.run.deck[1].evolution=="loose_leaf" and ui.game.run.salvage==15,"Native paid cost branch confirmation")
-	for player in ui.find_children("*","AudioStreamPlayer",true,false):
-		player.stop()
-		player.stream=null
+	ui.hull_audio.stop_all()
 	ui.queue_free()
 	await process_frame
-	await create_timer(0.1).timeout
+	await create_timer(0.4).timeout
 	print("PALIMPSEST_EVOLUTIONS_UI_TEST ",checks," checks, ",failures," failures (node assertions, not graphical evidence)")
 	quit(1 if failures else 0)

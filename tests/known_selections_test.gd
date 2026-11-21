@@ -299,8 +299,7 @@ func test_ui() -> void:
 		for unused in range(3): await process_frame
 		check(find_button(ui.overlay,"Confirm · spend 1 CP")!=null,"resume UI restores full chooser")
 		ui._cancel_choice()
-	ui.audio.stop()
-	ui.ambience.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(4): await process_frame

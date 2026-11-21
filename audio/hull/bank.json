@@ -1,0 +1,3252 @@
+{
+  "version": 1,
+  "patches": {
+    "reed_mist": {
+      "file": "samples/reed_mist.wav",
+      "root": 50,
+      "bank": 0,
+      "program": 0
+    },
+    "reed_wood": {
+      "file": "samples/reed_wood.wav",
+      "root": 50,
+      "bank": 0,
+      "program": 1
+    },
+    "grain_bow": {
+      "file": "samples/grain_bow.wav",
+      "root": 48,
+      "bank": 0,
+      "program": 2
+    },
+    "bow_thread": {
+      "file": "samples/bow_thread.wav",
+      "root": 60,
+      "bank": 0,
+      "program": 3
+    },
+    "glass_fog": {
+      "file": "samples/glass_fog.wav",
+      "root": 57,
+      "bank": 0,
+      "program": 4
+    },
+    "glass_fall": {
+      "file": "samples/glass_fall.wav",
+      "root": 57,
+      "bank": 0,
+      "program": 5
+    },
+    "shell_mallet": {
+      "file": "samples/shell_mallet.wav",
+      "root": 51,
+      "bank": 0,
+      "program": 6
+    },
+    "wood_ember": {
+      "file": "samples/wood_ember.wav",
+      "root": 51,
+      "bank": 0,
+      "program": 7
+    },
+    "tide_body": {
+      "file": "samples/tide_body.wav",
+      "root": 39,
+      "bank": 0,
+      "program": 8
+    },
+    "wreck_body": {
+      "file": "samples/wreck_body.wav",
+      "root": 43,
+      "bank": 0,
+      "program": 9
+    },
+    "seam_air": {
+      "file": "samples/seam_air.wav",
+      "root": 45,
+      "bank": 0,
+      "program": 10
+    },
+    "pressure": {
+      "file": "samples/pressure.wav",
+      "root": 42,
+      "bank": 0,
+      "program": 11
+    },
+    "keel_tap": {
+      "file": "samples/keel_tap.wav",
+      "root": 60,
+      "bank": 0,
+      "program": 12
+    },
+    "shell_knock": {
+      "file": "samples/shell_knock.wav",
+      "root": 60,
+      "bank": 0,
+      "program": 13
+    },
+    "click_near": {
+      "file": "samples/click_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 0
+    },
+    "click_hollow": {
+      "file": "samples/click_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 1
+    },
+    "click_take2": {
+      "file": "samples/click_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 0
+    },
+    "card_select_near": {
+      "file": "samples/card_select_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 2
+    },
+    "card_select_hollow": {
+      "file": "samples/card_select_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 3
+    },
+    "card_select_take2": {
+      "file": "samples/card_select_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 1
+    },
+    "play_near": {
+      "file": "samples/play_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 4
+    },
+    "play_hollow": {
+      "file": "samples/play_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 5
+    },
+    "play_take2": {
+      "file": "samples/play_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 2
+    },
+    "impact_near": {
+      "file": "samples/impact_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 6
+    },
+    "impact_hollow": {
+      "file": "samples/impact_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 7
+    },
+    "impact_take2": {
+      "file": "samples/impact_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 3
+    },
+    "reward_near": {
+      "file": "samples/reward_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 8
+    },
+    "reward_hollow": {
+      "file": "samples/reward_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 9
+    },
+    "transition_near": {
+      "file": "samples/transition_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 10
+    },
+    "transition_hollow": {
+      "file": "samples/transition_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 11
+    },
+    "ship_select_near": {
+      "file": "samples/ship_select_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 12
+    },
+    "ship_select_hollow": {
+      "file": "samples/ship_select_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 13
+    },
+    "ship_select_take2": {
+      "file": "samples/ship_select_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 6
+    },
+    "organ_cartographer_near": {
+      "file": "samples/organ_cartographer_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 14
+    },
+    "organ_cartographer_hollow": {
+      "file": "samples/organ_cartographer_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 15
+    },
+    "organ_cartographer_take2": {
+      "file": "samples/organ_cartographer_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 7
+    },
+    "organ_palimpsest_near": {
+      "file": "samples/organ_palimpsest_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 16
+    },
+    "organ_palimpsest_hollow": {
+      "file": "samples/organ_palimpsest_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 17
+    },
+    "organ_palimpsest_take2": {
+      "file": "samples/organ_palimpsest_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 8
+    },
+    "organ_choir_near": {
+      "file": "samples/organ_choir_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 18
+    },
+    "organ_choir_hollow": {
+      "file": "samples/organ_choir_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 19
+    },
+    "organ_choir_take2": {
+      "file": "samples/organ_choir_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 9
+    },
+    "choir_phrase_near": {
+      "file": "samples/choir_phrase_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 20
+    },
+    "choir_phrase_hollow": {
+      "file": "samples/choir_phrase_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 21
+    },
+    "shop_buy_near": {
+      "file": "samples/shop_buy_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 22
+    },
+    "shop_buy_hollow": {
+      "file": "samples/shop_buy_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 23
+    },
+    "recovery_near": {
+      "file": "samples/recovery_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 24
+    },
+    "recovery_hollow": {
+      "file": "samples/recovery_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 25
+    },
+    "map_travel_near": {
+      "file": "samples/map_travel_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 26
+    },
+    "map_travel_hollow": {
+      "file": "samples/map_travel_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 27
+    },
+    "combat_kinetic_launch_near": {
+      "file": "samples/combat_kinetic_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 28
+    },
+    "combat_kinetic_launch_hollow": {
+      "file": "samples/combat_kinetic_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 29
+    },
+    "combat_kinetic_launch_take2": {
+      "file": "samples/combat_kinetic_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 14
+    },
+    "combat_kinetic_hit_near": {
+      "file": "samples/combat_kinetic_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 30
+    },
+    "combat_kinetic_hit_hollow": {
+      "file": "samples/combat_kinetic_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 31
+    },
+    "combat_kinetic_hit_take2": {
+      "file": "samples/combat_kinetic_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 15
+    },
+    "combat_plasma_launch_near": {
+      "file": "samples/combat_plasma_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 32
+    },
+    "combat_plasma_launch_hollow": {
+      "file": "samples/combat_plasma_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 33
+    },
+    "combat_plasma_launch_take2": {
+      "file": "samples/combat_plasma_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 16
+    },
+    "combat_plasma_hit_near": {
+      "file": "samples/combat_plasma_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 34
+    },
+    "combat_plasma_hit_hollow": {
+      "file": "samples/combat_plasma_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 35
+    },
+    "combat_plasma_hit_take2": {
+      "file": "samples/combat_plasma_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 17
+    },
+    "combat_fracture_launch_near": {
+      "file": "samples/combat_fracture_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 36
+    },
+    "combat_fracture_launch_hollow": {
+      "file": "samples/combat_fracture_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 37
+    },
+    "combat_fracture_launch_take2": {
+      "file": "samples/combat_fracture_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 18
+    },
+    "combat_fracture_hit_near": {
+      "file": "samples/combat_fracture_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 38
+    },
+    "combat_fracture_hit_hollow": {
+      "file": "samples/combat_fracture_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 39
+    },
+    "combat_fracture_hit_take2": {
+      "file": "samples/combat_fracture_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 19
+    },
+    "combat_sonic_launch_near": {
+      "file": "samples/combat_sonic_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 40
+    },
+    "combat_sonic_launch_hollow": {
+      "file": "samples/combat_sonic_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 41
+    },
+    "combat_sonic_launch_take2": {
+      "file": "samples/combat_sonic_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 20
+    },
+    "combat_sonic_hit_near": {
+      "file": "samples/combat_sonic_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 42
+    },
+    "combat_sonic_hit_hollow": {
+      "file": "samples/combat_sonic_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 43
+    },
+    "combat_sonic_hit_take2": {
+      "file": "samples/combat_sonic_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 21
+    },
+    "combat_memory_launch_near": {
+      "file": "samples/combat_memory_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 44
+    },
+    "combat_memory_launch_hollow": {
+      "file": "samples/combat_memory_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 45
+    },
+    "combat_memory_launch_take2": {
+      "file": "samples/combat_memory_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 22
+    },
+    "combat_memory_hit_near": {
+      "file": "samples/combat_memory_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 46
+    },
+    "combat_memory_hit_hollow": {
+      "file": "samples/combat_memory_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 47
+    },
+    "combat_memory_hit_take2": {
+      "file": "samples/combat_memory_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 23
+    },
+    "combat_beam_launch_near": {
+      "file": "samples/combat_beam_launch_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 48
+    },
+    "combat_beam_launch_hollow": {
+      "file": "samples/combat_beam_launch_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 49
+    },
+    "combat_beam_launch_take2": {
+      "file": "samples/combat_beam_launch_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 24
+    },
+    "combat_beam_hit_near": {
+      "file": "samples/combat_beam_hit_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 50
+    },
+    "combat_beam_hit_hollow": {
+      "file": "samples/combat_beam_hit_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 51
+    },
+    "combat_beam_hit_take2": {
+      "file": "samples/combat_beam_hit_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 25
+    },
+    "combat_repair_near": {
+      "file": "samples/combat_repair_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 52
+    },
+    "combat_repair_hollow": {
+      "file": "samples/combat_repair_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 53
+    },
+    "combat_shield_near": {
+      "file": "samples/combat_shield_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 54
+    },
+    "combat_shield_hollow": {
+      "file": "samples/combat_shield_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 55
+    },
+    "combat_shield_take2": {
+      "file": "samples/combat_shield_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 27
+    },
+    "combat_disrupt_near": {
+      "file": "samples/combat_disrupt_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 56
+    },
+    "combat_disrupt_hollow": {
+      "file": "samples/combat_disrupt_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 57
+    },
+    "combat_vent_near": {
+      "file": "samples/combat_vent_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 58
+    },
+    "combat_vent_hollow": {
+      "file": "samples/combat_vent_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 59
+    },
+    "combat_sever_near": {
+      "file": "samples/combat_sever_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 60
+    },
+    "combat_sever_hollow": {
+      "file": "samples/combat_sever_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 61
+    },
+    "combat_link_near": {
+      "file": "samples/combat_link_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 62
+    },
+    "combat_link_hollow": {
+      "file": "samples/combat_link_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 63
+    },
+    "combat_phase_near": {
+      "file": "samples/combat_phase_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 64
+    },
+    "combat_phase_hollow": {
+      "file": "samples/combat_phase_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 65
+    },
+    "combat_ready_near": {
+      "file": "samples/combat_ready_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 66
+    },
+    "combat_ready_hollow": {
+      "file": "samples/combat_ready_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 67
+    },
+    "combat_draw_near": {
+      "file": "samples/combat_draw_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 68
+    },
+    "combat_draw_hollow": {
+      "file": "samples/combat_draw_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 69
+    },
+    "combat_draw_take2": {
+      "file": "samples/combat_draw_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 34
+    },
+    "combat_discard_near": {
+      "file": "samples/combat_discard_near.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 70
+    },
+    "combat_discard_hollow": {
+      "file": "samples/combat_discard_hollow.wav",
+      "root": 60,
+      "bank": 1,
+      "program": 71
+    },
+    "combat_discard_take2": {
+      "file": "samples/combat_discard_take2.wav",
+      "root": 60,
+      "bank": 2,
+      "program": 35
+    }
+  },
+  "cues": {
+    "score_reed_mist": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "reed_mist",
+        "reed_wood"
+      ],
+      "gain_db": -12
+    },
+    "score_reed_wood": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "reed_wood",
+        "reed_mist"
+      ],
+      "gain_db": -12
+    },
+    "score_grain_bow": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "grain_bow",
+        "bow_thread"
+      ],
+      "gain_db": -12
+    },
+    "score_bow_thread": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "bow_thread",
+        "grain_bow"
+      ],
+      "gain_db": -12
+    },
+    "score_glass_fog": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "glass_fog",
+        "glass_fall"
+      ],
+      "gain_db": -12
+    },
+    "score_glass_fall": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "glass_fall",
+        "glass_fog"
+      ],
+      "gain_db": -12
+    },
+    "score_shell_mallet": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "shell_mallet",
+        "wood_ember"
+      ],
+      "gain_db": -12
+    },
+    "score_wood_ember": {
+      "group": "score instruments",
+      "bus": "Music",
+      "variants": [
+        "wood_ember",
+        "shell_mallet"
+      ],
+      "gain_db": -12
+    },
+    "score_tide_body": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "tide_body",
+        "wreck_body"
+      ],
+      "gain_db": -12
+    },
+    "score_wreck_body": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "wreck_body",
+        "tide_body"
+      ],
+      "gain_db": -12
+    },
+    "score_seam_air": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "seam_air",
+        "pressure"
+      ],
+      "gain_db": -12
+    },
+    "score_pressure": {
+      "group": "regional atmospheres",
+      "bus": "Music",
+      "variants": [
+        "pressure",
+        "seam_air"
+      ],
+      "gain_db": -12
+    },
+    "score_keel_tap": {
+      "group": "outcomes/cinematics",
+      "bus": "Music",
+      "variants": [
+        "keel_tap",
+        "shell_knock"
+      ],
+      "gain_db": -12
+    },
+    "score_shell_knock": {
+      "group": "outcomes/cinematics",
+      "bus": "Music",
+      "variants": [
+        "shell_knock",
+        "keel_tap"
+      ],
+      "gain_db": -12
+    },
+    "click": {
+      "group": "cards/interface",
+      "bus": "Interface",
+      "variants": [
+        "click_near",
+        "click_hollow",
+        "click_take2"
+      ],
+      "gain_db": -12,
+      "round_robin": [
+        "click_near",
+        "click_take2"
+      ]
+    },
+    "card_select": {
+      "group": "cards/interface",
+      "bus": "Interface",
+      "variants": [
+        "card_select_near",
+        "card_select_hollow",
+        "card_select_take2"
+      ],
+      "gain_db": -12,
+      "round_robin": [
+        "card_select_near",
+        "card_select_take2"
+      ]
+    },
+    "play": {
+      "group": "cards/interface",
+      "bus": "Interface",
+      "variants": [
+        "play_near",
+        "play_hollow",
+        "play_take2"
+      ],
+      "gain_db": -8,
+      "round_robin": [
+        "play_near",
+        "play_take2"
+      ]
+    },
+    "impact": {
+      "group": "impacts",
+      "bus": "Interface",
+      "variants": [
+        "impact_near",
+        "impact_hollow",
+        "impact_take2"
+      ],
+      "gain_db": -6,
+      "round_robin": [
+        "impact_near",
+        "impact_take2"
+      ]
+    },
+    "reward": {
+      "group": "travel/locations",
+      "bus": "Interface",
+      "variants": [
+        "reward_near",
+        "reward_hollow"
+      ],
+      "gain_db": -10
+    },
+    "transition": {
+      "group": "travel/locations",
+      "bus": "Interface",
+      "variants": [
+        "transition_near",
+        "transition_hollow"
+      ],
+      "gain_db": -13
+    },
+    "ship_select": {
+      "group": "ship/organ voices",
+      "bus": "Interface",
+      "variants": [
+        "ship_select_near",
+        "ship_select_hollow",
+        "ship_select_take2"
+      ],
+      "gain_db": -11,
+      "round_robin": [
+        "ship_select_near",
+        "ship_select_take2"
+      ]
+    },
+    "organ_cartographer": {
+      "group": "ship/organ voices",
+      "bus": "Combat",
+      "variants": [
+        "organ_cartographer_near",
+        "organ_cartographer_hollow",
+        "organ_cartographer_take2"
+      ],
+      "gain_db": -10,
+      "round_robin": [
+        "organ_cartographer_near",
+        "organ_cartographer_take2"
+      ]
+    },
+    "organ_palimpsest": {
+      "group": "ship/organ voices",
+      "bus": "Combat",
+      "variants": [
+        "organ_palimpsest_near",
+        "organ_palimpsest_hollow",
+        "organ_palimpsest_take2"
+      ],
+      "gain_db": -10,
+      "round_robin": [
+        "organ_palimpsest_near",
+        "organ_palimpsest_take2"
+      ]
+    },
+    "organ_choir": {
+      "group": "ship/organ voices",
+      "bus": "Combat",
+      "variants": [
+        "organ_choir_near",
+        "organ_choir_hollow",
+        "organ_choir_take2"
+      ],
+      "gain_db": -11,
+      "round_robin": [
+        "organ_choir_near",
+        "organ_choir_take2"
+      ]
+    },
+    "choir_phrase": {
+      "group": "ship/organ voices",
+      "bus": "Combat",
+      "variants": [
+        "choir_phrase_near",
+        "choir_phrase_hollow"
+      ],
+      "gain_db": -10
+    },
+    "shop_buy": {
+      "group": "travel/locations",
+      "bus": "Interface",
+      "variants": [
+        "shop_buy_near",
+        "shop_buy_hollow"
+      ],
+      "gain_db": -9
+    },
+    "recovery": {
+      "group": "travel/locations",
+      "bus": "Interface",
+      "variants": [
+        "recovery_near",
+        "recovery_hollow"
+      ],
+      "gain_db": -11
+    },
+    "map_travel": {
+      "group": "travel/locations",
+      "bus": "Interface",
+      "variants": [
+        "map_travel_near",
+        "map_travel_hollow"
+      ],
+      "gain_db": -12
+    },
+    "combat_kinetic_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_kinetic_launch_near",
+        "combat_kinetic_launch_hollow",
+        "combat_kinetic_launch_take2"
+      ],
+      "gain_db": -7,
+      "round_robin": [
+        "combat_kinetic_launch_near",
+        "combat_kinetic_launch_take2"
+      ]
+    },
+    "combat_kinetic_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_kinetic_hit_near",
+        "combat_kinetic_hit_hollow",
+        "combat_kinetic_hit_take2"
+      ],
+      "gain_db": -4,
+      "round_robin": [
+        "combat_kinetic_hit_near",
+        "combat_kinetic_hit_take2"
+      ]
+    },
+    "combat_plasma_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_plasma_launch_near",
+        "combat_plasma_launch_hollow",
+        "combat_plasma_launch_take2"
+      ],
+      "gain_db": -8,
+      "round_robin": [
+        "combat_plasma_launch_near",
+        "combat_plasma_launch_take2"
+      ]
+    },
+    "combat_plasma_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_plasma_hit_near",
+        "combat_plasma_hit_hollow",
+        "combat_plasma_hit_take2"
+      ],
+      "gain_db": -6,
+      "round_robin": [
+        "combat_plasma_hit_near",
+        "combat_plasma_hit_take2"
+      ]
+    },
+    "combat_fracture_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_fracture_launch_near",
+        "combat_fracture_launch_hollow",
+        "combat_fracture_launch_take2"
+      ],
+      "gain_db": -8,
+      "round_robin": [
+        "combat_fracture_launch_near",
+        "combat_fracture_launch_take2"
+      ]
+    },
+    "combat_fracture_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_fracture_hit_near",
+        "combat_fracture_hit_hollow",
+        "combat_fracture_hit_take2"
+      ],
+      "gain_db": -7,
+      "round_robin": [
+        "combat_fracture_hit_near",
+        "combat_fracture_hit_take2"
+      ]
+    },
+    "combat_sonic_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_sonic_launch_near",
+        "combat_sonic_launch_hollow",
+        "combat_sonic_launch_take2"
+      ],
+      "gain_db": -8,
+      "round_robin": [
+        "combat_sonic_launch_near",
+        "combat_sonic_launch_take2"
+      ]
+    },
+    "combat_sonic_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_sonic_hit_near",
+        "combat_sonic_hit_hollow",
+        "combat_sonic_hit_take2"
+      ],
+      "gain_db": -6,
+      "round_robin": [
+        "combat_sonic_hit_near",
+        "combat_sonic_hit_take2"
+      ]
+    },
+    "combat_memory_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_memory_launch_near",
+        "combat_memory_launch_hollow",
+        "combat_memory_launch_take2"
+      ],
+      "gain_db": -9,
+      "round_robin": [
+        "combat_memory_launch_near",
+        "combat_memory_launch_take2"
+      ]
+    },
+    "combat_memory_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_memory_hit_near",
+        "combat_memory_hit_hollow",
+        "combat_memory_hit_take2"
+      ],
+      "gain_db": -7,
+      "round_robin": [
+        "combat_memory_hit_near",
+        "combat_memory_hit_take2"
+      ]
+    },
+    "combat_beam_launch": {
+      "group": "weapon launches",
+      "bus": "Combat",
+      "variants": [
+        "combat_beam_launch_near",
+        "combat_beam_launch_hollow",
+        "combat_beam_launch_take2"
+      ],
+      "gain_db": -18,
+      "round_robin": [
+        "combat_beam_launch_near",
+        "combat_beam_launch_take2"
+      ]
+    },
+    "combat_beam_hit": {
+      "group": "impacts",
+      "bus": "Combat",
+      "variants": [
+        "combat_beam_hit_near",
+        "combat_beam_hit_hollow",
+        "combat_beam_hit_take2"
+      ],
+      "gain_db": -16,
+      "round_robin": [
+        "combat_beam_hit_near",
+        "combat_beam_hit_take2"
+      ]
+    },
+    "combat_repair": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_repair_near",
+        "combat_repair_hollow"
+      ],
+      "gain_db": -8
+    },
+    "combat_shield": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_shield_near",
+        "combat_shield_hollow",
+        "combat_shield_take2"
+      ],
+      "gain_db": -6,
+      "round_robin": [
+        "combat_shield_near",
+        "combat_shield_take2"
+      ]
+    },
+    "combat_disrupt": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_disrupt_near",
+        "combat_disrupt_hollow"
+      ],
+      "gain_db": -9
+    },
+    "combat_vent": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_vent_near",
+        "combat_vent_hollow"
+      ],
+      "gain_db": -10
+    },
+    "combat_sever": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_sever_near",
+        "combat_sever_hollow"
+      ],
+      "gain_db": -8
+    },
+    "combat_link": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_link_near",
+        "combat_link_hollow"
+      ],
+      "gain_db": -10
+    },
+    "combat_phase": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_phase_near",
+        "combat_phase_hollow"
+      ],
+      "gain_db": -7
+    },
+    "combat_ready": {
+      "group": "support/status",
+      "bus": "Combat",
+      "variants": [
+        "combat_ready_near",
+        "combat_ready_hollow"
+      ],
+      "gain_db": -10
+    },
+    "combat_draw": {
+      "group": "cards/interface",
+      "bus": "Combat",
+      "variants": [
+        "combat_draw_near",
+        "combat_draw_hollow",
+        "combat_draw_take2"
+      ],
+      "gain_db": -12,
+      "round_robin": [
+        "combat_draw_near",
+        "combat_draw_take2"
+      ]
+    },
+    "combat_discard": {
+      "group": "cards/interface",
+      "bus": "Combat",
+      "variants": [
+        "combat_discard_near",
+        "combat_discard_hollow",
+        "combat_discard_take2"
+      ],
+      "gain_db": -12,
+      "round_robin": [
+        "combat_discard_near",
+        "combat_discard_take2"
+      ]
+    }
+  },
+  "scores": {
+    "clear_0": {
+      "length": 5.032258,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.209677,
+          "name": "answer"
+        },
+        {
+          "time": 5.032258,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 967742
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.46371,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.052419,
+          "duration": 2.032259,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.209677,
+          "duration": 2.758065,
+          "cue": "score_wood_ember",
+          "note": 48,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "clear_1": {
+      "length": 5.777777,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.388889,
+          "name": "answer"
+        },
+        {
+          "time": 5.777777,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1111111
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.532407,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.060185,
+          "duration": 2.333333,
+          "cue": "score_wreck_body",
+          "note": 46,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.388889,
+          "duration": 3.166666,
+          "cue": "score_shell_mallet",
+          "note": 43,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "clear_2": {
+      "length": 5.2,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.25,
+          "name": "answer"
+        },
+        {
+          "time": 5.2,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.479167,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.054167,
+          "duration": 2.1,
+          "cue": "score_reed_mist",
+          "note": 54,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.25,
+          "duration": 2.85,
+          "cue": "score_glass_fall",
+          "note": 51,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "clear_3": {
+      "length": 4.727273,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.136364,
+          "name": "answer"
+        },
+        {
+          "time": 4.727273,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 909091
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.435606,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.049242,
+          "duration": 1.909092,
+          "cue": "score_reed_wood",
+          "note": 53,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.136364,
+          "duration": 2.590909,
+          "cue": "score_shell_mallet",
+          "note": 50,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "clear_4": {
+      "length": 6.367348,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.530612,
+          "name": "answer"
+        },
+        {
+          "time": 6.367348,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1224490
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.586735,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.066327,
+          "duration": 2.571429,
+          "cue": "score_tide_body",
+          "note": 42,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.530612,
+          "duration": 3.489797,
+          "cue": "score_glass_fog",
+          "note": 39,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "clear_5": {
+      "length": 5.379312,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "clear"
+        },
+        {
+          "time": 1.293104,
+          "name": "answer"
+        },
+        {
+          "time": 5.379312,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1034483
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.49569,
+          "cue": "score_shell_knock",
+          "note": 60,
+          "velocity": 75,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.056034,
+          "duration": 2.172415,
+          "cue": "score_bow_thread",
+          "note": 48,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.293104,
+          "duration": 2.948276,
+          "cue": "score_pressure",
+          "note": 45,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "defeat": {
+      "length": 13.090908,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "afterimage": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "defeat"
+        },
+        {
+          "time": 3.631818,
+          "name": "phrase"
+        },
+        {
+          "time": 7.068181,
+          "name": "ending"
+        },
+        {
+          "time": 13.090908,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1090909
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.6,
+          "cue": "score_keel_tap",
+          "note": 57,
+          "velocity": 77,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.109091,
+          "duration": 2.836363,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 75,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.636364,
+          "duration": 2.290908,
+          "cue": "score_seam_air",
+          "note": 43,
+          "velocity": 48,
+          "track": "afterimage"
+        },
+        {
+          "time": 3.631818,
+          "duration": 2.945454,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 71,
+          "track": "vessel motif"
+        },
+        {
+          "time": 7.068181,
+          "duration": 4.254545,
+          "cue": "score_grain_bow",
+          "note": 46,
+          "velocity": 65,
+          "track": "vessel motif"
+        },
+        {
+          "time": 7.877272,
+          "duration": 4.145454,
+          "cue": "score_seam_air",
+          "note": 43,
+          "velocity": 56,
+          "track": "afterimage"
+        }
+      ]
+    },
+    "guardian_0": {
+      "length": 4.741936,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.209677,
+          "name": "answer"
+        },
+        {
+          "time": 4.741936,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 967742
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.46371,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.052419,
+          "duration": 2.032259,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.209677,
+          "duration": 2.758065,
+          "cue": "score_wood_ember",
+          "note": 51,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "guardian_1": {
+      "length": 5.444444,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.388889,
+          "name": "answer"
+        },
+        {
+          "time": 5.444444,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1111111
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.532407,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.060185,
+          "duration": 2.333333,
+          "cue": "score_wreck_body",
+          "note": 43,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.388889,
+          "duration": 3.166666,
+          "cue": "score_shell_mallet",
+          "note": 46,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "guardian_2": {
+      "length": 4.9,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.229167,
+          "name": "answer"
+        },
+        {
+          "time": 4.9,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.479167,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.060417,
+          "duration": 2.7,
+          "cue": "score_bow_thread",
+          "note": 51,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.229167,
+          "duration": 3.5,
+          "cue": "score_glass_fog",
+          "note": 57,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "guardian_3": {
+      "length": 4.454546,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.136364,
+          "name": "answer"
+        },
+        {
+          "time": 4.454546,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 909091
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.435606,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.049242,
+          "duration": 1.909092,
+          "cue": "score_reed_wood",
+          "note": 50,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.136364,
+          "duration": 2.590909,
+          "cue": "score_shell_mallet",
+          "note": 53,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "guardian_4": {
+      "length": 6.000001,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.530612,
+          "name": "answer"
+        },
+        {
+          "time": 6.000001,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1224490
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.586735,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.066327,
+          "duration": 2.571429,
+          "cue": "score_tide_body",
+          "note": 39,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.530612,
+          "duration": 3.489797,
+          "cue": "score_glass_fog",
+          "note": 42,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "guardian_5": {
+      "length": 5.068967,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "answer": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "guardian"
+        },
+        {
+          "time": 1.293104,
+          "name": "answer"
+        },
+        {
+          "time": 5.068967,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1034483
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.49569,
+          "cue": "score_keel_tap",
+          "note": 60,
+          "velocity": 81,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.056034,
+          "duration": 2.172415,
+          "cue": "score_bow_thread",
+          "note": 45,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.293104,
+          "duration": 2.948276,
+          "cue": "score_pressure",
+          "note": 48,
+          "velocity": 61,
+          "track": "answer"
+        }
+      ]
+    },
+    "opening": {
+      "length": 9.0,
+      "tracks": {
+        "keel": {
+          "channel": 1
+        },
+        "breath": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "film_start"
+        },
+        {
+          "time": 4.7,
+          "name": "phrase"
+        },
+        {
+          "time": 8.8,
+          "name": "handoff"
+        },
+        {
+          "time": 9.0,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.089583,
+          "duration": 0.570834,
+          "cue": "score_keel_tap",
+          "note": 56,
+          "velocity": 72,
+          "track": "keel"
+        },
+        {
+          "time": 0.460417,
+          "duration": 4.6,
+          "cue": "score_seam_air",
+          "note": 45,
+          "velocity": 81,
+          "track": "breath"
+        },
+        {
+          "time": 4.7,
+          "duration": 2.4,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 64,
+          "track": "vessel motif"
+        },
+        {
+          "time": 7.05,
+          "duration": 1.85,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 53,
+          "track": "vessel motif"
+        }
+      ]
+    },
+    "region_0": {
+      "length": 55.161294,
+      "tracks": {
+        "bowed hull": {
+          "channel": 1
+        },
+        "ember": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 13.790323,
+          "name": "phrase"
+        },
+        {
+          "time": 34.199599,
+          "name": "phrase"
+        },
+        {
+          "time": 55.161294,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 967742
+        }
+      ],
+      "events": [
+        {
+          "time": 0.967742,
+          "duration": 5.612904,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 82,
+          "track": "bowed hull"
+        },
+        {
+          "time": 7.983872,
+          "duration": 0.407258,
+          "cue": "score_wood_ember",
+          "note": 55,
+          "velocity": 52,
+          "track": "ember"
+        },
+        {
+          "time": 12.67742,
+          "duration": 2.516129,
+          "cue": "score_bow_thread",
+          "note": 55,
+          "velocity": 50,
+          "track": "tension"
+        },
+        {
+          "time": 16.209678,
+          "duration": 3.000001,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 66,
+          "track": "bowed hull"
+        },
+        {
+          "time": 19.935485,
+          "duration": 0.300403,
+          "cue": "score_wood_ember",
+          "note": 51,
+          "velocity": 39,
+          "track": "ember"
+        },
+        {
+          "time": 23.419356,
+          "duration": 2.322581,
+          "cue": "score_reed_wood",
+          "note": 55,
+          "velocity": 56,
+          "track": "vessel motif"
+        },
+        {
+          "time": 27.19355,
+          "duration": 2.709678,
+          "cue": "score_reed_wood",
+          "note": 58,
+          "velocity": 50,
+          "track": "vessel motif"
+        },
+        {
+          "time": 29.03226,
+          "duration": 5.516129,
+          "cue": "score_grain_bow",
+          "note": 43,
+          "velocity": 88,
+          "track": "bowed hull"
+        },
+        {
+          "time": 33.725809,
+          "duration": 0.455645,
+          "cue": "score_wood_ember",
+          "note": 55,
+          "velocity": 46,
+          "track": "ember"
+        },
+        {
+          "time": 35.052422,
+          "duration": 0.308467,
+          "cue": "score_wood_ember",
+          "note": 51,
+          "velocity": 33,
+          "track": "ember"
+        },
+        {
+          "time": 40.54839,
+          "duration": 2.806452,
+          "cue": "score_bow_thread",
+          "note": 51,
+          "velocity": 54,
+          "track": "tension"
+        },
+        {
+          "time": 45.000003,
+          "duration": 3.67742,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 68,
+          "track": "bowed hull"
+        }
+      ]
+    },
+    "region_1": {
+      "length": 65.555549,
+      "tracks": {
+        "near wreck": {
+          "channel": 1
+        },
+        "far wreck": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 16.388887,
+          "name": "phrase"
+        },
+        {
+          "time": 40.643514,
+          "name": "phrase"
+        },
+        {
+          "time": 65.555549,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1111111
+        }
+      ],
+      "events": [
+        {
+          "time": 0.888889,
+          "duration": 4.666666,
+          "cue": "score_wreck_body",
+          "note": 43,
+          "velocity": 86,
+          "track": "near wreck"
+        },
+        {
+          "time": 7.999999,
+          "duration": 2.555555,
+          "cue": "score_shell_mallet",
+          "note": 53,
+          "velocity": 58,
+          "track": "far wreck"
+        },
+        {
+          "time": 12.555554,
+          "duration": 2.444445,
+          "cue": "score_glass_fall",
+          "note": 50,
+          "velocity": 57,
+          "track": "vessel motif"
+        },
+        {
+          "time": 16.777776,
+          "duration": 2.333333,
+          "cue": "score_glass_fall",
+          "note": 53,
+          "velocity": 50,
+          "track": "vessel motif"
+        },
+        {
+          "time": 18.888887,
+          "duration": 2.666666,
+          "cue": "score_shell_mallet",
+          "note": 50,
+          "velocity": 46,
+          "track": "far wreck"
+        },
+        {
+          "time": 24.444442,
+          "duration": 4.555555,
+          "cue": "score_wreck_body",
+          "note": 46,
+          "velocity": 67,
+          "track": "near wreck"
+        },
+        {
+          "time": 28.33333,
+          "duration": 4.666667,
+          "cue": "score_pressure",
+          "note": 38,
+          "velocity": 54,
+          "track": "tension"
+        },
+        {
+          "time": 34.777774,
+          "duration": 3.0,
+          "cue": "score_shell_mallet",
+          "note": 53,
+          "velocity": 62,
+          "track": "far wreck"
+        },
+        {
+          "time": 44.999995,
+          "duration": 4.888889,
+          "cue": "score_wreck_body",
+          "note": 43,
+          "velocity": 71,
+          "track": "near wreck"
+        },
+        {
+          "time": 54.444439,
+          "duration": 2.888889,
+          "cue": "score_shell_mallet",
+          "note": 46,
+          "velocity": 49,
+          "track": "far wreck"
+        },
+        {
+          "time": 59.999994,
+          "duration": 2.777778,
+          "cue": "score_pressure",
+          "note": 41,
+          "velocity": 47,
+          "track": "tension"
+        }
+      ]
+    },
+    "region_2": {
+      "length": 63.0,
+      "tracks": {
+        "breath": {
+          "channel": 1
+        },
+        "rim": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 15.75,
+          "name": "phrase"
+        },
+        {
+          "time": 39.060417,
+          "name": "phrase"
+        },
+        {
+          "time": 63.0,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.15,
+          "duration": 5.4,
+          "cue": "score_reed_mist",
+          "note": 47,
+          "velocity": 82,
+          "track": "breath"
+        },
+        {
+          "time": 3.820833,
+          "duration": 5.2,
+          "cue": "score_glass_fog",
+          "note": 57,
+          "velocity": 66,
+          "track": "rim"
+        },
+        {
+          "time": 8.45,
+          "duration": 2.0,
+          "cue": "score_glass_fall",
+          "note": 57,
+          "velocity": 45,
+          "track": "vessel motif"
+        },
+        {
+          "time": 13.0,
+          "duration": 2.15,
+          "cue": "score_glass_fall",
+          "note": 60,
+          "velocity": 40,
+          "track": "vessel motif"
+        },
+        {
+          "time": 14.120833,
+          "duration": 2.3,
+          "cue": "score_bow_thread",
+          "note": 54,
+          "velocity": 57,
+          "track": "tension"
+        },
+        {
+          "time": 19.2,
+          "duration": 4.8,
+          "cue": "score_reed_mist",
+          "note": 52,
+          "velocity": 70,
+          "track": "breath"
+        },
+        {
+          "time": 27.4,
+          "duration": 3.9,
+          "cue": "score_glass_fog",
+          "note": 54,
+          "velocity": 57,
+          "track": "rim"
+        },
+        {
+          "time": 32.2,
+          "duration": 3.6,
+          "cue": "score_bow_thread",
+          "note": 51,
+          "velocity": 48,
+          "track": "tension"
+        },
+        {
+          "time": 35.3,
+          "duration": 3.8,
+          "cue": "score_reed_mist",
+          "note": 50,
+          "velocity": 61,
+          "track": "breath"
+        },
+        {
+          "time": 39.1,
+          "duration": 2.0,
+          "cue": "score_glass_fall",
+          "note": 57,
+          "velocity": 41,
+          "track": "vessel motif"
+        },
+        {
+          "time": 44.9,
+          "duration": 4.4,
+          "cue": "score_glass_fog",
+          "note": 57,
+          "velocity": 58,
+          "track": "rim"
+        },
+        {
+          "time": 50.7,
+          "duration": 4.9,
+          "cue": "score_reed_mist",
+          "note": 47,
+          "velocity": 75,
+          "track": "breath"
+        },
+        {
+          "time": 54.4,
+          "duration": 2.1,
+          "cue": "score_bow_thread",
+          "note": 54,
+          "velocity": 49,
+          "track": "tension"
+        }
+      ]
+    },
+    "region_3": {
+      "length": 56.363642,
+      "tracks": {
+        "wood air": {
+          "channel": 1
+        },
+        "second breath": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 14.09091,
+          "name": "phrase"
+        },
+        {
+          "time": 34.945079,
+          "name": "phrase"
+        },
+        {
+          "time": 56.363642,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 909091
+        }
+      ],
+      "events": [
+        {
+          "time": 0.636364,
+          "duration": 3.727273,
+          "cue": "score_reed_wood",
+          "note": 50,
+          "velocity": 79,
+          "track": "wood air"
+        },
+        {
+          "time": 3.272728,
+          "duration": 4.363636,
+          "cue": "score_seam_air",
+          "note": 45,
+          "velocity": 60,
+          "track": "second breath"
+        },
+        {
+          "time": 7.727273,
+          "duration": 2.909092,
+          "cue": "score_grain_bow",
+          "note": 45,
+          "velocity": 44,
+          "track": "tension"
+        },
+        {
+          "time": 10.272728,
+          "duration": 3.363637,
+          "cue": "score_reed_wood",
+          "note": 55,
+          "velocity": 62,
+          "track": "wood air"
+        },
+        {
+          "time": 16.545456,
+          "duration": 3.727273,
+          "cue": "score_seam_air",
+          "note": 48,
+          "velocity": 58,
+          "track": "second breath"
+        },
+        {
+          "time": 21.909093,
+          "duration": 4.181819,
+          "cue": "score_reed_wood",
+          "note": 50,
+          "velocity": 70,
+          "track": "wood air"
+        },
+        {
+          "time": 24.818184,
+          "duration": 3.909092,
+          "cue": "score_seam_air",
+          "note": 45,
+          "velocity": 64,
+          "track": "second breath"
+        },
+        {
+          "time": 31.636367,
+          "duration": 1.545454,
+          "cue": "score_shell_mallet",
+          "note": 50,
+          "velocity": 55,
+          "track": "vessel motif"
+        },
+        {
+          "time": 33.954549,
+          "duration": 2.0,
+          "cue": "score_shell_mallet",
+          "note": 53,
+          "velocity": 48,
+          "track": "vessel motif"
+        },
+        {
+          "time": 38.36364,
+          "duration": 3.000001,
+          "cue": "score_grain_bow",
+          "note": 50,
+          "velocity": 48,
+          "track": "tension"
+        },
+        {
+          "time": 42.545459,
+          "duration": 3.272727,
+          "cue": "score_reed_wood",
+          "note": 53,
+          "velocity": 74,
+          "track": "wood air"
+        },
+        {
+          "time": 47.727277,
+          "duration": 3.454546,
+          "cue": "score_seam_air",
+          "note": 48,
+          "velocity": 53,
+          "track": "second breath"
+        }
+      ]
+    },
+    "region_4": {
+      "length": 66.12246,
+      "tracks": {
+        "undertow": {
+          "channel": 1
+        },
+        "afterimage": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 16.530615,
+          "name": "phrase"
+        },
+        {
+          "time": 40.994905,
+          "name": "phrase"
+        },
+        {
+          "time": 66.12246,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1224490
+        }
+      ],
+      "events": [
+        {
+          "time": 1.102041,
+          "duration": 7.591838,
+          "cue": "score_tide_body",
+          "note": 39,
+          "velocity": 85,
+          "track": "undertow"
+        },
+        {
+          "time": 11.387757,
+          "duration": 4.775511,
+          "cue": "score_wreck_body",
+          "note": 39,
+          "velocity": 46,
+          "track": "afterimage"
+        },
+        {
+          "time": 16.163268,
+          "duration": 3.551021,
+          "cue": "score_glass_fog",
+          "note": 51,
+          "velocity": 45,
+          "track": "vessel motif"
+        },
+        {
+          "time": 20.877554,
+          "duration": 2.57143,
+          "cue": "score_glass_fog",
+          "note": 54,
+          "velocity": 38,
+          "track": "vessel motif"
+        },
+        {
+          "time": 22.163269,
+          "duration": 8.326532,
+          "cue": "score_tide_body",
+          "note": 34,
+          "velocity": 73,
+          "track": "undertow"
+        },
+        {
+          "time": 33.183679,
+          "duration": 4.163266,
+          "cue": "score_wreck_body",
+          "note": 34,
+          "velocity": 42,
+          "track": "afterimage"
+        },
+        {
+          "time": 40.775517,
+          "duration": 3.428572,
+          "cue": "score_grain_bow",
+          "note": 42,
+          "velocity": 56,
+          "track": "tension"
+        },
+        {
+          "time": 47.510212,
+          "duration": 6.734695,
+          "cue": "score_tide_body",
+          "note": 39,
+          "velocity": 65,
+          "track": "undertow"
+        },
+        {
+          "time": 55.591846,
+          "duration": 3.428572,
+          "cue": "score_wreck_body",
+          "note": 39,
+          "velocity": 34,
+          "track": "afterimage"
+        },
+        {
+          "time": 59.693888,
+          "duration": 2.938775,
+          "cue": "score_grain_bow",
+          "note": 46,
+          "velocity": 47,
+          "track": "tension"
+        }
+      ]
+    },
+    "region_5": {
+      "length": 72.41381,
+      "tracks": {
+        "bowed hull": {
+          "channel": 1
+        },
+        "pressure swell": {
+          "channel": 2
+        },
+        "vessel motif": {
+          "channel": 3
+        },
+        "tension": {
+          "channel": 4
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 18.103452,
+          "name": "phrase"
+        },
+        {
+          "time": 44.896562,
+          "name": "phrase"
+        },
+        {
+          "time": 72.41381,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1034483
+        }
+      ],
+      "events": [
+        {
+          "time": 0.310345,
+          "duration": 5.48276,
+          "cue": "score_bow_thread",
+          "note": 52,
+          "velocity": 81,
+          "track": "bowed hull"
+        },
+        {
+          "time": 5.379312,
+          "duration": 7.137932,
+          "cue": "score_pressure",
+          "note": 40,
+          "velocity": 74,
+          "track": "pressure swell"
+        },
+        {
+          "time": 12.517244,
+          "duration": 2.689656,
+          "cue": "score_reed_mist",
+          "note": 52,
+          "velocity": 60,
+          "track": "vessel motif"
+        },
+        {
+          "time": 16.965521,
+          "duration": 2.275863,
+          "cue": "score_reed_mist",
+          "note": 55,
+          "velocity": 49,
+          "track": "vessel motif"
+        },
+        {
+          "time": 20.06897,
+          "duration": 3.620691,
+          "cue": "score_bow_thread",
+          "note": 53,
+          "velocity": 65,
+          "track": "bowed hull"
+        },
+        {
+          "time": 26.586213,
+          "duration": 6.000001,
+          "cue": "score_pressure",
+          "note": 42,
+          "velocity": 71,
+          "track": "pressure swell"
+        },
+        {
+          "time": 31.65518,
+          "duration": 3.310345,
+          "cue": "score_grain_bow",
+          "note": 46,
+          "velocity": 61,
+          "track": "tension"
+        },
+        {
+          "time": 38.482768,
+          "duration": 4.344828,
+          "cue": "score_bow_thread",
+          "note": 45,
+          "velocity": 81,
+          "track": "bowed hull"
+        },
+        {
+          "time": 43.551734,
+          "duration": 2.379311,
+          "cue": "score_grain_bow",
+          "note": 46,
+          "velocity": 53,
+          "track": "tension"
+        },
+        {
+          "time": 46.137942,
+          "duration": 2.586207,
+          "cue": "score_bow_thread",
+          "note": 48,
+          "velocity": 62,
+          "track": "bowed hull"
+        },
+        {
+          "time": 50.379322,
+          "duration": 5.793105,
+          "cue": "score_pressure",
+          "note": 40,
+          "velocity": 57,
+          "track": "pressure swell"
+        }
+      ]
+    },
+    "title": {
+      "length": 43.0,
+      "tracks": {
+        "vessel motif": {
+          "channel": 1
+        },
+        "interior": {
+          "channel": 2
+        },
+        "loose shell": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "loop_start"
+        },
+        {
+          "time": 16.45,
+          "name": "phrase"
+        },
+        {
+          "time": 43.0,
+          "name": "loop_end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.110417,
+          "duration": 3.8,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 57,
+          "track": "vessel motif"
+        },
+        {
+          "time": 5.1,
+          "duration": 5.1,
+          "cue": "score_seam_air",
+          "note": 45,
+          "velocity": 74,
+          "track": "interior"
+        },
+        {
+          "time": 11.9,
+          "duration": 1.5,
+          "cue": "score_shell_mallet",
+          "note": 48,
+          "velocity": 37,
+          "track": "loose shell"
+        },
+        {
+          "time": 16.45,
+          "duration": 2.6,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 60,
+          "track": "vessel motif"
+        },
+        {
+          "time": 21.6,
+          "duration": 2.4,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 54,
+          "track": "vessel motif"
+        },
+        {
+          "time": 27.4,
+          "duration": 1.9,
+          "cue": "score_shell_mallet",
+          "note": 51,
+          "velocity": 33,
+          "track": "loose shell"
+        },
+        {
+          "time": 30.7,
+          "duration": 4.4,
+          "cue": "score_seam_air",
+          "note": 45,
+          "velocity": 65,
+          "track": "interior"
+        }
+      ]
+    },
+    "victory": {
+      "length": 12.0,
+      "tracks": {
+        "hull contact": {
+          "channel": 1
+        },
+        "vessel motif": {
+          "channel": 2
+        },
+        "afterimage": {
+          "channel": 3
+        }
+      },
+      "markers": [
+        {
+          "time": 0.0,
+          "name": "victory"
+        },
+        {
+          "time": 3.329167,
+          "name": "phrase"
+        },
+        {
+          "time": 6.479167,
+          "name": "ending"
+        },
+        {
+          "time": 12.0,
+          "name": "end"
+        }
+      ],
+      "meter": [
+        {
+          "time": 0.0,
+          "numerator": 4,
+          "denominator": 4
+        }
+      ],
+      "tempo": [
+        {
+          "time": 0.0,
+          "us_per_quarter": 1000000
+        }
+      ],
+      "events": [
+        {
+          "time": 0.0,
+          "duration": 0.55,
+          "cue": "score_keel_tap",
+          "note": 57,
+          "velocity": 77,
+          "track": "hull contact"
+        },
+        {
+          "time": 0.1,
+          "duration": 2.6,
+          "cue": "score_grain_bow",
+          "note": 48,
+          "velocity": 75,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.5,
+          "duration": 2.1,
+          "cue": "score_glass_fall",
+          "note": 55,
+          "velocity": 48,
+          "track": "afterimage"
+        },
+        {
+          "time": 3.329167,
+          "duration": 2.7,
+          "cue": "score_grain_bow",
+          "note": 51,
+          "velocity": 71,
+          "track": "vessel motif"
+        },
+        {
+          "time": 6.479167,
+          "duration": 3.9,
+          "cue": "score_grain_bow",
+          "note": 55,
+          "velocity": 65,
+          "track": "vessel motif"
+        },
+        {
+          "time": 7.220833,
+          "duration": 3.8,
+          "cue": "score_glass_fall",
+          "note": 60,
+          "velocity": 56,
+          "track": "afterimage"
+        }
+      ]
+    }
+  }
+}

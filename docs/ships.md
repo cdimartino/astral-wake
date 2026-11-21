@@ -202,6 +202,8 @@ Repeating a kind resets the meter **before** printed gains and organs. A repeate
 
 Concert and Crescendo are separate spends. A Concert card empties the meter before organs act; later organs may build more Resonance for Crescendo or Cadence. Concert can add healing to an attack, while Crescendo only amplifies healing already present when it is reached.
 
+**Choosing between two 2-CP attacks:** In the balance candidate, the *Crescendo card* earns an extra 4 damage when its own Concert spends exactly 3 Resonance. Before organs and enemy defenses, Bright Canon deals 12 to Crescendo's 10 with an empty meter, or 18 to Crescendo's 20 at full spend. Both gain the usual 3 healing on that full spend. Repeating an attack kind resets Resonance before Concert: a full meter at the start of selection does not guarantee a full spend. This rule applies only to new voyages; previously saved voyages keep the original comparison. The *Crescendo organ* has not changed.
+
 ### Starter deck
 
 | Copies | Card | Kind | Cost | Base effect |

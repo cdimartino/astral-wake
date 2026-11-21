@@ -44,6 +44,11 @@ python3 tests/install_engine_replay_test.py "$engine"
 python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/seed_ui_test.gd
 "$engine" --headless --path . --script tests/balance_tests.gd
+"$engine" --headless --path . --script tests/balance_revision_test.gd
+"$engine" --headless --path . --script tests/ascension_rules_test.gd
+"$engine" --headless --path . --script tests/ascension_compatibility_test.gd
+"$engine" --headless --path . --script tests/ascension_mcp_test.gd
+"$engine" --headless --path . --script tests/ascension_ui_test.gd
 "$engine" --headless --path . --script tests/enemy_tactics_tests.gd
 "$engine" --headless --path . --script tests/enemy_tactics_ui_test.gd
 "$engine" --headless --path . --script tests/expansion_tests.gd
@@ -61,7 +66,15 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/actor_motion_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd
+"$engine" --headless --path . --script tests/hull_audio_runtime.gd
+"$engine" --headless --path . --script tests/hull_audio_factory.gd
+"$engine" --headless --path . --script tests/hull_admin_test.gd
+"$engine" --headless --path . --script tools/hull_admin_reference.gd -- --check
+"$engine" --headless --path . --script tests/hull_desk_ui_test.gd
+"$engine" --headless --path . --script tests/hull_workshop_test.gd
 "$engine" --headless --path . --script tests/mcp_controller_test.gd
+"$engine" --headless --path . --script tests/balance_actions_test.gd
+"$engine" --headless --path . --script tests/balance_clarity_ui_test.gd
 "$engine" --headless --path . --script tests/mcp_blind_test.gd
 "$engine" --headless --path . --script tests/mcp_settings_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd

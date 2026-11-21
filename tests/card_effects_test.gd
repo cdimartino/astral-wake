@@ -72,8 +72,7 @@ func check() -> void:
 	require(ui.selected_card == 0 and not ui.hand_buttons[0].disabled, "Selection permits effective cost when affordable")
 	var labels = ui.hand_buttons[0].find_children("*", "Label", true, false)
 	require(labels.any(func(label): return label.text == "2") and labels.any(func(label): return label.text == "20") and labels.any(func(label): return label.text == "Trace +3"), "Face cost, printed payload and resource badges share effective definition")
-	ui.ambience.stop()
-	ui.audio.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

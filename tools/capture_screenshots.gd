@@ -79,7 +79,7 @@ func capture() -> void:
    ui._render()
   await shot(pair[0] + ("-upgraded-effects" if effects_sample else "-deck-overlay" if deck_sample else "-last-command" if memory_sample else "-anatomy" if anatomy_sample else "-combat"))
   if deck_sample: ui._close_overlay()
- ui.ambience.stop()
+ ui.hull_audio.stop_all()
  ui.queue_free()
  await process_frame
  quit(0)

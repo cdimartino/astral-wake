@@ -36,8 +36,7 @@ func check() -> void:
 				var tip=ui._card_tip(instance)
 				require(tip.contains(definition.description),"Authoritative full branch rules accessible "+definition.name)
 				require(not ui.game.card_text(instance).is_empty(),"Nonempty card rules")
-	ui.audio.stop()
-	ui.ambience.stop()
+	ui.hull_audio.stop_all()
 	OS.delay_msec(200)
 	ui.queue_free()
 	for unused in range(5): await process_frame

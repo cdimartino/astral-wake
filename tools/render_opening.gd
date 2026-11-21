@@ -62,10 +62,6 @@ func _setup() -> void:
 	veil.color = Color.BLACK
 	veil.size = Vector2(1440,900)
 	film.add_child(veil)
-	var audio := AudioStreamPlayer.new()
-	audio.stream = load("res://audio/opening.wav")
-	film.add_child(audio)
-	audio.play()
 
 func _process(delta: float) -> bool:
 	if not is_instance_valid(veil): return false

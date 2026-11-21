@@ -2,9 +2,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-version='0.2.0'
-source_app='dist/Astral Wake.app'
-archive="dist/Astral-Wake-${version}-macos.zip"
+version='0.3.0'
+source_app="${1:-dist/Astral Wake.app}"
+archive="${2:-dist/Astral-Wake-${version}-macos.zip}"
+if [[ -e "$archive" ]]; then
+  printf 'Refusing to overwrite existing archive: %s\n' "$archive" >&2
+  exit 1
+fi
+mkdir -p "$(dirname "$archive")"
 if [[ ! -d "$source_app" ]]; then
   printf 'Export the app first: bash tools/export_macos.sh\n' >&2
   exit 1
@@ -15,7 +20,7 @@ if [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$source
 fi
 
 # Keep the signed bundle outside synced Documents while cleaning and verifying it.
-staging="$(mktemp -d /tmp/astral-release.XXXXXX)"
+staging="$(mktemp -d "${TMPDIR:-/tmp}/astral-release.XXXXXX")"
 trap 'rm -rf "$staging"' EXIT
 staged_app="$staging/Astral Wake.app"
 COPYFILE_DISABLE=1 ditto --norsrc --noextattr "$source_app" "$staged_app"
