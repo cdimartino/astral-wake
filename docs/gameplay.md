@@ -18,13 +18,13 @@ Compare output, CP, timing, resource gains and any Retain/Exhaust/first-free fla
 before confirming.
 Old evolved copies on all ships keep that exact legacy behavior, including Draw.
 
-While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Hover an organ for its resource changes and the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
+While routing, Trace and Resonance show **current → projected** values without spending anything. Selected organs are labeled **Active**, **Fallback**, **Inactive**, or **Wasted** (resource spent without benefit), with matching colors. Inspect an organ for its resource changes, or hover the route preview for the complete card-to-organ flow. Undoing or canceling restores the corresponding forecast; the current combat state changes only on confirmation.
 
 The **Draw** and **Discard** piles flank your hand. Cards travel into and out of them when played or when a turn ends; reshuffles and pile counts follow the same sequence. Click a pile to inspect its composition (draw order stays hidden). Escape skips the presentation without changing the committed result. Reduced motion shows the same card and count changes without travel animations.
 
 The route preview's **Damage** is damage to the selected enemy. **Split** lists damage to other living enemies, separately; unequal values reflect each recipient's defenses and remaining hull. Hover the preview or Confirm for the full named-target breakdown.
 
-Hover or keyboard-focus a card to read definitions of its keywords beside the enlarged face. The same glossary is available from reward/shop controls, deck card headings, and organ tooltips. Number keys can inspect an unaffordable hand card without selecting or playing it. Long explanations scroll within the viewport, and opening an overlay dismisses hand explanations.
+Right-click a hand card or organ, or focus it and press **I**, to inspect its enlarged back beside the fight. Inspection does not select the card, change your route, or spend resources. Long details scroll in the side panel. Press **Esc** to close the details without canceling your staged move.
 
 1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
 2. Select a command from your hand. Its gold badge is its command point cost.
@@ -33,7 +33,7 @@ Hover or keyboard-focus a card to read definitions of its keywords beside the en
 5. Read the preview, then press **Confirm** or **Space**. You can change the route or target before committing.
 6. Play another affordable command, or **End turn** to let the enemies act and prepare your next hand.
 
-Hover or focus a card to raise and enlarge it. Tooltips contain its full effects, including evolution bonuses. Cards you cannot afford remain inspectable.
+Hover a card to bring its front into view. Inspect its back for full effects, keywords, and evolution details. Cards you cannot afford remain inspectable.
 
 For an unmodified Cartographer, **Needle of Dawn → Lens [Q] → Fork [W] → Echo [E]** costs 1 command point and produces 18 damage to the target, plus 9 to each other enemy. This assumes enough enemy hull and no enemy protection or powerup bonuses. Each of those three organs gains 1 strain. Lens and Echo do not connect directly.
 

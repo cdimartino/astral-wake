@@ -208,30 +208,34 @@ func check() -> void:
 		for unused in range(2): await process_frame
 	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and ui.hand_buttons[1].find_child("RetainMarker",true,false).text=="[R1] NEXT DISCARD","Distinct intrinsic and one-discard markers visible")
 	for index in [0,1]:
-		require(ui.hand_buttons[index].explanation.contains("[b]Retain[/b]") and ui.hand_buttons[index].explanation.contains("temporary UID mark"),"Existing rich keyword tooltip explains intrinsic and temporary Retain")
+		require(not ui.hand_buttons[index] is Main.CardTooltip and ui.hand_buttons[index].tooltip_text.is_empty(),"Combat hand avoids unsolicited rich tooltips")
+		var detail := ui._card_tip(ui.game.run.battle.hand[index])
+		require(detail.contains("Retain:") and detail.contains("temporary UID mark"),"Explicit card back explains intrinsic and temporary Retain")
 	var intrinsic_text="Retained every end turn until played."
 	var temporary_text="Retained through next discard only; expires when played."
 	for index in [0,1]:
 		var exact=intrinsic_text if index==0 else temporary_text
-		require(ui.hand_buttons[index].tooltip_text.contains(exact) and ui.hand_buttons[index].explanation.begins_with(exact),"Card-specific hover and focus duration precedes general glossary")
+		var detail := ui._card_tip(ui.game.run.battle.hand[index])
+		require(detail.contains(exact) and ui.hand_buttons[index].get_meta("mcp_description", "").contains(exact),"Explicit details and MCP help include card-specific duration")
 	await check_retain_readability(ui)
 	var retention_initial=ui.game.run.duplicate(true)
 	ui.game.retain_card(int(ui.game.run.battle.hand[0].uid))
 	ui._render()
 	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN","Intrinsic marker wins when temporary Retain overlaps")
 	var overlap_text="Temporary retain also expires at the next discard or when played; intrinsic Retain remains."
-	require(ui.hand_buttons[0].explanation.begins_with(intrinsic_text) and ui.hand_buttons[0].explanation.contains(overlap_text) and ui.hand_buttons[0].tooltip_text.contains(overlap_text),"Overlap hover/focus explains expiry without removing intrinsic Retain")
+	var overlap_detail := ui._card_tip(ui.game.run.battle.hand[0])
+	require(overlap_detail.begins_with(intrinsic_text) and overlap_detail.contains(overlap_text) and ui.hand_buttons[0].get_meta("mcp_description", "").contains(overlap_text),"Explicit details explain expiry without removing intrinsic Retain")
 	await check_retain_readability(ui)
 	var retained_resume=Game.new(ui.game.store.directory)
 	Fixtures.register(retained_resume)
 	require(retained_resume.load_saved(),"Resume retention duration fixture")
 	ui.game.run=retained_resume.run
 	ui._render()
-	require(ui.hand_buttons[0].explanation.contains("intrinsic Retain remains") and ui.hand_buttons[1].explanation.begins_with(temporary_text),"Save/resume preserves overlap and one-discard duration text")
+	require(ui._card_tip(ui.game.run.battle.hand[0]).contains("intrinsic Retain remains") and ui._card_tip(ui.game.run.battle.hand[1]).begins_with(temporary_text),"Save/resume preserves overlap and one-discard duration text")
 	ui.game.end_turn()
 	ui._render()
-	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and not ui.hand_buttons[0].explanation.contains("Temporary retain also"),"Boundary removes temporary overlap text but retains intrinsic marker")
-	require(ui.hand_buttons[1].find_child("RetainMarker",true,false)==null and not ui.hand_buttons[1].tooltip_text.contains(temporary_text),"One-discard marker and specific temporary text expire after boundary")
+	require(ui.hand_buttons[0].find_child("RetainMarker",true,false).text=="[R] EVERY TURN" and not ui._card_tip(ui.game.run.battle.hand[0]).contains("Temporary retain also"),"Boundary removes temporary overlap text but retains intrinsic marker")
+	require(ui.hand_buttons[1].find_child("RetainMarker",true,false)==null and not ui._card_tip(ui.game.run.battle.hand[1]).contains(temporary_text),"One-discard marker and specific temporary text expire after boundary")
 	retained_resume=Game.new(ui.game.store.directory)
 	Fixtures.register(retained_resume)
 	require(retained_resume.load_saved(),"Resume expired retention fixture")
@@ -267,8 +271,7 @@ func check() -> void:
 	ui._render()
 	var detached=ui.hand_buttons[0]
 	detached.get_parent().remove_child(detached)
-	detached._show_focus_tip()
-	require(not is_instance_valid(detached.focus_tip),"Deferred keyword focus on a detached zone/retain card creates no tooltip")
+	require(not detached is Main.CardTooltip,"Combat hand does not schedule a rich focus tooltip")
 	detached.free()
 	ui._render()
 	print("CARD ZONES: ",checks," checks, ",failures," failures (headless node assertions, not graphical evidence)")

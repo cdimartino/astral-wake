@@ -39,25 +39,29 @@ func check() -> void:
 			ui._render()
 			await settle()
 			var card = ui.hand_buttons[0]
-			require(card is Main.CardTooltip, "Hand still uses plain repeating tooltip")
-			for keyword in Keywords.for_card(definition): require(card.explanation.contains(Keywords.DEFINITIONS[keyword]), "Relevant keyword omitted")
+			require(not card is Main.CardTooltip and card.tooltip_text.is_empty(), "Combat hand does not expose unsolicited rich tooltips")
 			card.grab_focus()
 			await settle()
-			require(is_instance_valid(card.focus_tip) and root.get_visible_rect().grow(1).encloses(card.focus_tip.get_global_rect()), "Focused keyword panel leaves viewport")
+			require(not card is Main.CardTooltip, "Focus alone does not expose rich card details")
+			ui._show_combat_detail("card", 0)
+			await settle()
+			var detail_labels: Array = ui.page.find_children("*", "Label", true, false)
+			var detail_text := ""
+			for label in detail_labels: detail_text += str(label.text) + "\n"
+			for keyword in Keywords.for_card(definition): require(detail_text.contains(Keywords.DEFINITIONS[keyword]), "Explicit card back omits keyword: " + keyword)
 			if id == "cut_sentence" and window.x == 1440 and OS.get_cmdline_user_args().has("--capture"):
 				await RenderingServer.frame_post_draw
 				root.get_texture().get_image().save_png("res://docs/screenshots/card-keyword-definitions.png")
-			var hover = card._make_custom_tooltip("")
-			require(hover.find_children("*", "RichTextLabel", true, false).size() == 1, "Hover does not show rich definitions")
-			hover.free()
+			ui._show_combat_detail("card", 0)
+			await settle()
 			ui.game.run.battle.command_points = 0
 			ui._select_card(0)
 			await settle()
 			card = ui.hand_buttons[0]
-			require(card.disabled and is_instance_valid(card.focus_tip) and ui.selected_card == -1, "Unaffordable card cannot be inspected safely")
+			require(card.disabled and not card is Main.CardTooltip and ui.selected_card == -1, "Unaffordable card stays unselected without auto tooltip")
 			ui._open_deck()
 			await settle()
-			require(not is_instance_valid(card.focus_tip), "Card tooltip obscures deck overlay")
+			require(not card is Main.CardTooltip, "Combat card does not create a tooltip over deck overlay")
 			var headings = ui.overlay.find_children("*", "Button", true, false).filter(func(button): return button is Main.CardTooltip)
 			require(not headings.is_empty(), "Deck lacks keyboard keyword inspection")
 			ui._close_overlay()

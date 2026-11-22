@@ -62,6 +62,7 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/card_piles_test.gd
 "$engine" --headless --path . --script tests/split_preview_test.gd
 "$engine" --headless --path . --script tests/keyword_tooltip_test.gd
+"$engine" --headless --path . --script tests/combat_inspector_test.gd
 "$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
 "$engine" --headless --path . --script tests/actor_motion_test.gd

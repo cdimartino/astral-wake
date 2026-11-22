@@ -86,6 +86,8 @@ var combat_voice_cursor := 0
 var focus_key := ""
 var hand_buttons: Array[Button] = []
 var hover_card := -1
+var detail_kind := ""
+var detail_index := -1
 var modify_page := 0
 var map_detail: VBoxContainer
 var cinematic_active := false
@@ -343,6 +345,9 @@ func _art(slot: int, height: float, width: float = 0) -> TextureRect:
 	return image
 
 func _render() -> void:
+	if detail_kind != "" and (menu or choosing_character or game.run.get("mode", "") != "combat" or int(game.run.battle.get("turn", -1)) != int(get_meta("detail_turn", -1)) or (detail_kind == "card" and (game.run.battle.get("hand", []).size() <= detail_index or int(game.run.battle.hand[detail_index].get("uid", -1)) != int(get_meta("detail_uid", -1))))):
+		detail_kind = ""
+		detail_index = -1
 	resolving = false
 	feedback_serial += 1
 	var focused := get_viewport().gui_get_focus_owner()
@@ -757,10 +762,11 @@ func _combat() -> void:
 		_enemy_target(i, battle.enemies[i], locations[i], count)
 	_preview()
 	_reading_plate(Rect2(40, 607, 1360, 22))
-	var hints := _screen_text("1–5 select   Q W E R T Y route   Space confirm   E end turn (Shift+E while routing)   Esc cancel", Rect2(50, 605, 1340, 23), 16, CREAM)
+	var hints := _screen_text("1–5 select   Q W E R T Y route   Space confirm   E end turn (Shift+E while routing)   Right-click / I details   Esc close / cancel", Rect2(50, 605, 1340, 23), 16, CREAM)
 	hints.name = "ShortcutHints"
 	_card_piles()
 	_hand()
+	_combat_detail_dock()
 
 func _card_piles() -> void:
 	for pile in ["draw", "discard", "exhausted", "installed"]:
@@ -824,6 +830,7 @@ func _ship_cutaway(battle: Dictionary) -> void:
 	player_art.stretch_mode = TextureRect.STRETCH_SCALE
 	player_art.modulate = Color.WHITE
 	var hull := ShipAnatomy.new()
+	if detail_kind != "": hull.scale.x = 0.755
 	var ship_id := str(game.run.get("character", "cartographer"))
 	hull.tint = Color("bcb5ff") if ship_id == "hollow_choir" else GOLD if ship_id == "palimpsest" else TEAL
 	_at(hull, Rect2(34, 176, 756, 357))
@@ -838,11 +845,12 @@ func _ship_cutaway(battle: Dictionary) -> void:
 	_at(inspector, Rect2(ShipAnatomy.ORIGIN + ShipAnatomy.INSPECTOR_RECT.position, ShipAnatomy.INSPECTOR_RECT.size))
 	anatomy_readout = _screen_text(resource, Rect2(10, 4, 190, 62), 14, TEAL, inspector)
 	_reading_plate(Rect2(42, 505, 742, 28))
-	var label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 509, 150, 23), 16, CREAM)
+	var hull_text := "%d/%d HULL" % [game.run.hull, game.run.max_hull] if detail_kind != "" else "HULL %d / %d" % [game.run.hull, game.run.max_hull]
+	var label := _screen_text(hull_text, Rect2(48, 509, 170 if detail_kind != "" else 150, 23), 15 if detail_kind != "" else 16, CREAM)
 	label.name = "PlayerHullText"
 	player_hull = _hull_bar(game.run.hull, game.run.max_hull, TEAL)
 	player_hull.name = "PlayerHullBar"
-	_at(player_hull, Rect2(208, 516, 140, 8))
+	_at(player_hull, Rect2(218 if detail_kind != "" else 208, 516, 140, 8))
 	var footer := _screen_text(_character_resource_text(battle).replace("\n", " · ") if ship_id != "cartographer" else "Hover an organ to inspect its function", Rect2(380, 509, 400, 23), 14, TEAL)
 	if ship_id != "cartographer": footer.name = "CharacterResource"
 	var graph := Control.new()
@@ -852,18 +860,19 @@ func _ship_cutaway(battle: Dictionary) -> void:
 
 func _ship_console(battle: Dictionary) -> void:
 	if str(game.run.get("character", "cartographer")) != "cartographer":
-		var resource_label := _screen_text(_character_resource_text(battle), Rect2(48, 488, 266, 43), 14, TEAL)
+		var resource_label := _screen_text(_character_resource_text(battle), Rect2(48, 484 if detail_kind != "" else 488, 266, 43), 14, TEAL)
 		resource_label.name = "CharacterResource"
 	else:
-		_screen_text("Living circuit · 6 organs\nFilled cells show strain", Rect2(48, 488, 266, 43), 14, MUTED)
+		_screen_text("Living circuit · 6 organs\nFilled cells show strain", Rect2(48, 484 if detail_kind != "" else 488, 266, 43), 14, MUTED)
 	player_art = _float_art(0, PLAYER_COMBAT_RECT, 16.0, 1.5, 1.5)
 	player_art.name = "PlayerShip"
-	_screen_text(str(game.character().name), Rect2(48, 438, 266, 29), 22, TEAL)
-	var player_hull_label := _screen_text("HULL %d / %d" % [game.run.hull, game.run.max_hull], Rect2(48, 466, 146, 23), 16, CREAM)
+	_screen_text(str(game.character().name), Rect2(48, 428 if detail_kind != "" else 438, 266, 26 if detail_kind != "" else 29), 22, TEAL)
+	var hull_text := "%d/%d HULL" % [game.run.hull, game.run.max_hull] if detail_kind != "" else "HULL %d / %d" % [game.run.hull, game.run.max_hull]
+	var player_hull_label := _screen_text(hull_text, Rect2(48, 458 if detail_kind != "" else 466, 160 if detail_kind != "" else 146, 23), 16, CREAM)
 	player_hull_label.name = "PlayerHullText"
 	player_hull = _hull_bar(game.run.hull, game.run.max_hull, TEAL)
 	player_hull.name = "PlayerHullBar"
-	_at(player_hull, Rect2(200, 473, 110, 8))
+	_at(player_hull, Rect2(220 if detail_kind != "" else 200, 473, 110, 8))
 	var guidance := "Choose a card → wake the circuit"
 	if selected_card >= 0:
 		guidance = "Start anywhere · lit organs are available" if route.is_empty() else "%d / 3 routed · follow the lit connections" % route.size()
@@ -877,6 +886,7 @@ func _ship_console(battle: Dictionary) -> void:
 func _organ_graph(parent: Node, battle: Dictionary) -> void:
 	var graph: Control = parent
 	var lines := OrganCircuit.new()
+	if detail_kind != "": lines.scale.x = 0.755
 	lines.name = "NeuralConduits"
 	lines.edges = battle.edges
 	lines.severed = battle.get("severed", [])
@@ -914,7 +924,9 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 			tip += "\nDamage %d → %d · Repair %d → %d · Disruption %d → %d" % [step.payload_before[0], step.payload_after[0], step.payload_before[1], step.payload_after[1], step.payload_before[2], step.payload_after[2]]
 		tip += "\nStrain %d / %d. Filled segments are current strain; gold outlines show the preview." % [strain, battle.capacity]
 		tip += "\n" + ("Click to undo this organ and later steps." if selected else "Available next organ." if available else reason if selected_card >= 0 else "Choose a card to begin routing.")
-		var button := _button("", func(): _select_organ(i), tip)
+		var button := _button("", func(): _select_organ(i))
+		button.tooltip_text = ""
+		button.set_meta("mcp_description", tip)
 		button.name = "Organ%d" % i
 		button.set_meta("focus_key", "organ%d" % i)
 		button.set_meta("route_available", available)
@@ -949,6 +961,7 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 				effect_label.text = effect_status.to_upper()
 				effect_label.add_theme_color_override("font_color", border)
 			continue
+		var compact := detail_kind != ""
 		var art := TextureRect.new()
 		art.name = "OrganSpecimen"
 		art.texture = load("res://art/organs/%s.svg" % organ.id)
@@ -956,16 +969,21 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		art.modulate = Color.WHITE if selected or available or selected_card < 0 else Color("8a98a6")
-		_at(art, Rect2(0, 16, 80, 82), button)
+		_at(art, Rect2(2 if compact else 0, 22 if compact else 16, 52 if compact else 80, 58 if compact else 82), button)
 		var key := _screen_text(ORGAN_LETTERS[i], Rect2(193, 6, 21, 21), 14, GOLD if selected else MUTED, button)
 		key.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		key.add_theme_stylebox_override("normal", _style(Color("08131f"), border, 5, 0))
-		var title := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 5, 109, 24), 16, CREAM, button)
+		var title_x := 58.0 if compact else 84.0
+		var title_width := 156.0 if compact else 109.0
+		var title := _screen_text(str(organ.name).trim_prefix("The "), Rect2(title_x, 5, title_width, 26), 15 if compact else 16, CREAM, button)
 		title.name = "OrganName"
-		_screen_text(str(readout[0]), Rect2(82, 27, 134, 23), 16, accent, button)
-		var condition := _screen_text(effect_status.capitalize() if not step.is_empty() else str(readout[1]), Rect2(82, 48, 134, 35), 14, border if not step.is_empty() else MUTED, button)
+		var detail_x := 58.0 if compact else 82.0
+		var detail_width := 156.0 if compact else 134.0
+		var organ_effect := _screen_text(str(readout[0]), Rect2(detail_x, 32 if compact else 27, detail_width, 20), 14, accent, button)
+		organ_effect.name = "OrganEffect"
+		var condition := _screen_text(effect_status.capitalize() if not step.is_empty() else str(readout[1]), Rect2(detail_x, 57 if compact else 48, detail_width, 18 if compact else 35), 14, border if not step.is_empty() else MUTED, button)
 		condition.name = "OrganCondition"
-		condition.max_lines_visible = 2
+		condition.max_lines_visible = 1 if compact else 2
 		if selected:
 			var order := _screen_text(str(route.find(i) + 1), Rect2(6, 5, 24, 24), 16, NAVY, button)
 			order.name = "RouteOrder"
@@ -985,12 +1003,13 @@ func _organ_graph(parent: Node, battle: Dictionary) -> void:
 		var value := "%d/%d" % [strain, battle.capacity]
 		if forecast.size() == 6 and int(forecast[i]) != strain:
 			value = "%d→%d/%d" % [strain, projected, battle.capacity]
-		var strain_label := _screen_text(value, Rect2(151, 81, 65, 19), 14, GOLD if projected != strain else CORAL if saturated else MUTED, button)
+		var strain_label := _screen_text(value, Rect2(145 if compact else 151, 81 if compact else 81, 72 if compact else 65, 18 if compact else 19), 14, GOLD if projected != strain else CORAL if saturated else MUTED, button)
 		strain_label.name = "StrainReadout"
 		strain_label.add_theme_font_override("font", theme.default_font)
 	lines.queue_redraw()
 
 func _anatomy_organ(button: Button, index: int, organ: Dictionary, readout: Array, border: Color, strain: int, projected: int, selected: bool, available: bool) -> void:
+	var compact := detail_kind != ""
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		button.add_theme_stylebox_override(state, _style(Color.TRANSPARENT, Color.TRANSPARENT, 0, 0, 0))
 	button.add_theme_stylebox_override("focus", _style(Color.TRANSPARENT, GOLD, 40, 0, 1))
@@ -1008,24 +1027,30 @@ func _anatomy_organ(button: Button, index: int, organ: Dictionary, readout: Arra
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_at(art, Rect2(8, 9, 70, 78), button)
+	_at(art, Rect2(5 if compact else 8, 20 if compact else 9, 44 if compact else 70, 52 if compact else 78), button)
 	var caption := Panel.new()
 	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	caption.add_theme_stylebox_override("panel", _style(Color(0.02, 0.05, 0.075, 0.96), Color.TRANSPARENT, 17, 0))
-	_at(caption, Rect2(78, 12, 112, 71), button)
-	var name_label := _screen_text(str(organ.name).trim_prefix("The "), Rect2(84, 14, 106, 23), 16, CREAM, button)
+	var caption_x := 52.0 if compact else 78.0
+	var caption_width := 136.0 if compact else 112.0
+	_at(caption, Rect2(caption_x, 12, caption_width, 71), button)
+	var label_x := 58.0 if compact else 84.0
+	var label_width := 126.0 if compact else 106.0
+	var name_label := _screen_text(str(organ.name).trim_prefix("The "), Rect2(label_x, 14, label_width, 22), 15 if compact else 16, CREAM, button)
 	name_label.name = "OrganName"
-	var effect_label := _screen_text(str(readout[0]), Rect2(84, 37, 106, 22), 14, Color(str(readout[2])), button)
+	var effect_label := _screen_text(str(readout[0]), Rect2(label_x, 38 if compact else 37, label_width, 18 if compact else 22), 14, Color(str(readout[2])), button)
 	effect_label.name = "OrganEffect"
+	if compact: effect_label.max_lines_visible = 1
 	var value := "%d/%d strain" % [strain, game.run.battle.capacity]
 	if strain != projected: value = "%d→%d/%d" % [strain, projected, game.run.battle.capacity]
-	var strain_label := _screen_text(value, Rect2(84, 60, 106, 21), 14, GOLD if strain != projected else MUTED, button)
+	var strain_label := _screen_text(value, Rect2(label_x, 60 if compact else 60, label_width, 18 if compact else 21), 14, GOLD if strain != projected else MUTED, button)
 	strain_label.name = "StrainReadout"
 	var key := _screen_text(ORGAN_LETTERS[index], Rect2(5, 6, 22, 22), 14, border, button)
 	key.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	key.add_theme_stylebox_override("normal", _style(NAVY, border, 11, 0))
 	if selected:
-		var order := _screen_text(str(route.find(index) + 1), Rect2(58, 3, 24, 24), 16, NAVY, button)
+		var order_rect := Rect2(29, 49, 20, 20) if compact else Rect2(58, 3, 24, 24)
+		var order := _screen_text(str(route.find(index) + 1), order_rect, 16, NAVY, button)
 		order.name = "RouteOrder"
 		order.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		order.add_theme_stylebox_override("normal", _style(GOLD, CREAM, 12, 0))
@@ -1084,15 +1109,22 @@ func _preview() -> void:
 	detail.tooltip_text = full_summary + source_detail + _keyword_definitions(full_summary)
 	detail.mouse_filter = Control.MOUSE_FILTER_STOP
 	var confirm := _button("Choose cards [Space]" if needs_choices else "Confirm [Space]", _confirm, full_summary, true)
+	confirm.name = "RouteConfirm"
 	confirm.disabled = not (valid or needs_choices)
 	_at(confirm, Rect2(790, 549, 184, 50))
-	_at(_button("Undo", func():
+	var undo := _button("Undo", func():
 		if not route.is_empty(): route.pop_back()
-		_render(), "Remove the last organ."), Rect2(984, 549, 90, 50))
-	_at(_button("Cancel", func():
+		_render(), "Remove the last organ.")
+	undo.name = "RouteUndo"
+	_at(undo, Rect2(984, 549, 90, 50))
+	var cancel := _button("Cancel", func():
 		_clear_selection()
-		_render(), "Clear command and route. [Esc]"), Rect2(1084, 549, 100, 50))
-	_at(_button("End turn [E]", _end_turn, "Enemies act, organs cool and a new hand arrives. Shift+E while routing."), Rect2(1194, 549, 190, 50))
+		_render(), "Clear command and route. [Esc]")
+	cancel.name = "RouteCancel"
+	_at(cancel, Rect2(1084, 549, 100, 50))
+	var end_turn := _button("End turn [E]", _end_turn, "Enemies act, organs cool and a new hand arrives. Shift+E while routing.")
+	end_turn.name = "EndTurnControl"
+	_at(end_turn, Rect2(1194, 549, 190, 50))
 
 func _damage_breakdown(result: Dictionary) -> Dictionary:
 	var breakdown := {"primary":0, "secondary":[]}
@@ -1134,7 +1166,6 @@ func _select_card(index: int) -> void:
 	if cost > remaining:
 		notice = "This command costs %d command points; %d remain. End turn to refill to %d." % [cost, remaining, int(game.run.battle.get("max_command_points", 3))]
 		_render()
-		if index < hand_buttons.size(): hand_buttons[index]._show_focus_tip.call_deferred()
 		return
 	selected_card = index
 	_sound("card_select")
@@ -1774,6 +1805,20 @@ func _open_unlocks() -> void:
 
 func _input(event: InputEvent) -> void:
 	if is_instance_valid(opening_film): return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not menu and game.run.get("mode", "") == "combat":
+		for hand_index in range(hand_buttons.size() - 1, -1, -1):
+			var button: Button = hand_buttons[hand_index]
+			if button.get_global_rect().has_point(event.position):
+				_show_combat_detail("card", int(str(button.name).trim_prefix("Hand")))
+				get_viewport().set_input_as_handled()
+				return
+		var organ_buttons := page.find_children("Organ*", "Button", true, false)
+		for button in organ_buttons:
+			if button.get_global_rect().has_point(event.position):
+				_show_combat_detail("organ", int(str(button.name).trim_prefix("Organ")))
+				get_viewport().set_input_as_handled()
+				return
+		return
 	if not event is InputEventKey or not event.pressed or event.echo:
 		return
 	if hull_admin.active and event.keycode == desk_key:
@@ -1789,7 +1834,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if event.keycode == KEY_ESCAPE:
-		if game.selection_pending():
+		if detail_kind != "":
+			detail_kind = ""
+			detail_index = -1
+			_render()
+		elif game.selection_pending():
 			_cancel_choice()
 		elif is_instance_valid(overlay):
 			_close_overlay()
@@ -1803,6 +1852,17 @@ func _input(event: InputEvent) -> void:
 			_open_menu()
 		get_viewport().set_input_as_handled()
 		return
+	if event.keycode == KEY_I and not menu and not is_instance_valid(overlay) and game.run.get("mode", "") == "combat":
+		var focused := get_viewport().gui_get_focus_owner()
+		if is_instance_valid(focused):
+			if str(focused.name).begins_with("Hand"):
+				_show_combat_detail("card", int(str(focused.name).trim_prefix("Hand")))
+				get_viewport().set_input_as_handled()
+				return
+			if str(focused.name).begins_with("Organ"):
+				_show_combat_detail("organ", int(str(focused.name).trim_prefix("Organ")))
+				get_viewport().set_input_as_handled()
+				return
 	if menu or is_instance_valid(overlay) or game.run.get("mode", "") != "combat":
 		return
 	if event.keycode >= KEY_1 and event.keycode <= KEY_5:
@@ -1881,11 +1941,89 @@ func _tick() -> void:
 
 func _at(control: Control, rect: Rect2, parent: Node = null) -> Control:
 	if parent == null: parent = page
+	if detail_kind != "" and game.run.get("mode", "") == "combat" and not (parent == page and rect.position.y < 78):
+		# Temporary inspection profile: reserve a real right-hand dock while
+		# keeping the combat controls at full text size and their normal order.
+		rect.position.x = (26.0 if parent == page else 0.0) + rect.position.x * 0.755
+		rect.size.x *= 0.755
 	parent.add_child(control)
 	control.position = rect.position
 	control.size = rect.size
 	if control is Label: control.set_deferred("size", rect.size)
 	return control
+
+func _show_combat_detail(kind: String, index: int) -> void:
+	if detail_kind == kind and detail_index == index:
+		detail_kind = ""
+		detail_index = -1
+	else:
+		detail_kind = kind
+		detail_index = index
+		set_meta("detail_turn", int(game.run.battle.get("turn", -1)))
+		if kind == "card" and index >= 0 and index < game.run.battle.hand.size():
+			set_meta("detail_uid", int(game.run.battle.hand[index].get("uid", -1)))
+	_render()
+
+func _combat_detail_dock() -> void:
+	if detail_kind.is_empty() or game.run.get("mode", "") != "combat": return
+	var panel := PanelContainer.new()
+	panel.name = "CombatDetailDock"
+	panel.add_theme_stylebox_override("panel", _style(Color("0c1c2b"), TEAL, 14, 16, 2))
+	# Deliberately bypass the temporary combat-coordinate mapper.
+	page.add_child(panel)
+	panel.position = Vector2(1125, 181)
+	panel.size = Vector2(285, 690)
+	var body := VBoxContainer.new()
+	body.add_theme_constant_override("separation", 12)
+	panel.add_child(body)
+	var head := HBoxContainer.new()
+	body.add_child(head)
+	var title := _label("DETAILS · " + ("COMMAND" if detail_kind == "card" else "ORGAN"), 15, TEAL)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var close := _button("Close", func():
+		detail_kind = ""
+		detail_index = -1
+		_render(), "Close details. Escape also closes this panel.")
+	close.name = "DetailClose"
+	close.custom_minimum_size = Vector2(72, 42)
+	head.add_child(close)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 10)
+	scroll.add_child(content)
+	if detail_kind == "card" and detail_index >= 0 and detail_index < game.run.battle.hand.size():
+		var instance: Dictionary = game.run.battle.hand[detail_index]
+		var card := game.effective_card(instance)
+		var back := PanelContainer.new()
+		back.name = "CardDetailBack"
+		back.add_theme_stylebox_override("panel", _style(Color("132739"), GOLD, 12, 14, 2))
+		content.add_child(back)
+		var back_body := VBoxContainer.new()
+		back_body.add_theme_constant_override("separation", 12)
+		back.add_child(back_body)
+		back_body.add_child(_label("COMMAND · REVERSE", 14, GOLD))
+		back_body.add_child(_label(str(card.name) + (" +" if int(instance.get("level", 0)) > 0 else ""), 23, CREAM))
+		back_body.add_child(_text(_card_tip(instance), 16, CREAM))
+	elif detail_kind == "organ" and detail_index >= 0 and detail_index < 6:
+		var organ: Dictionary = game.organ(detail_index)
+		var face := PanelContainer.new()
+		face.custom_minimum_size = Vector2(220, 260)
+		content.add_child(face)
+		var specimen := TextureRect.new()
+		specimen.texture = load("res://art/organs/%s.svg" % organ.id)
+		specimen.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		specimen.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		specimen.custom_minimum_size = Vector2(0, 220)
+		face.add_child(specimen)
+		content.add_child(_label(str(organ.name), 24, GOLD))
+		var source: Button = page.find_child("Organ%d" % detail_index, true, false)
+		if is_instance_valid(source):
+			content.add_child(_text(str(source.get_meta("mcp_description", "")), 16, CREAM))
 
 func _screen_text(text: String, rect: Rect2, font_size: int = 20, color: Color = CREAM, parent: Node = null) -> Label:
 	var label := _text(text, font_size, color)
@@ -1914,10 +2052,16 @@ func _surface(rect: Rect2) -> VBoxContainer:
 func _layout_stage() -> void:
 	if not is_instance_valid(page): return
 	# Canvas coordinates stay logical when Godot stretches the window.
-	var viewport_size := get_viewport().get_visible_rect().size
+	var viewport_size := Vector2(get_window().size)
 	var factor := minf(viewport_size.x / 1440.0, viewport_size.y / 900.0)
-	page.scale = Vector2(factor, factor)
-	page.position = (viewport_size - Vector2(1440, 900) * factor) * 0.5
+	if detail_kind != "" and game.run.get("mode", "") == "combat":
+		# Godot stretches the base canvas with the window. Do not add a second
+		# scale to the temporary inspection profile.
+		page.scale = Vector2.ONE
+		page.position = Vector2.ZERO
+	else:
+		page.scale = Vector2(factor, factor)
+		page.position = (viewport_size - Vector2(1440, 900) * factor) * 0.5
 
 func _float_art(slot: int, rect: Rect2, amplitude: float = 7.0, sway: float = 0.0, duration: float = 3.3) -> TextureRect:
 	var image := _art(slot, rect.size.y)
@@ -2013,9 +2157,10 @@ func _hand() -> void:
 		var tip := "%d command point%s. %d remaining.\n" % [cost, "s" if cost != 1 else "", points] + game.card_text(instance)
 		if game.retained(instance): tip += "\n" + _retain_detail(instance)
 		if not affordable: tip += "\nEnd your turn to refill command points. Hover to inspect this card."
-		var button := _button("", func(): _select_card(i), tip, selected_card == i, instance)
+		var button := _button("", func(): _select_card(i), "", selected_card == i)
 		button.name = "Hand%d" % i
 		button.set_meta("card_uid", int(instance.uid))
+		button.set_meta("mcp_description", tip)
 		button.set_meta("focus_key", "hand%d" % i)
 		button.clip_contents = true
 		button.disabled = not affordable
@@ -2037,6 +2182,7 @@ func _hand() -> void:
 				hover_card = -1
 				_arrange_hand())
 		button.focus_entered.connect(func():
+			if detail_kind != "": return
 			hover_card = i
 			_arrange_hand())
 		button.focus_exited.connect(func():
@@ -2052,8 +2198,10 @@ func _arrange_hand() -> void:
 	for i in range(hand_buttons.size()):
 		var button: Button = hand_buttons[i]
 		var lifted := i == raised
-		button.position = Vector2(clampf(left + i * step - (20 if lifted else 0), 150, 1090 if lifted else 1110), 630 if lifted else 670)
+		var hand_x := clampf(left + i * step - (20 if lifted else 0), 150, 1090 if lifted else 1110)
+		button.position = Vector2(26 + hand_x * 0.755, 630 if lifted else 670) if detail_kind != "" else Vector2(hand_x, 630 if lifted else 670)
 		button.size = Vector2(200, 250) if lifted else Vector2(160, 210)
+		if detail_kind != "": button.size.x *= 0.755
 		button.z_index = 50 if lifted else i
 		var title: Label = button.get_meta("title_label")
 		var description: Label = button.get_meta("description_label")
