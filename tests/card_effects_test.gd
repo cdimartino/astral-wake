@@ -63,7 +63,7 @@ func check() -> void:
 	ui._clear_selection()
 	ui._render()
 	require(ui.hand_buttons[0].disabled, "Hand affordability uses effective cost")
-	require(ui.hand_buttons[0].tooltip_text.contains("2 command points") and ui.hand_buttons[0].tooltip_text.contains("Deal 20 damage"), "Tooltip cost and text share effective definition")
+	require(ui.hand_buttons[0].get_meta("mcp_description", "").contains("2 command points") and ui.hand_buttons[0].get_meta("mcp_description", "").contains("Deal 20 damage"), "Public combat help cost and text share effective definition")
 	ui._select_card(0)
 	require(ui.selected_card == -1, "Selection refuses effective cost even when raw catalog cost is affordable")
 	ui.game.run.battle.command_points = 2

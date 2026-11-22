@@ -73,6 +73,10 @@ func run() -> void:
 	check(act("select_card", {"index":-1}).error.code == "invalid_args", "negative index")
 	check(act("select_card", {"index":[]}).error.code == "invalid_args", "malformed index")
 	check(act("select_card").ok, "select card")
+	for entry in c.snapshot().legal_actions:
+		if entry.action in ["select_card", "select_organ"]:
+			for option in entry.args.index.options:
+				check(not str(option.description).is_empty(), "Combat option keeps player-facing help without a pop-up")
 	check(act("select_organ").ok, "route organ")
 	check(c.request("preview", {}).ok, "preview live selection")
 	check(act("confirm").ok, "play selected command")

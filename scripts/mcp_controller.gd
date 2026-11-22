@@ -93,7 +93,7 @@ func snapshot() -> Dictionary:
 	return state
 
 func _option(button: Button, index: int) -> Dictionary:
-	var option := {"index":index, "label":button.text, "description":button.tooltip_text, "control":str(button.name)}
+	var option := {"index":index, "label":button.text, "description":str(button.get_meta("mcp_description", button.tooltip_text)), "control":str(button.name)}
 	if button.get_meta("mcp_control", "") == "select_ascension":
 		option["ascension_rank"] = button.get_meta("ascension_rank", 0)
 		option["ship"] = str(button.get_meta("ship", ""))
