@@ -54,6 +54,12 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/expansion_tests.gd
 "$engine" --headless --path . --script tests/expansion_ui_test.gd
 "$engine" --headless --path . --script tests/organ_routing_test.gd
+"$engine" --headless --path . --script tests/command_targeting_test.gd
+"$engine" --headless --path . --script tests/combat_route_gesture_test.gd
+"$engine" --headless --path . --script tests/combat_route_drag_test.gd
+"$engine" --headless --path . --script tests/chart_projection_test.gd
+"$engine" --headless --path . --script tests/star_chart_test.gd
+"$engine" --headless --path . --script tests/chart_scene_projection_test.gd
 "$engine" --headless --path . --script tests/conduit_visibility_test.gd
 "$engine" --headless --path . --script tests/last_command_test.gd
 "$engine" --headless --path . --script tests/deck_overlay_test.gd
@@ -63,10 +69,14 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/split_preview_test.gd
 "$engine" --headless --path . --script tests/keyword_tooltip_test.gd
 "$engine" --headless --path . --script tests/combat_inspector_test.gd
+"$engine" --headless --path . --script tests/voyage_screens_phase_d_test.gd
 "$engine" --headless --path . --script tests/ui_legibility_test.gd
 "$engine" --headless --path . --script tests/combat_presentation_test.gd
+"$engine" --headless --path . --script tests/enemy_defeat_feedback_test.gd
 "$engine" --headless --path . --script tests/actor_motion_test.gd
 "$engine" --headless --path . --script tests/audio_settings_test.gd
+"$engine" --headless --path . --script tests/voyage_audio_test.gd
+"$engine" --headless --path . --script tests/enemy_defeat_audio_test.gd
 "$engine" --headless --path . --script tests/hull_audio_runtime.gd
 "$engine" --headless --path . --script tests/hull_audio_factory.gd
 "$engine" --headless --path . --script tests/hull_admin_test.gd

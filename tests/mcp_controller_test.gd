@@ -68,8 +68,15 @@ func run() -> void:
 	check(act("set_setting", {"key":"volume", "value":{}}).error.code == "invalid_args", "malformed settings rejected")
 	check(act("set_setting", {"key":"reduced_motion", "value":true}).ok, "settings change")
 	check(act("close_overlay").ok, "close")
+	check(act("inspect_node").ok, "focus map signal without traveling")
+	check(c.snapshot().ui.screen == "map", "signal focus keeps chart open")
 	check(act("choose_node").ok, "choose map node")
 	check(c.snapshot().ui.screen == "combat", "combat scene")
+	check(c.snapshot().busy, "committed chart travel reports presentation busy")
+	for i in range(20):
+		if not main.presentation_busy(): break
+		await create_timer(0.1).timeout
+	check(not main.presentation_busy(), "chart arrival presentation completes")
 	check(act("select_card", {"index":-1}).error.code == "invalid_args", "negative index")
 	check(act("select_card", {"index":[]}).error.code == "invalid_args", "malformed index")
 	check(act("select_card").ok, "select card")

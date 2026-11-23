@@ -1,5 +1,8 @@
 extends RefCounted
 
+const ChartStopView = preload("res://scripts/chart_stop_view.gd")
+const NAMED_CONTROLS := ["inspect_node", "choose_node", "inspect_card", "inspect_organ", "close_inspection"]
+
 # A finite semantic vocabulary; only callbacks built by the visible controller
 # are executable. No network-provided property or method is ever evaluated.
 const LABELS := {
@@ -28,6 +31,8 @@ func _init(owner):
 
 func _command(button: Button) -> String:
 	var n := str(button.name)
+	var named_control := str(button.get_meta("mcp_control", ""))
+	if named_control in NAMED_CONTROLS: return named_control
 	if main.choosing_character and button.get_meta("mcp_control", "") == "select_ascension" and n.begins_with("AscensionRank") and n.trim_prefix("AscensionRank").is_valid_int():
 		return "select_ascension"
 	if button.get_meta("map_node", false):
@@ -94,15 +99,22 @@ func snapshot() -> Dictionary:
 
 func _option(button: Button, index: int) -> Dictionary:
 	var option := {"index":index, "label":button.text, "description":str(button.get_meta("mcp_description", button.tooltip_text)), "control":str(button.name)}
+	if button.get_meta("mcp_control", "") in ["inspect_card", "inspect_organ"]:
+		for key in ["inspection_kind", "card_uid", "organ_index"]:
+			if button.has_meta(key): option[key] = button.get_meta(key)
+	if button.get_meta("mcp_control", "") in ["inspect_node", "choose_node"] and button.has_meta("node_id"):
+		option["node_id"] = str(button.get_meta("node_id"))
 	if button.get_meta("mcp_control", "") == "select_ascension":
 		option["ascension_rank"] = button.get_meta("ascension_rank", 0)
 		option["ship"] = str(button.get_meta("ship", ""))
 		option["locked"] = bool(button.get_meta("locked", false))
 	if button.get_meta("map_node", false):
 		var identity := str(button.get_meta("focus_key", ""))
+		if button.has_meta("node_id"):
+			option["node_id"] = str(button.get_meta("node_id"))
 		# The authored destination focus key contains the public map node ID.
 		# Dispatch still uses the current revision's validated visible binding.
-		if identity.begins_with("destination_"):
+		elif identity.begins_with("destination_"):
 			option["node_id"] = identity.trim_prefix("destination_")
 		else:
 			option["map_control"] = str(button.name)
@@ -178,11 +190,7 @@ func _public_run() -> Dictionary:
 	if run.is_empty(): return result
 	result.ascension_rank = run.get("ascension_rank", 0)
 	result.modifier_revision = run.get("modifier_revision", 0)
-	result.map = []
-	for layer in run.get("map", []):
-		var visible: Array = []
-		for node in layer: visible.append(_fields(node, ["id", "layer", "column", "type", "edges"]))
-		result.map.append(visible)
+	result.map = ChartStopView.project(run).layers
 	var battle: Dictionary = run.get("battle", {})
 	result.battle = _fields(battle, ["enemies", "hand", "discard", "exhausted", "installed", "strain", "capacity", "edges", "severed", "ward", "turn", "last_route", "mark", "first_play", "emergency_used", "kind", "command_points", "max_command_points", "trace", "last_payload", "resonance", "last_command_kind", "last_command", "engine_routes", "engine_counters"])
 	if not battle.is_empty(): result.battle.draw_count = battle.get("draw", []).size()

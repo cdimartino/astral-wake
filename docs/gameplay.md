@@ -6,7 +6,7 @@ Choose a living ship, build its deck, and defeat the guardians of three regions.
 
 All three ships are available immediately. **New expedition** opens ship selection; **Details** shows a ship's systems and starting deck. See the [ship guide](ships.md) for their different organ networks, Trace and Resonance mechanics.
 
-The combat header's **Last command** box shows the previous card, its kind, and its resolved damage, repair, and disruption. Hover for its base payload, or click/focus and press Enter to inspect the card. Rewrite uses half the upgraded base damage, repair, and disruption, rounded down—not the results after organs, resources, or powerups. This memory persists across turns and saves; older saves may retain the payload without the card's identity.
+**Last command** records the previous card and its resolved damage, repair, and disruption. Use its explicit **Details** action to inspect the card. Rewrite uses half the upgraded base damage, repair, and disruption, rounded down—not the results after organs, resources, or powerups. This memory persists across turns and saves; older saves may retain the payload without the card's identity.
 
 ## Your first encounter
 
@@ -24,9 +24,9 @@ The **Draw** and **Discard** piles flank your hand. Cards travel into and out of
 
 The route preview's **Damage** is damage to the selected enemy. **Split** lists damage to other living enemies, separately; unequal values reflect each recipient's defenses and remaining hull. Hover the preview or Confirm for the full named-target breakdown.
 
-Right-click a hand card or organ, or focus it and press **I**, to inspect its enlarged back beside the fight. Inspection does not select the card, change your route, or spend resources. Long details scroll in the side panel. Press **Esc** to close the details without canceling your staged move.
+Right-click a hand card or organ, use its **Details** control, or focus it and press **I**, to inspect its enlarged back beside the fight. Inspection does not select the card, change your route, or spend resources. Long details scroll in the side panel. Press **Esc** to close the details without canceling your staged move. Cards in rewards, shops and deck views also require deliberate inspection; hovering or focusing does not open full details or accept an offer.
 
-1. Choose a lit destination on the map. Clicking a reachable node travels immediately; you can also use **Travel here** in its details.
+1. Inspect a reachable beacon on the star chart, then use its explicit travel action. Clicking a beacon alone never travels.
 2. Select a command from your hand. Its gold badge is its command point cost.
 3. Choose one to three connected organs, in order.
 4. Select a living enemy, even for a repair or utility command.
@@ -34,6 +34,8 @@ Right-click a hand card or organ, or focus it and press **I**, to inspect its en
 6. Play another affordable command, or **End turn** to let the enemies act and prepare your next hand.
 
 Hover a card to bring its front into view. Inspect its back for full effects, keywords, and evolution details. Cards you cannot afford remain inspectable.
+
+Alternatively, drag a card from your hand through one to three connected organs. Backtrack through the preceding organ to shorten the route. Releasing an enemy-directed command arms it without spending anything; a fresh click on a living enemy commits it once. A valid, clearly indicated self-only command resolves on release. Target requirements depend on the routed effects, not just the card's printed kind. Click and keyboard routing remain available.
 
 For an unmodified Cartographer, **Needle of Dawn → Lens [Q] → Fork [W] → Echo [E]** costs 1 command point and produces 18 damage to the target, plus 9 to each other enemy. This assumes enough enemy hull and no enemy protection or powerup bonuses. Each of those three organs gains 1 strain. Lens and Echo do not connect directly.
 
@@ -127,7 +129,9 @@ An expedition chooses three distinct regions from these six:
 
 Each region has twelve map layers. Ordinary layers offer two to four nodes, with branching and merging connections; the final layer contains its guardian. You choose one connected destination per layer. You cannot return to an earlier stop or jump to an unconnected branch. Enemy strength scales with the region's position in your expedition.
 
-Scroll vertically to inspect the chart. The map returns to your progress and focuses a reachable next choice. Hovering, focusing or clicking an unreachable node reveals its details without traveling.
+The star chart shows your ship, visited stops, route connections and reachable beacons. Hover, focus or click a beacon to inspect its public signal without moving. Only the explicit travel action commits a jump. **Recenter on ship** locates your current position; **Close** dismisses the signal readout. During travel, **Esc** or **Skip travel** skips presentation without consuming another jump.
+
+Before arrival, signals disclose the broad kind of risk or service, not the enemy names, portraits, number or composition. This applies to ordinary, elite and guardian encounters. The actual encounter is revealed on arrival. Chart appearance and navigation sounds do not depend on the hidden roster.
 
 | Destination | What to expect |
 | --- | --- |
@@ -193,7 +197,7 @@ Older saves retain the Cartographer and their original three-area itinerary. In 
 
 | Input | Action |
 | --- | --- |
-| Mouse | Select cards, route organs, choose targets and activate buttons. Hover a card to enlarge it. |
+| Mouse | Select cards, route organs, choose targets and activate buttons. Drag a card through connected organs to stage a route. Hover a card to enlarge its front; use deliberate inspection for full details. |
 | 1–5 | Select the first five cards in your hand. Use mouse or keyboard focus for other cards. |
 | Q W E R T Y | Add the corresponding labeled organ while a card is selected. |
 | Space | Confirm a legal selected command and route. |
@@ -201,7 +205,7 @@ Older saves retain the Cartographer and their original three-area itinerary. In 
 | Shift+E | End turn while routing as well. |
 | Left / Right | Cycle living enemy targets while a card is selected. |
 | Escape | Skip a resolving effect sequence; close an overlay, leave ship selection, cancel a selected command or open the pause menu, depending on context. |
-| Tab / Shift+Tab | Move focus forward/backward. Focusing cards enlarges them; focusing map nodes scrolls them into view. |
+| Tab / Shift+Tab | Move focus forward/backward. Focusing cards enlarges their fronts; focusing chart beacons inspects signals without traveling. |
 | Enter | Activate the focused control. |
 | Any key or click during the opening film | Skip the film. |
 
