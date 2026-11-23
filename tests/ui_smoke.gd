@@ -1,4 +1,5 @@
 extends SceneTree
+const CHART_CAPTURE_DIR="res://tests/artifacts/integrated-star-chart-20261122"
 var ui
 var checks=0
 var failures=0
@@ -88,14 +89,14 @@ func bounds(label):
    for control in [image,name,hull_text,bar,intent]:require(target.get_global_rect().grow(0.1).encloses(control.get_global_rect()),"Enemy presentation outside its target")
    for other in targets:require(not target.get_global_rect().intersects(other.get_global_rect()),"Enemy targets overlap")
    targets.append(target)
- var hints=ui.page.find_child("ShortcutHints",true,false)
- if hints!=null:
+  var hints=ui.page.find_child("ShortcutHints",true,false)
+  require(hints==null,"Repeated combat instruction strip should be replaced by contextual prompts")
   for card in ui.hand_buttons:
-   require(not card.get_global_rect().intersects(hints.get_global_rect()),"Hand covers shortcut text "+str(card.get_global_rect())+" hints "+str(hints.get_global_rect()))
    for control in buttons:
     if control.name.begins_with("Organ") or control.text in ["Confirm [Space]","Undo","Cancel","End turn [E]"]:
      require(not card.get_global_rect().intersects(control.get_global_rect()),"Card covers gameplay control")
-   require(card.size.is_equal_approx(Vector2(160,210)) or card.size.is_equal_approx(Vector2(200,250)),"Card not using requested hover sizes "+str(card.size)+" "+str(card.name))
+    var responsive_profiles=[Vector2(140,210),Vector2(160,210),Vector2(200,242),Vector2(151,242)]
+    require(responsive_profiles.any(func(profile):return card.size.is_equal_approx(profile)),"Hand card size is outside the approved responsive profiles "+str(card.size)+" "+str(card.name))
    var description=card.get_meta("description_label")
    require(description.size.y>5 and description.get_visible_line_count()>0,"Card effect text collapsed")
  if label not in ["upgraded card hover","card titles resting","card titles hovering"]:print("GEOMETRY ",label," buttons=",buttons.size()," physical=",root.size," logical=",root.get_visible_rect().size)
@@ -161,22 +162,56 @@ func check():
   ui._render()
   await settle()
   bounds("title")
+  DisplayServer.window_set_size(viewport_size)
+  await settle()
   ui.game.new_run(1001)
   ui.menu=false
+  ui.notice=""
   ui._render()
   await settle()
   bounds("map")
-  var chart=ui.page.find_child("ExpeditionChart",true,false)
-  require(chart.get_global_rect().end.x<=root.get_visible_rect().end.x)
-  var star_scroll=ui.page.find_child("StarChartScroll",true,false)
-  for i in range(ui.game.run.map[0].size()):
-   require(star_scroll.get_global_rect().encloses(ui.page.find_child("Destination%d"%i,true,false).get_global_rect()),"Opening choices not visible")
-  var destinations=chart.find_children("Destination*","Button",true,false)
-  require(destinations.size()==ui.game.run.map.reduce(func(total,layer):return total+layer.size(),0),"Map omits destinations")
-  destinations[-1].grab_focus()
+  save_chart_capture("map-%dx%d.png"%[viewport_size.x,viewport_size.y])
+  var chart=ui.page.find_child("StarChart",true,false)
+  require(chart is StarChart,"Integrated map does not contain StarChart")
+  var current_before=str(ui.game.run.get("current_node",""))
+  # Reset any startup pointer focus before subscribing; the OS cursor may
+  # already rest over a beacon when the chart is first constructed.
+  chart.close_inspection()
+  var travel_target={}
+  for node in chart._nodes:
+   if node.reachable and node.id!=current_before:
+    travel_target=node
+    break
+  require(not travel_target.is_empty(),"Integrated chart has no reachable public stop")
+  var focus_events=[]
+  var travel_events=[]
+  var arrival_events=[]
+  chart.focus_node.connect(func(id):focus_events.append(id))
+  chart.travel_requested.connect(func(id):travel_events.append(id))
+  chart.travel_presentation_finished.connect(func(id):arrival_events.append(id))
+  if not travel_target.is_empty():
+   var beacon=chart._buttons[travel_target.id]
+   var hovered_beacon=await pointer_move_to(beacon)
+   require(hovered_beacon==beacon,"Integrated chart beacon is not the actual pointer target")
+   await pointer_click(beacon)
+   require(focus_events==[travel_target.id],"Beacon pointer focus did not inspect the selected public stop")
+   require(travel_events.is_empty(),"Beacon inspection triggered travel")
+   require(str(ui.game.run.get("current_node",""))==current_before,"Beacon inspection changed the current location")
+   var travel_button=chart._travel_button
+   var hovered_travel=await pointer_move_to(travel_button)
+   require(hovered_travel==travel_button,"Integrated chart Travel button is not pointer-accessible")
+   await pointer_click(travel_button)
+   require(travel_events==[travel_target.id],"Explicit Travel did not request the inspected stop")
+   require(str(ui.game.run.get("current_node",""))==travel_target.id,"Explicit Travel did not commit through the Main controller")
+   await create_timer(0.72).timeout
+   await settle()
+   require(arrival_events==[travel_target.id],"Committed chart travel did not finish at the controller destination")
+  ui.game.new_run(1001)
+  ui._render()
   await settle()
-  require(star_scroll.get_global_rect().grow(1).encloses(destinations[-1].get_global_rect()),"Keyboard does not scroll to later destinations")
-  star_scroll.scroll_vertical=0
+  bounds("map after chart travel")
+  DisplayServer.window_set_size(Vector2i(1440,900))
+  await settle()
   ui.game.choose_node(ui.game.run.map[0][0].id)
   ui._render()
   await settle()
@@ -185,14 +220,14 @@ func check():
   ui.game.run.battle.command_points=0
   ui._render()
   await settle()
-  for card in ui.hand_buttons:require(card.disabled,"Unaffordable card enabled")
+  for card in ui.hand_buttons:require(not card.disabled,"Unaffordable card removed from the keyboard inspection order")
   ui.hand_buttons[0].emit_signal("mouse_entered")
   await settle()
-  require(ui.hand_buttons[0].size.is_equal_approx(Vector2(200,250)),"Unaffordable card did not enlarge on hover")
+  require(ui.hand_buttons[0].size.is_equal_approx(Vector2(200,242)),"Unaffordable card did not enlarge on hover")
   ui.hand_buttons[0].grab_focus()
   await settle()
   require(root.gui_get_focus_owner()==ui.hand_buttons[0],"Unaffordable keyboard inspection missing")
-  require(ui.hand_buttons[0].find_next_valid_focus()==ui.hand_buttons[1],"Tab skips unaffordable cards")
+  require(ui.hand_buttons[0].focus_mode==Control.FOCUS_ALL and ui.hand_buttons[0].find_next_valid_focus()!=null,"Unaffordable card remains in keyboard focus order for Details inspection")
   ui._select_card(0)
   require(ui.selected_card==-1 and ui.game.run.battle.command_points==0,"Unaffordable hotkey changed selection or points")
   ui.game.run.battle.command_points=3
@@ -320,3 +355,37 @@ func check():
  ui.queue_free()
  await settle()
  quit(0 if failures==0 else 1)
+
+func pointer_move_to(control):
+ var center=control.get_global_rect().get_center()
+ var event=InputEventMouseMotion.new()
+ event.position=center
+ event.global_position=center
+ root.push_input(event,true)
+ await process_frame
+ return root.gui_get_hovered_control()
+
+func pointer_click(control):
+ var center=control.get_global_rect().get_center()
+ var down=InputEventMouseButton.new()
+ down.button_index=MOUSE_BUTTON_LEFT
+ down.position=center
+ down.global_position=center
+ down.pressed=true
+ root.push_input(down,true)
+ await process_frame
+ var up=InputEventMouseButton.new()
+ up.button_index=MOUSE_BUTTON_LEFT
+ up.position=center
+ up.global_position=center
+ up.pressed=false
+ root.push_input(up,true)
+ await process_frame
+
+func save_chart_capture(filename):
+ if DisplayServer.get_name()=="headless":return
+ var directory=ProjectSettings.globalize_path(CHART_CAPTURE_DIR)
+ DirAccess.make_dir_recursive_absolute(directory)
+ var image=root.get_texture().get_image()
+ var error=image.save_png(directory.path_join(filename))
+ require(error==OK,"Could not save integrated chart screenshot: "+filename)

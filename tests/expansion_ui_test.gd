@@ -9,7 +9,13 @@ func require(condition: bool, message: String) -> void:
   push_error(message)
 func _initialize() -> void:
  OS.set_environment("ASTRAL_SKIP_INTRO","1")
- OS.set_environment("ASTRAL_SAVE_DIR","/tmp/astral-expansion-ui-%d" % Time.get_ticks_usec())
+ var base=OS.get_environment("TMPDIR")
+ if base.is_empty():base=OS.get_cache_dir()
+ var isolated=base.path_join("astral-expansion-ui-"+Crypto.new().generate_random_bytes(16).hex_encode())
+ if DirAccess.make_dir_recursive_absolute(isolated)!=OK:
+  quit(1)
+  return
+ OS.set_environment("ASTRAL_SAVE_DIR",isolated)
  check.call_deferred()
 func settle() -> void:
  for i in range(5): await process_frame
@@ -89,7 +95,11 @@ func check() -> void:
     resource=ui.page.find_child("CharacterResource",true,false)
     require(resource.text.begins_with(kind.to_upper()+" %d /"%ui.game.run.battle[kind]),"Committed command did not update its resource HUD")
    for button in ui.page.find_children("*","Button",true,false):require(on_stage(button),"Combat control outside stage: "+str(button.name))
-   var organs=ui.page.find_children("Organ*","Button",true,false)
+   var organs=[]
+   for organ_index in range(6):
+    var organ_button=ui.page.find_child("Organ%d"%organ_index,true,false)
+    require(organ_button is Button,"Character circuit missing Organ%d"%organ_index)
+    if organ_button is Button:organs.append(organ_button)
    require(organs.size()==6,"Character circuit must show six organs")
    for i in range(organs.size()):
     var font=organs[i].get_theme_font("font")
@@ -103,28 +113,56 @@ func check() -> void:
    ui._render()
    await settle()
    require(ui._area_index()==index,"Geography confused mission depth with area registry")
-   require(ui.hull_audio.score_id=="region_%d"%index,"Wrong soundtrack for selected area")
+   require(ui.hull_audio.score_id.is_empty() and ui.voyage_audio.active,"Chart must use voyage bed instead of region score")
    var region_id=str(ui.game.catalog.regions[index].id)
    var expected=ui.expansion_regions.get(region_id,ui.region_textures[index])
    require(ui.background.texture==expected,"Wrong background for area")
-   var scroll=ui.page.find_child("StarChartScroll",true,false)
-   var chart=ui.page.find_child("ExpeditionChart",true,false)
-   require(scroll!=null and on_stage(scroll),"Map scroll surface absent")
-   require(root.gui_get_focus_owner().get_meta("reachable_destination",false),"Map does not focus a reachable next choice")
-   var nodes=chart.find_children("Destination*","Button",true,false)
+   var chart=ui.page.find_child("StarChart",true,false)
+   require(chart!=null and on_stage(chart),"Full-bounds star chart absent")
+   if chart==null:continue
+   require(chart.size.x>=1400 and chart.size.y>=800,"Chart does not fill logical voyage bounds")
+   var focused=root.gui_get_focus_owner()
+   require(focused!=null and focused.get_meta("mcp_control","")=="inspect_node" and focused.get_meta("reachable",false),"Map does not keyboard-focus a reachable signal")
+   var nodes=[]
+   for button in chart.find_children("*","Button",true,false):
+    if button.get_meta("mcp_control","")=="inspect_node":nodes.append(button)
+   require(not nodes.is_empty(),"Chart public beacons absent")
+   if nodes.is_empty():continue
    var last=nodes[-1]
    var before=JSON.stringify(ui.game.run)
    last.pressed.emit()
    await settle()
    require(JSON.stringify(ui.game.run)==before,"Inspecting unreachable destination traveled")
+   require(chart._focused_id==last.get_meta("node_id",""),"Signal activation did not focus public preview")
    last.grab_focus()
    await settle()
-   require(scroll.get_global_rect().grow(1).encloses(last.get_global_rect()),"Keyboard failed to reveal boss")
-   ui.game.run.layer=9
+   require(chart.get_global_rect().grow(1).encloses(last.get_global_rect()),"Keyboard boss focus outside chart")
+   require(chart._travel_button.get_meta("node_id","")==last.get_meta("node_id","") and chart._travel_button.disabled,"Unreachable focused boss must not enable travel")
+   # A valid existing graph position, not a layer-only impossible fixture.
+   var current=ui.game.run.map[9][0]
+   ui.game.run.layer=current.layer
+   ui.game.run.current_node=current.id
+   ui.game.run.visited=[current.id]
+   var unchanged_graph=JSON.stringify(ui.game.run.map)
    ui._render()
    await settle()
-   scroll=ui.page.find_child("StarChartScroll",true,false)
-   require(scroll.scroll_vertical>=1400,"Map did not return to mission progress")
+   chart=ui.page.find_child("StarChart",true,false)
+   require(chart!=null,"Progress chart missing")
+   if chart==null:continue
+   require(chart._current_id==current.id and chart._ship_position()==chart._positions.get(current.id),"Ship marker did not return to committed progress")
+   require(JSON.stringify(ui.game.run.map)==unchanged_graph,"Progress display rerolled the graph")
+   for layer in ui.game.run.map:
+    for node in layer:
+     var beacon=chart._buttons.get(node.id)
+     require(beacon!=null,"Progress beacon missing")
+     if beacon==null:continue
+     require(beacon.get_meta("reachable",false)==ui.game.reachable(node),"Public branch reachability differs from game")
+   focused=root.gui_get_focus_owner()
+   require(focused!=null and focused.get_meta("reachable",false),"Progress did not keyboard-focus reachable branch")
+   if focused!=null:
+    focused.pressed.emit()
+    require(chart._travel_button.get_meta("node_id","")==focused.get_meta("node_id","") and not chart._travel_button.disabled,"Explicit Travel does not match focused reachable destination")
+    require(ui.game.run.current_node==current.id,"Reachable focus committed travel")
  print("EXPANSION_UI ",checks," checks, ",failures," failures")
  ui.hull_audio.stop_all()
  OS.delay_msec(200)

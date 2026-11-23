@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-version='0.3.0'
+version='0.4.0'
 source_app="${1:-dist/Astral Wake.app}"
 archive="${2:-dist/Astral-Wake-${version}-macos.zip}"
 if [[ -e "$archive" ]]; then

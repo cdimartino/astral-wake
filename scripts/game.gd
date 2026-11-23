@@ -416,6 +416,7 @@ func _validate_route(state: Dictionary, route: Array) -> String:
 func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_index: int, preview_only: bool = false, choices: Array = []) -> Dictionary:
 	if state.get("mode","")!="combat": return _fail("There is no active battle.")
 	var battle=state.battle
+	var enemies_before: Array = battle.enemies.duplicate(true)
 	if hand_index<0 or hand_index>=battle.hand.size(): return _fail("Choose a card from your hand.")
 	var route_error=_validate_route(state,route)
 	if not route_error.is_empty() and not (preview_only and route.is_empty()): return _fail(route_error)
@@ -688,7 +689,7 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 	battle.last_route=route.duplicate()
 	battle.first_play=false
 	state.tutorial_step=maxi(1,int(state.tutorial_step))
-	_clean_enemies(state,presentation)
+	_clean_enemies(state,presentation,enemies_before)
 	var finish_heal=mini(int(state.max_hull)-int(state.hull),_effect(state,"repair_after")) if battle.enemies.is_empty() and int(state.hull)>0 else 0
 	if finish_heal>0:
 		presentation.append({"kind":"heal","amount":finish_heal,"source":"repair_after"})
@@ -708,6 +709,8 @@ func _simulate_card(state: Dictionary, hand_index: int, route: Array, target_ind
 func preview_card(hand_index: int, route: Array, target_index: int, choices: Array = []) -> Dictionary:
 	var result=_simulate_card(run.duplicate(true),hand_index,route,target_index,true,choices)
 	result.erase("next")
+	# Local predictions and resolved results share their event descriptions.
+	# Preview never plays them; Main schedules feedback only after a commit.
 	# Pending known-card choice is cancellable: never disclose newly simulated
 	# hidden draw identities. Preserve the historical no-choice preview contract.
 	if run.get("mode","")=="combat" and hand_index>=0 and hand_index<run.battle.hand.size() and effective_card(run.battle.hand[hand_index]).has("selections"):
@@ -842,11 +845,14 @@ func _damage_enemy(state: Dictionary, index: int, amount: int, route_length: int
 	target.hp=maxi(0,int(target.hp)-amount)
 	return actual
 
-func _clean_enemies(state: Dictionary, presentation: Array = []) -> void:
+func _clean_enemies(state: Dictionary, presentation: Array = [], enemies_before: Array = []) -> void:
 	var living=[]
-	for foe in state.battle.enemies:
+	for index in range(state.battle.enemies.size()):
+		var foe: Dictionary = state.battle.enemies[index]
 		if int(foe.hp)>0: living.append(foe)
 		else:
+			if index < enemies_before.size() and int(enemies_before[index].get("hp", 0)) > 0:
+				presentation.append({"kind":"enemy_defeated","target_index":index,"name":str(foe.get("name","Enemy"))})
 			var repaired=mini(int(state.max_hull)-int(state.hull),_effect(state,"kill_heal")) if int(state.hull)>0 else 0
 			state.hull+=repaired
 			if repaired>0: presentation.append({"kind":"heal","amount":repaired,"source":"kill"})
@@ -912,6 +918,7 @@ func end_turn() -> Dictionary:
 	if not _mode("combat"): return _fail("There is no active battle.")
 	var battle=run.battle
 	var presentation=[]
+	var enemies_before: Array = run.battle.enemies.duplicate(true)
 	var held=[]
 	for i in range(battle.hand.size()):
 		var instance=battle.hand[i]
@@ -1010,7 +1017,7 @@ func end_turn() -> Dictionary:
 		foe.redirect=0
 		if int(run.hull)<=0: break
 		if retaliation_recipient>=0: Engines.retaliation(self,run,retaliation_sources,retaliation_recipient,i,presentation)
-	_clean_enemies(run,presentation)
+	_clean_enemies(run,presentation,enemies_before)
 	battle.ward=0
 	var cooled=[]
 	for i in range(6):

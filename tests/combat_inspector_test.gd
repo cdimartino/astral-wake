@@ -38,6 +38,30 @@ func click(ui, control: Control, button: int) -> void:
 		event.pressed = false
 		root.push_input(event)
 
+func pointer_press(point: Vector2) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	event.position = point
+	event.global_position = point
+	root.push_input(event)
+
+func pointer_release(point: Vector2) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = false
+	event.position = point
+	event.global_position = point
+	root.push_input(event)
+
+func pointer_move(from_point: Vector2, to_point: Vector2) -> void:
+	var event := InputEventMouseMotion.new()
+	event.position = to_point
+	event.global_position = to_point
+	event.relative = to_point - from_point
+	event.button_mask = MOUSE_BUTTON_MASK_LEFT
+	root.push_input(event)
+
 func check() -> void:
 	if not screenshots.is_empty(): DirAccess.make_dir_recursive_absolute(screenshots)
 	var ui = Main.new()
@@ -75,6 +99,49 @@ func check() -> void:
 			print("CAPTURE viewport ", viewport, " window ", ui.get_window().size, " page ", ui.page.scale)
 		var hand: Control = ui.page.find_child("Hand9", true, false)
 		var organ: Control = ui.page.find_child("Organ0", true, false)
+		require(hand.tooltip_text.is_empty() and not hand is Main.CardTooltip, "Hover and focus do not create a full-card popup")
+		var hand_origin := hand.position
+		var hand_point := hand.get_global_rect().get_center()
+		ui.resolving = true
+		pointer_press(hand_point)
+		pointer_move(hand_point, organ.get_global_rect().get_center())
+		pointer_release(organ.get_global_rect().get_center())
+		await settle()
+		require(ui.route_gesture.pressed_uid == -1 and ui.selected_card == -1 and ui.route.is_empty(), "Busy viewport pointer cannot begin or stage a drag")
+		require(hand.position == hand_origin, "Busy pointer cannot move the card geometry: %s → %s" % [str(hand_origin), str(hand.position)])
+		ui.resolving = false
+		var modal_body := ui._modal("Pointer interception")
+		modal_body.add_child(ui._text("Modal captures pointer input."))
+		pointer_press(hand_point)
+		pointer_move(hand_point, organ.get_global_rect().get_center())
+		pointer_release(organ.get_global_rect().get_center())
+		await settle()
+		require(ui.route_gesture.pressed_uid == -1 and ui.selected_card == -1 and ui.route.is_empty(), "Modal-intercepted viewport pointer cannot stage a drag")
+		ui._close_overlay()
+		hand = ui.page.find_child("Hand9", true, false)
+		organ = ui.page.find_child("Organ0", true, false)
+		hand.grab_focus()
+		await settle()
+		require(ui.detail_kind.is_empty(), "Ordinary focus never opens card details")
+		var contextual_details: Button = ui.page.find_child("DetailsButton", true, false)
+		require(is_instance_valid(contextual_details) and str(contextual_details.get_meta("mcp_control", "")) == "inspect_card", "Focused hand card has one explicit Details control")
+		organ.grab_focus()
+		await settle()
+		var organ_details: Button = ui.page.find_child("OrganDetailsButton", true, false)
+		require(is_instance_valid(organ_details) and organ_details.visible and int(organ_details.get_meta("organ_index", -1)) == 0, "Keyboard-focused organ exposes matching Details metadata")
+		require(ui.detail_kind.is_empty(), "Focusing an organ does not open its detail panel")
+		hand.grab_focus()
+		await settle()
+		if is_instance_valid(contextual_details):
+			contextual_details.pressed.emit()
+			await settle()
+			require(ui.detail_kind == "card" and ui.selected_card == -1, "Visible Details inspects instead of staging or playing")
+			var dismiss := InputEventKey.new()
+			dismiss.keycode = KEY_ESCAPE
+			dismiss.pressed = true
+			root.push_input(dismiss)
+			await settle()
+		hand = ui.page.find_child("Hand9", true, false)
 		click(ui, hand, MOUSE_BUTTON_RIGHT)
 		await settle()
 		require(ui.detail_kind == "card" and ui.page.find_child("CombatDetailDock", true, false) != null, "Actual hand right-click opens card detail dock " + str(viewport))

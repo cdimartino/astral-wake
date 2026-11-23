@@ -62,10 +62,16 @@ func check() -> void:
 	ui.game.run.battle.command_points = 1
 	ui._clear_selection()
 	ui._render()
-	require(ui.hand_buttons[0].disabled, "Hand affordability uses effective cost")
+	var staged_before: Dictionary = ui.game.run.duplicate(true)
+	require(not ui.hand_buttons[0].disabled and ui.hand_buttons[0].focus_mode != Control.FOCUS_NONE, "Unaffordable hand card stays focusable for accessible inspection")
+	ui.hand_buttons[0].grab_focus()
+	require(root.gui_get_focus_owner() == ui.hand_buttons[0], "Unaffordable hand card accepts inspection focus")
+	require(not ui.game.preview_card(0, [0], 0).ok, "Effective two-point cost is not playable with one command point")
+	require(ui.game.run == staged_before, "Affordability inspection and preview spend no resources")
 	require(ui.hand_buttons[0].get_meta("mcp_description", "").contains("2 command points") and ui.hand_buttons[0].get_meta("mcp_description", "").contains("Deal 20 damage"), "Public combat help cost and text share effective definition")
 	ui._select_card(0)
 	require(ui.selected_card == -1, "Selection refuses effective cost even when raw catalog cost is affordable")
+	require(ui.game.run == staged_before, "Refused effective-cost selection changes no resources or battle state")
 	ui.game.run.battle.command_points = 2
 	ui._render()
 	ui._select_card(0)

@@ -79,9 +79,13 @@ than waiting forever.
 - **Title/character:** discover new/continue actions, select a vessel, inspect
   character details if needed, then begin. Replacing or abandoning an existing
   expedition requires explicit user intent; do not automatically confirm it.
-- **Map:** `choose_node` travels; `inspect_node` shows details for a visible
-  destination that cannot currently be reached. Match the advertised `node_id`
-  to the public map, then submit the option's current `index`.
+- **Map:** `inspect_node` focuses a visible beacon, including reachable ones,
+  without traveling. `choose_node` activates the explicit travel control for
+  the focused reachable beacon. Match the advertised `node_id` to the public
+  map, then submit the option's current `index`. Signals disclose broad risk or
+  service, not future enemy identities or rosters. Wait for arrival presentation
+  to finish before another mutation; the accepted jump already changed logical
+  state and must not be retried merely because the chart is still visible.
 - **Combat:** select a hand card, build a connected organ route using available
   controls, select a living target, and call `preview`. Read its `ok`, error,
   resource cost, strain, and deterministic forecast fields. Preview deliberately
@@ -102,7 +106,10 @@ than waiting forever.
 - **Region/ending:** use discovered continuation/title/new-expedition controls.
   Report the actual final mode; do not claim victory from a transient animation.
 - **Inspection/settings:** open available help, deck, history, discoveries,
-  details, menu, or settings controls. Close overlays before resuming gameplay.
+  details, menu, or settings controls. Card and organ selection does not open
+  full details; discover the contextual `inspect_card` or `inspect_organ`
+  control, then `close_inspection` to dismiss it without clearing the route.
+  Close overlays before resuming gameplay.
 
 Command names come from the live controller and may evolve with the game.
 `legal_actions` is the runtime contract; this guide is not a replacement for it.

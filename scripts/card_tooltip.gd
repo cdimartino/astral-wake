@@ -3,14 +3,10 @@ extends Button
 var explanation := ""
 var focus_tip: Control
 
-func _ready() -> void:
-	focus_entered.connect(_show_focus_tip)
-	focus_exited.connect(_hide_focus_tip)
-	tree_exiting.connect(_hide_focus_tip)
-
 func _make_custom_tooltip(_text: String) -> Object:
-	_hide_focus_tip()
-	return _rich_tip()
+	# Full card text is available only through an explicit Details action.
+	# Hover/focus tooltips cover the board and can accidentally imply purchase.
+	return null
 
 func _rich_tip() -> Control:
 	var panel := PanelContainer.new()

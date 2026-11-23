@@ -61,13 +61,31 @@ func _run() -> void:
 	hull.play_cue("hit")
 	var voice = hull.voices[0]
 	check(voice.bus.begins_with("HullVoice_"), "Stereo pan is physically applied")
-	await create_timer(.2).timeout
-	var frames := capture.get_buffer(capture.get_frames_available())
-	var peak := 0.0
-	for frame in frames: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
-	check(peak > .001 and peak < .99, "Real mixer decodes unclipped PCM")
 	check(not hull.reload_bank(directory.path_join("missing.json")), "Broken reload rejected")
 	check(voice.playing and hull.bank.cues.has("hit"), "Broken reload retains voices and bank")
+	# Dummy's mixer thread may start late under CI scheduling pressure. Drain real
+	# batches until we cover 200ms, including at least 100ms of audible PCM.
+	# Keep the peak across every batch so later silence cannot hide clipping.
+	var deadline := Time.get_ticks_msec() + 5000
+	var frame_count := 0
+	var audible_frames := 0
+	var peak := 0.0
+	var required_frames := int(AudioServer.get_mix_rate() * .2)
+	var required_audible := int(AudioServer.get_mix_rate() * .1)
+	while Time.get_ticks_msec() < deadline:
+		await create_timer(.01).timeout
+		var frames := capture.get_buffer(capture.get_frames_available())
+		frame_count += frames.size()
+		for frame in frames:
+			var amplitude := maxf(absf(frame.x), absf(frame.y))
+			peak = maxf(peak, amplitude)
+			if amplitude > .001:
+				audible_frames += 1
+		if frame_count >= required_frames and audible_frames >= required_audible:
+			break
+	var discarded := capture.get_discarded_frames()
+	print("HULL MIXER: frames=%d audible=%d peak=%.6f discarded=%d" % [frame_count, audible_frames, peak, discarded])
+	check(frame_count >= required_frames and audible_frames >= required_audible and discarded == 0 and peak > .001 and peak < .99, "Real mixer decodes unclipped PCM")
 	var incomplete: Dictionary = manifest.duplicate(true)
 	incomplete.cues = {}
 	file = FileAccess.open(directory.path_join("incomplete.json"), FileAccess.WRITE)
