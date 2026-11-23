@@ -12,6 +12,8 @@ import unittest
 
 HOST = Path(__file__).resolve().parents[1] / "tools" / "astral_mcp.py"
 TOKEN = "test-secret-" * 4
+# Interpreter startup can be delayed by local scheduling; live RPCs stay at 3s.
+STARTUP_TIMEOUT = 15
 
 
 class FakeBridge:
@@ -86,27 +88,52 @@ class FakeBridge:
 class StdioTest(unittest.TestCase):
     def setUp(self):
         self.bridge = FakeBridge()
+        self.addCleanup(self.bridge.close)
         self.process = subprocess.Popen(
             [sys.executable, str(HOST), "--port", str(self.bridge.port), "--bridge-timeout", "0.2"],
             env={**os.environ, "ASTRAL_MCP_TOKEN": TOKEN}, stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.addCleanup(self.close_process)
         self.messages = queue.Queue()
         self.sequence = 0
         threading.Thread(target=self.read, daemon=True).start()
         self.rpc("initialize", {"protocolVersion": "2024-11-05", "capabilities": {},
-                                "clientInfo": {"name": "test", "version": "1"}})
+                                "clientInfo": {"name": "test", "version": "1"}},
+                 timeout=STARTUP_TIMEOUT)
 
     def read(self):
         for line in self.process.stdout:
             self.messages.put(json.loads(line))
 
     def tearDown(self):
-        self.process.stdin.close()
-        self.process.wait(timeout=3)
-        self.bridge.close()
-        self.process.stdout.close()
-        self.process.stderr.close()
+        self.close_process()
         self.assertEqual(self.process.returncode, 0)
+
+    def close_process(self):
+        # Also runs after failed setUp, without replacing its original exception.
+        try:
+            self.process.stdin.close()
+        except OSError:
+            pass
+        try:
+            try:
+                self.process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                try:
+                    self.process.terminate()
+                    self.process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait(timeout=3)
+        except (OSError, subprocess.TimeoutExpired):
+            # Cleanup must not obscure a setup/test failure, even if reaping fails.
+            pass
+        finally:
+            for stream in (self.process.stdout, self.process.stderr):
+                try:
+                    stream.close()
+                except OSError:
+                    pass
 
     def send(self, method, params=None):
         self.sequence += 1
@@ -115,10 +142,11 @@ class StdioTest(unittest.TestCase):
         self.process.stdin.flush()
         return self.sequence
 
-    def rpc(self, method, params=None):
+    def rpc(self, method, params=None, timeout=3):
         request_id = self.send(method, params)
+        deadline = time.monotonic() + timeout
         while True:
-            message = self.messages.get(timeout=3)
+            message = self.messages.get(timeout=max(0, deadline - time.monotonic()))
             if message.get("id") == request_id:
                 return message
 
@@ -221,7 +249,7 @@ class StdioTest(unittest.TestCase):
         self.assertEqual(self.messages.get(timeout=2)["error"]["code"], -32600)
         result = subprocess.run([sys.executable, str(HOST), "--port", "0"],
                                 env={**os.environ, "ASTRAL_MCP_TOKEN": "short"},
-                                capture_output=True, text=True, timeout=3)
+                                capture_output=True, text=True, timeout=STARTUP_TIMEOUT)
         self.assertEqual(result.returncode, 2)
         self.assertEqual(result.stdout, "")
         self.assertIn("ASTRAL_MCP_TOKEN", result.stderr)
