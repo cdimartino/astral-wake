@@ -121,7 +121,7 @@ bash tools/package_release.sh
 
 To block merging when tests fail, configure a GitHub branch protection rule or ruleset for `main` requiring the **Godot 4.7.2 checks** status check after its first workflow run.
 
-Packaging creates `dist/Astral-Wake-0.4.0-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
+Packaging creates `dist/Astral-Wake-0.4.1-macos.zip` from the exported app, cleans Finder metadata in a temporary copy, applies an ad-hoc signature, and verifies both architectures and the signature after ZIP extraction. Use its printed SHA-256 in `Casks/astral-wake.rb` before publishing the matching release.
 
 The bootstrap downloads approximately 1.5GB of editor/export archives into ignored `.tools/`. Only the Mac template is extracted. On macOS, editor import/export needs permission to write Godot's normal user-data/editor settings folder; restricted automation sandboxes may require an approved native launch.
 

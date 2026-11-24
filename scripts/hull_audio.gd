@@ -1,5 +1,15 @@
 extends Node
 const MAX_VOICES := 48
+const FACTORY_BANK := "res://audio/hull/bank.json"
+# Reviewed stereo mixes are pre-Master. The ordinary Music/Master sliders
+# supply their playback gain; they are not another instrument in the bank.
+const RENDERED_STINGERS := {
+	"victory":"res://audio/preview/ending_victory.wav",
+	"defeat":"res://audio/preview/ending_defeat.wav",
+	"clear_0":"res://audio/preview/warp_0.wav", "clear_1":"res://audio/preview/warp_0.wav",
+	"clear_2":"res://audio/preview/warp_1.wav", "clear_3":"res://audio/preview/warp_1.wav",
+	"clear_4":"res://audio/preview/warp_2.wav", "clear_5":"res://audio/preview/warp_2.wav",
+}
 ## Sample-bank player and local-only Sound Desk. Existing voices own their streams:
 ## replacing mappings or reloading the bank never cuts off an active note.
 
@@ -8,7 +18,7 @@ var overrides: Dictionary = {}
 var trace: Array[Dictionary] = []
 var voices: Array[AudioStreamPlayer] = []
 var storage := ""
-var bank_path := "res://audio/hull/bank.json"
+var bank_path := FACTORY_BANK
 var score_id := ""
 var score_loops := true
 var score_time := 0.0
@@ -27,6 +37,7 @@ var _stinger := ""
 var _stinger_time := 0.0
 var _stinger_priority := 0
 var _stinger_contact_only := false
+var _rendered_seconds := 0.0
 var _ab: Dictionary = {}
 var _take_index: Dictionary = {}
 var _levels: Dictionary = {}
@@ -78,6 +89,7 @@ func initialize(storage_dir: String) -> void:
 func stop_all() -> void:
 	score_id = ""
 	_stinger = ""
+	_rendered_seconds = 0.0
 	for voice in voices.duplicate(): _release(voice)
 
 func _exit_tree() -> void:
@@ -363,7 +375,10 @@ func _play(id: String, gain: float, pitch: float, track: String, duration: float
 		if combat.size() > 12: _release(combat[0])
 	elif voices.size() > MAX_VOICES:
 		_release(voices[0])
-	var record := {"cue": id, "patch": patch, "track": track, "gain_db": voice.volume_db, "at_ms": now, "peak_bus_db": -80.0}
+	_record_voice(voice)
+
+func _record_voice(voice: AudioStreamPlayer) -> void:
+	var record := {"cue": voice.get_meta("cue"), "patch": voice.get_meta("patch"), "track": voice.get_meta("track"), "gain_db": voice.volume_db, "at_ms": Time.get_ticks_msec(), "peak_bus_db": -80.0}
 	voice.set_meta("trace_record", record)
 	trace.append(record)
 	if trace.size() > 100: trace.pop_front()
@@ -410,18 +425,45 @@ func play_stinger(id: String, event_key: String) -> void:
 		if not found: return
 	var priority := 3 if id in ["victory", "defeat"] else (2 if id.begins_with("clear_") else 1)
 	if not _stinger.is_empty() and priority < _stinger_priority: return
-	if priority == 3:
-		for voice in voices.duplicate():
-			if voice.get_meta("stinger", false) and voice.get_meta("track", "") != "hull contact":
-				if voice.has_meta("tail_tween"): voice.get_meta("tail_tween").kill()
-				var fade := create_tween()
-				voice.set_meta("tail_tween", fade)
-				fade.tween_property(voice, "volume_db", -80.0, .12)
-				fade.tween_callback(_release.bind(voice))
+	for voice in voices.duplicate():
+		if voice.get_meta("rendered_stinger", false) or (priority == 3 and voice.get_meta("stinger", false) and voice.get_meta("track", "") != "hull contact"):
+			if voice.has_meta("tail_tween"): voice.get_meta("tail_tween").kill()
+			var fade := create_tween()
+			voice.set_meta("tail_tween", fade)
+			fade.tween_property(voice, "volume_db", -80.0, .12)
+			fade.tween_callback(_release.bind(voice))
 	_stinger = id
 	_stinger_contact_only = contact_only
 	_stinger_time = -.000001
 	_stinger_priority = priority
+	_rendered_seconds = _start_rendered_stinger(id)
+
+func _start_rendered_stinger(id: String) -> float:
+	if _stinger_contact_only or bank_path != FACTORY_BANK or not RENDERED_STINGERS.has(id) or not solo.is_empty(): return 0.0
+	# A single printed mix cannot implement per-part mute, alternate patch,
+	# pan or pitch. Give affected Sound Desk selections the editable timeline.
+	for event in bank.scores[id].events:
+		var cue: String = event.cue
+		if overrides.has(cue) or muted.get(cue, false) or muted.get(event.track, false) or muted.get(bank.cues[cue].group, false): return 0.0
+	var path: String = RENDERED_STINGERS[id]
+	var clip := load(path) as AudioStreamWAV
+	if clip == null: return 0.0
+	var voice := AudioStreamPlayer.new()
+	voice.stream = clip
+	voice.bus = "Music"
+	voice.set_meta("cue", id)
+	voice.set_meta("patch", path.get_file().get_basename())
+	voice.set_meta("category", "Music")
+	voice.set_meta("track", "rendered score")
+	voice.set_meta("stinger", true)
+	voice.set_meta("rendered_stinger", true)
+	add_child(voice)
+	voices.append(voice)
+	voice.finished.connect(_release.bind(voice))
+	if voices.size() > MAX_VOICES: _release(voices[0])
+	voice.play()
+	_record_voice(voice)
+	return clip.get_length()
 
 func _timeline(id: String, start: float, finish: float) -> void:
 	var score: Dictionary = bank.scores[id]
@@ -461,11 +503,12 @@ func _process(delta: float) -> void:
 		score_time = finish
 	if not _stinger.is_empty():
 		var finish := _stinger_time + delta
-		_timeline(_stinger, _stinger_time, finish)
+		if _rendered_seconds <= 0.0: _timeline(_stinger, _stinger_time, finish)
 		_stinger_time = finish
-		if finish >= float(bank.scores[_stinger].length):
+		if finish >= maxf(float(bank.scores[_stinger].length), _rendered_seconds):
 			_stinger = ""
 			_stinger_priority = 0
+			_rendered_seconds = 0.0
 
 func command(words: PackedStringArray) -> String:
 	if words.is_empty(): return "audio: packs bank groups cues patches scores variants bind audition group mix solo mute ab preset undo factory reload trace voices stinger"

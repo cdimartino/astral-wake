@@ -1,6 +1,6 @@
 cask "astral-wake" do
-  version "0.4.0"
-  sha256 "c80ed6a4232194e24c2b522275d84109778782d1d392729d4363f9a3f28b773b"
+  version "0.4.1"
+  sha256 "91e7155ff22ef88a20b21c4dae79c7dab19fdc3c312ea9deef0930fa8416d344"
 
   url "https://github.com/cdimartino/astral-wake/releases/download/v#{version}/Astral-Wake-#{version}-macos.zip"
   name "Astral Wake"

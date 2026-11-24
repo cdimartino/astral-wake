@@ -1,0 +1,33 @@
+{
+  "assets": {
+    "chart_body.wav": {
+      "sha256": "e5bf9eeb3d98fb29878da0e7f02317003f79ca3b8db76008e91d111eccb86fcd",
+      "rate": 48000,
+      "frames": 249600,
+      "seconds": 5.2
+    },
+    "opening_title.wav": {
+      "sha256": "a04e83e3229415ca5c3dc1c349d811e48c833cf61f719298abe6b3ab4ad5dabb",
+      "rate": 44100,
+      "frames": 601557,
+      "seconds": 13.640748299319728,
+      "loop_begin": 503808,
+      "loop_end": 601557,
+      "intro_seconds": 11.42421768707483,
+      "bed_period_seconds": 2.216530612244898
+    }
+  },
+  "calibration": {
+    "source_master_linear": 0.5,
+    "player_compensation_db": 6.020599913279624,
+    "bus": "Music",
+    "category_gain_not_baked_twice": true
+  },
+  "inputs": {
+    "dist/audio-review-round-1/chart/space-stem-native.wav": "908e960c035330de757cc04fd1928414c6ac8c808422626ac2e419c09f42a8d6",
+    "dist/audio-review-round-1/opening/B2 - Opening breath through title - no bowed strings.wav": "e5b17c0a9cabb7803151e933c2493e69fd84292988b871b49e4cfeb7e69e65ca",
+    "dist/audio-review-round-2/opening/B3 - Opening with a distant glass call.wav": "58a433d73c38ed4d57c422143649c964b15f6278e226fc1da3bfdba16c187c2f"
+  },
+  "chart_recipe": "Only bow-free private native bed 2\u20138s, 800ms cyclic overlap. No departure or combat samples.",
+  "title_recipe": "Approved B3 head; final 324ms crossfade to B2 breath phase; forward-loop region is breath ONLY."
+}

@@ -10,12 +10,12 @@ The score puts the listening position **inside** the hull. On the map, a sound r
 
 | Place | Where to listen | What the silence does |
 |---|---|---|
-| Cradle of Embers | Grainy low C on bowed psaltery. A very short log-drum/shaker tick interrupts it. | The second tick in a pair is a crumb, not a new beat. |
+| Cradle of Embers | Ringing low C on finger-plucked harp. A very short log-drum/shaker tick interrupts it. | The second tick in a pair is a crumb, not a new beat. |
 | Choir of Wrecks | A low G from one body, then a higher, shorter wood/rim answer. | Different decay times make the hulls feel separate. |
 | The Glass Beyond | Recorder air at 0.15 s, rubbed glass entering at 3.82 s, free glass release at 8.45 s. | Leave the attack of actual damage to the fracture cue. |
 | Verdant Engine | A D-centered breath on wood; the second air column overlaps its end, then separates. | Let the next breath arrive early or late, not like a heartbeat. |
 | Tidal Archive | Low E-flat emerges and returns as a quieter body at the same pitch. | Keep the middle register clear for a card or a command. |
-| Crown of Storms | Bow tension, pressure, a short unfinished phrase. The last swell falls into the longest wait. | Pressure can recede even at the hardest part of the voyage. |
+| Crown of Storms | Recorder, dark piano body and plucked tension. The final note falls into the longest wait. | Pressure can recede even at the hardest part of the voyage. |
 
 ### What each interruption earns
 
@@ -28,8 +28,8 @@ The score puts the listening position **inside** the hull. On the map, a sound r
 | Ward / repair / vent / sever | Rim caught by drum; brush pulled into wood; dry exhale; abruptly gated cut. Enemy phase is the uneven two knocks. | No stinger on damage, expiry, draw, discard or enemy turn. |
 | Travel / recovery / shop / reward | A passing wash, air releasing, short clasp, one warm overtone. | Don't repeat on every shop or map redraw. |
 | Guardian reveal | One low contact on the reveal, lead tone, then an unfinished interval. Most rise a minor third; Glass retains the wider interval of the chosen pilot. | The guardian comment should fire once, not on resume. Independent mute for repeated comparisons. |
-| Region clear | Same contact/answer form, turned downward to the regional center. | Skip on the final boss: the voyage outcome supersedes it. |
-| Voyage end | The first two notes are shared. Victory rises to an open fifth; defeat falls away to a lower unsettled answer. | Spend the full phrase once. Never delay a decision for a musical tail. |
+| Region clear | In the local audio preview, the factory mix is a sector-warp pass; ordinary chart hops are separate. The editable MIDI retains the regional contact/answer for custom Sound Desk arrangements. | Skip on the final boss: the voyage outcome supersedes it. |
+| Voyage end | Victory: a gathering low glass body and recorder air widen around a single seated keel contact, then release. Defeat: seven descending piano notes over five falling harp notes and a quiet spatial undersound, landing together in D octaves at 111 BPM. | Let the room decay to silence. Never delay a decision for a musical tail. |
 
 ### What the Glass pilot changed
 

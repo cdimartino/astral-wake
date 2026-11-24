@@ -13,6 +13,8 @@ const StarChartScene = preload("res://scripts/star_chart.gd")
 const CommandTargeting = preload("res://scripts/command_targeting.gd")
 const CombatRouteGesture = preload("res://scripts/combat_route_gesture.gd")
 const VoyageAudio = preload("res://scripts/voyage_audio.gd")
+const TitleAudio = preload("res://scripts/title_audio.gd")
+const ServiceAudioPreview = preload("res://scripts/service_audio_preview.gd")
 const OpeningFilm = preload("res://scripts/intro_cinematic.gd")
 const NAVY := Color("08131f")
 const PANEL := Color("111f30")
@@ -83,6 +85,8 @@ var services := Node.new()
 var hull_audio = preload("res://scripts/hull_audio.gd").new()
 var enemy_defeat_audio = preload("res://scripts/enemy_defeat_audio.gd").new()
 var voyage_audio
+var title_audio
+var service_audio
 var hull_admin = preload("res://scripts/hull_admin.gd").new()
 var desk_layer := CanvasLayer.new()
 var hull_desk: Control
@@ -158,6 +162,12 @@ func _ready() -> void:
 	voyage_audio = VoyageAudio.new()
 	services.add_child(voyage_audio)
 	voyage_audio.setup(hull_audio)
+	title_audio = TitleAudio.new()
+	services.add_child(title_audio)
+	title_audio.setup(hull_audio)
+	service_audio = ServiceAudioPreview.new()
+	services.add_child(service_audio)
+	service_audio.setup(hull_audio)
 	enemy_defeat_audio.setup(hull_audio)
 	services.add_child(enemy_defeat_audio)
 	game.load_saved()
@@ -186,10 +196,14 @@ func _notification(what: int) -> void:
 
 func _start_opening() -> void:
 	cinematic_active = true
+	if is_instance_valid(title_audio): title_audio.begin_opening()
 	opening_film = OpeningFilm.new()
 	add_child(opening_film)
 	opening_film.fading_out.connect(func():
 		cinematic_active = false
+		# An early skip goes straight to the quiet loop; a normal film handoff
+		# lets B3's single distant call finish across the title, without restart.
+		if is_instance_valid(title_audio): title_audio.finish_opening(title_audio.opening_elapsed < 8.5)
 		_soundtrack())
 	opening_film.finished.connect(func(): opening_film = null)
 	opening_film.start()
@@ -1691,10 +1705,10 @@ func _rewards() -> void:
 			var reserved := Control.new()
 			reserved.custom_minimum_size.y = 48
 			actions.add_child(reserved)
-		var take := _button("Take discovery", func(): _perform(func(): return game.choose_reward(i)), "Add this discovery to the expedition.", true)
+		var take := _button("Take discovery", func(): _perform(func(): return game.choose_reward(i), "reward"), "Add this discovery to the expedition.", true)
 		take.custom_minimum_size.y = 48
 		actions.add_child(take)
-	_at(_button("Skip reward →", func(): _perform(func(): return game.choose_reward(-1))), Rect2(1080, 814, 296, 52))
+	_at(_button("Skip reward →", func(): _perform(func(): return game.choose_reward(-1), "service_leave")), Rect2(1080, 814, 296, 52))
 
 func _event() -> void:
 	var event: Dictionary = {}
@@ -1714,7 +1728,7 @@ func _event() -> void:
 		detail.max_lines_visible = 3
 		box.add_child(detail)
 		box.add_child(_button(str(choice.get("label", "Choose")), func(): _perform(func(): return game.event_choice(i)), str(choice.get("detail", "")), true))
-	_at(_button("Leave the signal behind →", func(): _perform(func(): return game.leave_location())), Rect2(1000, 814, 376, 52))
+	_at(_button("Leave the signal behind →", func(): _perform(func(): return game.leave_location(), "service_leave")), Rect2(1000, 814, 376, 52))
 
 func _shop() -> void:
 	_section("SALVAGE EXCHANGE", "Useful things. Unlikely hands.")
@@ -1772,7 +1786,7 @@ func _shop() -> void:
 		button.disabled = sold or game.run.salvage < item.cost
 		button.custom_minimum_size.y = 48
 		actions.add_child(button)
-	_at(_button("Return to the chart →", func(): _perform(func(): return game.leave_location())), Rect2(1040, 814, 336, 52))
+	_at(_button("Return to the chart →", func(): _perform(func(): return game.leave_location(), "service_leave")), Rect2(1040, 814, 336, 52))
 
 func _recovery() -> void:
 	_section("A QUIET ORBIT", "Let the engines breathe.", "Take one moment of care before returning to the frontier.")
@@ -1783,15 +1797,15 @@ func _recovery() -> void:
 	_screen_text("HULL  %d / %d" % [game.run.hull, game.run.max_hull], Rect2(90, 583, 570, 24), 15, TEAL)
 	_screen_text("Repair the hull", Rect2(90, 614, 570, 48), 34, TEAL)
 	_screen_text("Restore 30 hull, up to your maximum.\nCurrent hull: %d / %d." % [game.run.hull, game.run.max_hull], Rect2(90, 674, 570, 82), 24, CREAM)
-	_at(_button("Repair +30 hull", func(): _perform(func(): return game.recover("repair")), "Repair and return to the chart.", true), Rect2(90, 778, 570, 54))
+	_at(_button("Repair +30 hull", func(): _perform(func(): return game.recover("repair"), "recovery"), "Repair and return to the chart.", true), Rect2(90, 778, 570, 54))
 	_screen_text("Refine a command", Rect2(780, 614, 570, 48), 34, GOLD)
 	var authored=false
 	for instance in game.run.deck:
 		if int(instance.level)==0 and game.card(instance.id).has("evolutions"): authored=true
 	var evolution_hint="Choose a command, then one permanent branch.\nCompare payload, CP and timing before confirming." if authored else "Damage +3. Repair +2. Vent and disrupt +1.\nChoose the exact command to evolve."
 	_screen_text(evolution_hint, Rect2(780, 674, 570, 82), 24, CREAM)
-	_at(_button("Choose an upgrade", func(): _perform(func(): return game.recover("upgrade")), "Inspect commands before choosing.", true), Rect2(780, 778, 570, 54))
-	_at(_button("Leave without resting", func(): _perform(func(): return game.leave_location())), Rect2(550, 845, 340, 44))
+	_at(_button("Choose an upgrade", func(): _perform(func(): return game.recover("upgrade"), "recovery"), "Inspect commands before choosing.", true), Rect2(780, 778, 570, 54))
+	_at(_button("Leave without resting", func(): _perform(func(): return game.leave_location(), "service_leave")), Rect2(550, 845, 340, 44))
 
 func _choose_modification(index: int) -> void:
 	var instance: Dictionary = game.run.deck[index]
@@ -1949,13 +1963,24 @@ func presentation_busy() -> bool:
 
 func _sync_voyage_audio() -> void:
 	if not is_instance_valid(voyage_audio): return
-	var chart_visible: bool = ((not menu and not game.run.is_empty() and game.run.get("mode", "") == "map") and not is_instance_valid(overlay)) or chart_travel_pending
+	var mode := str(game.run.get("mode", ""))
+	var title_visible := cinematic_active or menu or choosing_character or mode.is_empty()
+	var chart_visible: bool = (not title_visible and mode == "map") or chart_travel_pending
+	# Settings/help/inspection overlays do not replace the underlying room.
+	# Keeping the bed alive avoids a repeated entrance each time one closes.
 	if chart_visible:
 		if not voyage_audio.active:
 			hull_audio.set_score("")
 			voyage_audio.enter_chart()
 	elif voyage_audio.active:
 		voyage_audio.leave_chart()
+	if is_instance_valid(title_audio):
+		if title_visible: title_audio.enter_title()
+		else: title_audio.leave()
+	if is_instance_valid(service_audio):
+		var shelf_visible := not title_visible and mode in ["shop", "reward", "recovery", "event", "modify"]
+		if shelf_visible: service_audio.enter()
+		else: service_audio.leave()
 
 func _clear_selection() -> void:
 	selected_card = -1
@@ -2406,6 +2431,9 @@ func _audio_setup() -> void:
 		if key in [KEY_QUOTELEFT, KEY_F2, KEY_F8, KEY_F10]: desk_key = key
 
 func _sound(cue: String) -> void:
+	if is_instance_valid(service_audio) and cue in ["click", "ship_select", "reward", "shop_buy", "recovery", "transition"]:
+		service_audio.action(cue)
+		return
 	hull_audio.play_cue(cue)
 
 func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
@@ -2433,6 +2461,10 @@ func _combat_sound(cue: Dictionary, launch: bool = false) -> void:
 	# An echoed beam is the continuation of a single gesture, not a second
 	# equally prominent attack. Keep its visual contact and soften the repeat.
 	if sound.begins_with("beam_") and since < 400: level -= 4.5
+	# BEGIN COMBAT AUDIO PREVIEW: committed enemy attacks/ward only.
+	# A handled replacement consumes this event; never layer its original cue.
+	if enemy_defeat_audio.play_combat(cue, launch, level): return
+	# END COMBAT AUDIO PREVIEW (player attack path below is unchanged).
 	hull_audio.play_cue("combat_" + sound, level, 0.88 if kind == "enemy_shot" else 1.0)
 
 func _tick() -> void:
@@ -2799,16 +2831,12 @@ func _card_face(parent: Control, instance: Dictionary, expanded: bool, affordabl
 	return {"title": title, "description": description, "art": art}
 
 func _soundtrack() -> void:
-	if is_instance_valid(voyage_audio) and voyage_audio.active:
-		hull_audio.set_score("")
-		return
-	if cinematic_active:
-		hull_audio.set_score("opening", false, false)
-		return
 	var mode := str(game.run.get("mode", ""))
-	if menu or mode.is_empty():
-		# Title and ship selection are deliberately quiet. Start music when a
-		# voyage begins, not while the player is choosing what to do.
+	var preview_context := cinematic_active or menu or choosing_character or mode.is_empty()
+	preview_context = preview_context or (is_instance_valid(voyage_audio) and voyage_audio.active) or (is_instance_valid(service_audio) and service_audio.active)
+	if preview_context:
+		# These scenes own their approved beds. Never layer the old opening or
+		# regional score beneath them. Committed stingers below keep priority.
 		hull_audio.set_score("")
 	elif mode in ["victory", "defeat"]:
 		# Endings are a one-shot over silence, not a fanfare loop.
@@ -2839,6 +2867,9 @@ func _spot_action(previous: String, next: String, action_kind: String, before: D
 		if int(before.get("battle", {}).get("resonance", 0)) < 3 and int(game.run.get("battle", {}).get("resonance", 0)) == 3: _sound("choir_phrase")
 	elif previous == "map" and previous != next and action_kind != "chart_travel": _sound("recovery" if next == "recovery" else "map_travel")
 	elif action_kind == "purchase": _sound("shop_buy")
+	elif action_kind == "recovery": _sound("recovery")
+	elif action_kind == "reward": _sound("reward")
+	elif action_kind == "service_leave": _sound("transition")
 	elif previous == "reward" or next == "reward": _sound("reward")
 	elif previous == "transition": _sound("transition")
 

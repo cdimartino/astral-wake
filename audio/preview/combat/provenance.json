@@ -1,0 +1,65 @@
+{
+  "ward": {
+    "source": "dist/audio-review-round-1/attacks/02-enemy-phase-and-defenses--AFTER.wav",
+    "source_sha256": "971ac03309d29745eb29c9b1ddf9229e3acd6e74bf5529df43c09ada7f967b7a",
+    "source_start_frame": 88000,
+    "frames": 35040,
+    "seconds": 0.73,
+    "compensation_db": 6.020599913279624,
+    "sha256": "89a8dbdbbd7d3370cc26dfbe25e7d0bb86650d610f7d5a260ed6259d729526c7"
+  },
+  "enemy_kinetic_launch": {
+    "source": "dist/audio-review-round-1/attacks/02-enemy-phase-and-defenses--AFTER.wav",
+    "source_sha256": "971ac03309d29745eb29c9b1ddf9229e3acd6e74bf5529df43c09ada7f967b7a",
+    "source_start_frame": 160000,
+    "frames": 14400,
+    "seconds": 0.3,
+    "compensation_db": 6.020599913279624,
+    "sha256": "5767103cccf6be0beb60f530edcc8197604f70e18f8fe705b15c459565caef33"
+  },
+  "enemy_kinetic_hit": {
+    "source": "dist/audio-review-round-1/attacks/02-enemy-phase-and-defenses--AFTER.wav",
+    "source_sha256": "971ac03309d29745eb29c9b1ddf9229e3acd6e74bf5529df43c09ada7f967b7a",
+    "source_start_frame": 174400,
+    "frames": 36480,
+    "seconds": 0.76,
+    "compensation_db": 6.020599913279624,
+    "sha256": "fc4f8ff8198ad3eec8d11e606c083b5fe60b3e0b8f16068bd516bb3b1c43cf5c"
+  },
+  "enemy_sonic_launch": {
+    "source": "dist/audio-review-round-1/attacks/02-enemy-phase-and-defenses--AFTER.wav",
+    "source_sha256": "971ac03309d29745eb29c9b1ddf9229e3acd6e74bf5529df43c09ada7f967b7a",
+    "source_start_frame": 243200,
+    "frames": 14400,
+    "seconds": 0.3,
+    "compensation_db": 6.020599913279624,
+    "sha256": "57f6aaf60340f7aee3f8846d5023edb0f255c0e8ca06d13fd42655d9738c7ed6"
+  },
+  "enemy_sonic_hit": {
+    "source": "dist/audio-review-round-1/attacks/02-enemy-phase-and-defenses--AFTER.wav",
+    "source_sha256": "971ac03309d29745eb29c9b1ddf9229e3acd6e74bf5529df43c09ada7f967b7a",
+    "source_start_frame": 257600,
+    "frames": 43680,
+    "seconds": 0.91,
+    "compensation_db": 6.020599913279624,
+    "sha256": "32ff56588b6d1986ef86f9ff03d7bf8a27dbaf5281f0a2d4fdef0492319da463"
+  },
+  "kill": {
+    "source": "dist/audio-review-round-2/combat/qa/AuditionKill-diagnostic.wav",
+    "source_sha256": "272bc280defdafdae865348cd8e3017d7b08d0155e583c4c42175c6befb14fe2",
+    "source_start_frame": 234605,
+    "frames": 18240,
+    "seconds": 0.38,
+    "compensation_db": 0.0,
+    "sha256": "55d2c19ee8a6ac049e8ed46c3775c288a2233dfd80acd9215a0b94090dda90ba"
+  },
+  "clear": {
+    "source": "dist/audio-review-round-2/combat/qa/AuditionClear-diagnostic.wav",
+    "source_sha256": "2a42a867bfec35f624b9a12c522f3b877c53592ed288758cbbb439434663c36d",
+    "source_start_frame": 588865,
+    "frames": 81600,
+    "seconds": 1.7,
+    "compensation_db": 0.0,
+    "sha256": "2b53f943fed337b2b823fc79535c02d003ffd40bed8e4355cf4e21dfcaac2962"
+  }
+}
