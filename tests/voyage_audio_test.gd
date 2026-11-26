@@ -27,10 +27,17 @@ func _run() -> void:
 	var other: AudioStreamPlayer = hull.voices.back()
 	voyage.enter_chart()
 	voyage._process(0.1)
-	assert(voyage._owned.size() == 1)
+	assert(voyage._owned.is_empty() and voyage._body.playing)
+	var body = voyage._body
+	var body_stream: AudioStreamWAV = body.stream
+	assert(body_stream.loop_mode == AudioStreamWAV.LOOP_FORWARD)
+	assert(is_equal_approx(body_stream.get_length(), 5.2), "Only the approved chart body loops")
 	voyage.enter_chart()
 	voyage._process(0.1)
-	assert(voyage._owned.size() == 1, "Repeated render must not restart bed")
+	assert(voyage._body == body and voyage._owned.is_empty(), "Repeated render must not restart bed")
+	var idle_token: int = voyage.departure_token
+	voyage._process(35.0)
+	assert(voyage.departure_token == idle_token and voyage._phase == "idle" and voyage._owned.is_empty(), "Idle never replays the review recording's fixed-time departure")
 	voyage.depart(2.0)
 	var token: int = voyage.departure_token
 	var count: int = hull.voices.size()
@@ -64,11 +71,16 @@ func _run() -> void:
 	hull.overrides["score_seam_air"] = {"gain_db": -21.0, "pitch": 0.8, "patch": "pressure"}
 	voyage.enter_chart()
 	voyage._process(0.1)
+	assert(voyage._owned.is_empty() and voyage._body == body, "Approved bow-free body is not replaced by a bank alternative")
+	assert(voyage._body.bus == "Music")
+	# Explicit departure still uses the validated live cue/mix path.
+	voyage.depart(1.0)
+	voyage._process(0.1)
 	assert(voyage._owned.size() == 1)
 	var voice: AudioStreamPlayer = voyage._owned[0].voice
 	assert(voice.get_meta("patch") == "pressure")
-	assert(is_equal_approx(voice.pitch_scale, 0.6))
-	assert(is_equal_approx(float(voyage._owned[0].base_db), -39.0))
+	assert(is_equal_approx(voice.pitch_scale, 0.68))
+	assert(is_equal_approx(float(voyage._owned[0].base_db), -34.0))
 	assert(voice.bus == "Music")
 	hull.muted["second breath"] = true
 	voyage._process(0.1)

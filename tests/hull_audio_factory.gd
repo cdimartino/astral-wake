@@ -33,6 +33,22 @@ func _run() -> void:
 		for record in hull.trace: check(record.track == "hull contact", "Music disabled leaves contact only")
 	hull.stop_all()
 	hull.stingers_enabled = true
+	for id in hull.RENDERED_STINGERS:
+		hull.stop_all()
+		hull.play_stinger(id, "rendered-" + id)
+		check(hull._rendered_seconds > 0.0 and hull.voices.size() == 1, "%s uses one approved rendered stinger" % id)
+		if not hull.voices.is_empty():
+			var voice: AudioStreamPlayer = hull.voices.back()
+			check(voice.get_meta("rendered_stinger", false) and voice.bus == "Music", "%s rendered clip obeys Music settings" % id)
+			check(voice.stream.resource_path == hull.RENDERED_STINGERS[id], "%s uses its approved clip" % id)
+		hull.play_stinger(id, "rendered-" + id)
+		check(hull.voices.size() == 1, "%s committed rendered stinger deduplicates" % id)
+	hull.stop_all()
+	hull.solo = "hull contact"
+	hull.play_stinger("victory", "editable-solo")
+	check(hull._rendered_seconds == 0.0, "Sound Desk solo retains editable timeline instead of flattened mix")
+	hull.solo = ""
+	hull.stop_all()
 	hull.play_stinger("clear_0", "clear")
 	hull.play_stinger("victory", "outcome")
 	hull.play_stinger("clear_0", "late-clear")

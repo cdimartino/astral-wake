@@ -1,6 +1,6 @@
 # Space heard through the hull
 
-The opening plays once; the title and ship-selection screens are quiet except for your actions. On the expedition map, the music uses actual wind, string, glass, wood, and drum recordings. Cards and organs sound much closer than the landscape. The first committed route lets a quiet tension part enter the regional score; a change of screen does not start the phrase over.
+The opening plays once, then leaves a quiet breath under the title and ship selection. The star chart has its own sustained space ambience; rewards, shops, and recovery share a quieter cabin sound. In combat, cards and organs sound closer than the landscape, and the first committed route brings a quiet tension part into the regional score.
 
 **Try it in the game:** open **Settings → Enter admin mode · Sound Desk**. This parks your expedition and opens a private copy. Hide the desk to play the copy, bring it back with the **Sound Desk** button or the configured shortcut (backtick by default), and use **Settings → Leave admin mode** to return. The shortcut is rebindable in Settings. Normal audio sliders still control music/cinematic, combat, and interface independently.
 

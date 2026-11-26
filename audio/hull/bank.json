@@ -680,7 +680,7 @@
       "bus": "Music",
       "variants": [
         "grain_bow",
-        "bow_thread"
+        "pressure"
       ],
       "gain_db": -12
     },
@@ -1611,7 +1611,7 @@
         {
           "time": 0.056034,
           "duration": 2.172415,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 48,
           "velocity": 69,
           "track": "vessel motif"
@@ -1627,7 +1627,7 @@
       ]
     },
     "defeat": {
-      "length": 13.090908,
+      "length": 7.243249,
       "tracks": {
         "hull contact": {
           "channel": 1
@@ -1637,6 +1637,12 @@
         },
         "afterimage": {
           "channel": 3
+        },
+        "undertow": {
+          "channel": 4
+        },
+        "second breath": {
+          "channel": 5
         }
       },
       "markers": [
@@ -1645,15 +1651,15 @@
           "name": "defeat"
         },
         {
-          "time": 3.631818,
+          "time": 1.907659,
           "name": "phrase"
         },
         {
-          "time": 7.068181,
+          "time": 4.48649,
           "name": "ending"
         },
         {
-          "time": 13.090908,
+          "time": 7.243249,
           "name": "end"
         }
       ],
@@ -1667,56 +1673,136 @@
       "tempo": [
         {
           "time": 0.0,
-          "us_per_quarter": 1090909
+          "us_per_quarter": 540541
         }
       ],
       "events": [
         {
           "time": 0.0,
-          "duration": 0.6,
-          "cue": "score_keel_tap",
-          "note": 57,
-          "velocity": 77,
+          "duration": 0.173424,
+          "cue": "score_shell_knock",
+          "note": 53,
+          "velocity": 36,
           "track": "hull contact"
         },
         {
-          "time": 0.109091,
-          "duration": 2.836363,
-          "cue": "score_grain_bow",
-          "note": 48,
-          "velocity": 75,
+          "time": 0.0,
+          "duration": 6.32433,
+          "cue": "score_seam_air",
+          "note": 38,
+          "velocity": 24,
+          "track": "second breath"
+        },
+        {
+          "time": 0.0,
+          "duration": 6.486492,
+          "cue": "score_tide_body",
+          "note": 26,
+          "velocity": 29,
+          "track": "undertow"
+        },
+        {
+          "time": 0.065315,
+          "duration": 0.675677,
+          "cue": "score_pressure",
+          "note": 62,
+          "velocity": 83,
           "track": "vessel motif"
         },
         {
-          "time": 1.636364,
-          "duration": 2.290908,
-          "cue": "score_seam_air",
-          "note": 43,
-          "velocity": 48,
+          "time": 0.092342,
+          "duration": 0.956082,
+          "cue": "score_grain_bow",
+          "note": 50,
+          "velocity": 56,
           "track": "afterimage"
         },
         {
-          "time": 3.631818,
-          "duration": 2.945454,
+          "time": 0.65428,
+          "duration": 0.637388,
+          "cue": "score_pressure",
+          "note": 60,
+          "velocity": 77,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.194821,
+          "duration": 0.864865,
+          "cue": "score_pressure",
+          "note": 58,
+          "velocity": 73,
+          "track": "vessel motif"
+        },
+        {
+          "time": 1.227479,
+          "duration": 0.880631,
           "cue": "score_grain_bow",
-          "note": 51,
+          "note": 46,
+          "velocity": 55,
+          "track": "afterimage"
+        },
+        {
+          "time": 1.907659,
+          "duration": 0.719595,
+          "cue": "score_pressure",
+          "note": 57,
+          "velocity": 72,
+          "track": "vessel motif"
+        },
+        {
+          "time": 2.632885,
+          "duration": 0.859235,
+          "cue": "score_pressure",
+          "note": 53,
           "velocity": 71,
           "track": "vessel motif"
         },
         {
-          "time": 7.068181,
-          "duration": 4.254545,
+          "time": 2.670047,
+          "duration": 0.924551,
           "cue": "score_grain_bow",
-          "note": 46,
-          "velocity": 65,
+          "note": 41,
+          "velocity": 56,
+          "track": "afterimage"
+        },
+        {
+          "time": 3.507886,
+          "duration": 0.805181,
+          "cue": "score_pressure",
+          "note": 52,
+          "velocity": 66,
           "track": "vessel motif"
         },
         {
-          "time": 7.877272,
-          "duration": 4.145454,
-          "cue": "score_seam_air",
-          "note": 43,
-          "velocity": 56,
+          "time": 3.534913,
+          "duration": 0.822073,
+          "cue": "score_grain_bow",
+          "note": 40,
+          "velocity": 53,
+          "track": "afterimage"
+        },
+        {
+          "time": 4.48649,
+          "duration": 0.204955,
+          "cue": "score_shell_knock",
+          "note": 44,
+          "velocity": 31,
+          "track": "hull contact"
+        },
+        {
+          "time": 4.48649,
+          "duration": 1.605858,
+          "cue": "score_pressure",
+          "note": 50,
+          "velocity": 69,
+          "track": "vessel motif"
+        },
+        {
+          "time": 4.524779,
+          "duration": 1.448199,
+          "cue": "score_grain_bow",
+          "note": 38,
+          "velocity": 60,
           "track": "afterimage"
         }
       ]
@@ -2108,7 +2194,7 @@
         {
           "time": 0.056034,
           "duration": 2.172415,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 45,
           "velocity": 69,
           "track": "vessel motif"
@@ -2269,7 +2355,7 @@
         {
           "time": 12.67742,
           "duration": 2.516129,
-          "cue": "score_bow_thread",
+          "cue": "score_seam_air",
           "note": 55,
           "velocity": 50,
           "track": "tension"
@@ -2333,7 +2419,7 @@
         {
           "time": 40.54839,
           "duration": 2.806452,
-          "cue": "score_bow_thread",
+          "cue": "score_seam_air",
           "note": 51,
           "velocity": 54,
           "track": "tension"
@@ -2569,7 +2655,7 @@
         {
           "time": 14.120833,
           "duration": 2.3,
-          "cue": "score_bow_thread",
+          "cue": "score_pressure",
           "note": 54,
           "velocity": 57,
           "track": "tension"
@@ -2593,7 +2679,7 @@
         {
           "time": 32.2,
           "duration": 3.6,
-          "cue": "score_bow_thread",
+          "cue": "score_pressure",
           "note": 51,
           "velocity": 48,
           "track": "tension"
@@ -2633,7 +2719,7 @@
         {
           "time": 54.4,
           "duration": 2.1,
-          "cue": "score_bow_thread",
+          "cue": "score_pressure",
           "note": 54,
           "velocity": 49,
           "track": "tension"
@@ -2967,7 +3053,7 @@
         {
           "time": 0.310345,
           "duration": 5.48276,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 52,
           "velocity": 81,
           "track": "bowed hull"
@@ -2999,7 +3085,7 @@
         {
           "time": 20.06897,
           "duration": 3.620691,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 53,
           "velocity": 65,
           "track": "bowed hull"
@@ -3023,7 +3109,7 @@
         {
           "time": 38.482768,
           "duration": 4.344828,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 45,
           "velocity": 81,
           "track": "bowed hull"
@@ -3039,7 +3125,7 @@
         {
           "time": 46.137942,
           "duration": 2.586207,
-          "cue": "score_bow_thread",
+          "cue": "score_reed_mist",
           "note": 48,
           "velocity": 62,
           "track": "bowed hull"
@@ -3154,16 +3240,22 @@
       ]
     },
     "victory": {
-      "length": 12.0,
+      "length": 8.65,
       "tracks": {
         "hull contact": {
           "channel": 1
         },
-        "vessel motif": {
+        "undertow": {
           "channel": 2
         },
-        "afterimage": {
+        "second breath": {
           "channel": 3
+        },
+        "afterimage": {
+          "channel": 4
+        },
+        "interior": {
+          "channel": 5
         }
       },
       "markers": [
@@ -3172,15 +3264,15 @@
           "name": "victory"
         },
         {
-          "time": 3.329167,
+          "time": 0.760417,
           "name": "phrase"
         },
         {
-          "time": 6.479167,
+          "time": 3.85,
           "name": "ending"
         },
         {
-          "time": 12.0,
+          "time": 8.65,
           "name": "end"
         }
       ],
@@ -3200,51 +3292,43 @@
       "events": [
         {
           "time": 0.0,
-          "duration": 0.55,
-          "cue": "score_keel_tap",
-          "note": 57,
-          "velocity": 77,
-          "track": "hull contact"
-        },
-        {
-          "time": 0.1,
-          "duration": 2.6,
-          "cue": "score_grain_bow",
-          "note": 48,
-          "velocity": 75,
-          "track": "vessel motif"
-        },
-        {
-          "time": 1.5,
-          "duration": 2.1,
-          "cue": "score_glass_fall",
-          "note": 55,
-          "velocity": 48,
-          "track": "afterimage"
-        },
-        {
-          "time": 3.329167,
-          "duration": 2.7,
-          "cue": "score_grain_bow",
-          "note": 51,
-          "velocity": 71,
-          "track": "vessel motif"
-        },
-        {
-          "time": 6.479167,
-          "duration": 3.9,
-          "cue": "score_grain_bow",
-          "note": 55,
-          "velocity": 65,
-          "track": "vessel motif"
-        },
-        {
-          "time": 7.220833,
-          "duration": 3.8,
-          "cue": "score_glass_fall",
-          "note": 60,
+          "duration": 7.15,
+          "cue": "score_tide_body",
+          "note": 33,
           "velocity": 56,
+          "track": "undertow"
+        },
+        {
+          "time": 0.170833,
+          "duration": 4.11875,
+          "cue": "score_seam_air",
+          "note": 33,
+          "velocity": 45,
+          "track": "second breath"
+        },
+        {
+          "time": 0.760417,
+          "duration": 6.35,
+          "cue": "score_glass_fog",
+          "note": 45,
+          "velocity": 36,
           "track": "afterimage"
+        },
+        {
+          "time": 3.789583,
+          "duration": 3.789584,
+          "cue": "score_seam_air",
+          "note": 33,
+          "velocity": 51,
+          "track": "interior"
+        },
+        {
+          "time": 3.85,
+          "duration": 0.770833,
+          "cue": "score_keel_tap",
+          "note": 51,
+          "velocity": 74,
+          "track": "hull contact"
         }
       ]
     }

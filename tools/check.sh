@@ -77,6 +77,7 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/audio_settings_test.gd
 "$engine" --headless --path . --script tests/voyage_audio_test.gd
 "$engine" --headless --path . --script tests/enemy_defeat_audio_test.gd
+"$engine" --headless --path . --script tests/combat_audio_preview_test.gd
 "$engine" --headless --path . --script tests/hull_audio_runtime.gd
 "$engine" --headless --path . --script tests/hull_audio_factory.gd
 "$engine" --headless --path . --script tests/hull_admin_test.gd
