@@ -17,13 +17,37 @@ concurrency:
 jobs:
   test:
     name: Godot 4.7.2 checks
-    runs-on: macos-latest
+    # Route trusted demand only; this is not a replacement for GitHub fork approvals.
+    runs-on: >-
+      ${{
+        fromJSON(
+          github.repository == 'cdimartino/astral-wake' &&
+          vars.ASTRAL_REQUIRED_CI_POOL != 'hosted' &&
+          (
+            (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+            (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.actor == github.repository_owner) ||
+            (github.event_name == 'pull_request' && github.base_ref == 'main' &&
+             github.event.pull_request.head.repo.full_name == github.repository &&
+             github.event.pull_request.user.login == github.repository_owner &&
+             github.actor == github.repository_owner)
+          ) &&
+          '["self-hosted","macOS","ARM64","homelab-macos-arm64"]' || '["macos-latest"]'
+        )
+      }}
     timeout-minutes: 30
     env:
       ASTRAL_AUDIO_DRIVER: Dummy
     steps:
+      - name: Verify native execution on the homelab runner
+        if: runner.environment == 'self-hosted'
+        run: |
+          set -eu
+          test "$(uname -s)/$(uname -m)" = Darwin/arm64
+          test "$(sysctl -in sysctl.proc_translated)" != 1
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Install pinned Godot engine
         run: bash tools/bootstrap.sh --engine-only
