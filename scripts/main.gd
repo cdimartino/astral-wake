@@ -125,6 +125,7 @@ var resolving := false
 var presentation_duration := 0.0
 var opening_film
 var mcp_controller
+var telemetry = preload("res://scripts/telemetry.gd").new(self)
 var mcp_bridge
 
 func _ready() -> void:
@@ -161,6 +162,7 @@ func _ready() -> void:
 	enemy_defeat_audio.setup(hull_audio)
 	services.add_child(enemy_defeat_audio)
 	game.load_saved()
+	telemetry.start()
 	_apply_settings()
 	resized.connect(_layout_stage)
 	_render()
@@ -479,6 +481,7 @@ func _render() -> void:
 	if not menu and game.selection_pending(): _selection_chooser()
 	_sync_voyage_audio()
 	_soundtrack()
+	telemetry.sync()
 	if is_instance_valid(hull_desk):
 		page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 		if is_instance_valid(overlay): overlay.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
@@ -1909,8 +1912,10 @@ func _perform(action: Callable, action_kind: String = "") -> void:
 	var played_card := {}
 	if previous_mode == "combat" and selected_card >= 0 and selected_card < game.run.battle.hand.size():
 		played_card = game.run.battle.hand[selected_card].duplicate()
+	var observed: Dictionary = telemetry.snapshot()
 	var result: Dictionary = action.call()
 	if result.get("ok", false):
+		telemetry.observe(observed, action_kind, played_card, played_route)
 		if hull_admin.active: hull_admin.record_player_action(before, action_kind, played_card, played_route, played_target)
 		var next_mode := str(game.run.get("mode", ""))
 		_spot_action(previous_mode, next_mode, action_kind, before)
@@ -2084,6 +2089,15 @@ func _open_settings() -> void:
 	motion.toggled.connect(update)
 	full.toggled.connect(update)
 	for volume in volumes.values(): volume.value_changed.connect(update)
+	# The Sound Desk's settings are a throwaway copy, so the choice isn't offered there.
+	if not hull_admin.active:
+		var share := CheckBox.new()
+		share.name = "SharePerformanceData"
+		share.text = "Share performance data"
+		share.button_pressed = telemetry.sharing()
+		share.tooltip_text = "Send anonymous performance, error and play data. Turning this off stops sending at once."
+		share.toggled.connect(telemetry.set_sharing)
+		body.add_child(share)
 	body.add_child(_text("Settings save immediately on this Mac.", 16))
 	_add_admin_settings(body)
 	if not hull_admin.active and ResourceLoader.exists("res://scripts/mcp_settings.gd"):

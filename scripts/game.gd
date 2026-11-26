@@ -1329,7 +1329,7 @@ func save() -> bool:
 	return result
 
 func set_settings(settings: Dictionary) -> void:
-	for key in ["reduced_motion","fullscreen"]:
+	for key in ["reduced_motion","fullscreen","share_performance_data"]:
 		if settings.has(key) and settings[key] is bool: profile.settings[key]=settings[key]
 	for key in ["volume","music_volume","combat_volume","interface_volume"]:
 		if settings.has(key) and (settings[key] is float or settings[key] is int) and is_finite(float(settings[key])):

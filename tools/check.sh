@@ -88,6 +88,7 @@ python3 tests/defense_engine_replay_test.py "$engine"
 "$engine" --headless --path . --script tests/balance_clarity_ui_test.gd
 "$engine" --headless --path . --script tests/mcp_blind_test.gd
 "$engine" --headless --path . --script tests/mcp_settings_test.gd
+"$engine" --headless --path . --script tests/telemetry_test.gd
 "$engine" --headless --path . --script tests/ui_smoke.gd
 "$engine" --headless --path . --script tests/intro_test.gd
 "$engine" --headless --path . --script tests/intro_test.gd -- --skip
