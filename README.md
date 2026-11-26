@@ -18,6 +18,17 @@ Start with the [gameplay guide](docs/gameplay.md), then explore the [ships and o
 
 Win an ordinary expedition to unlock the next **Ascension** for that ship, up to A11. A0 keeps the original difficulty, and seeded practice never unlocks a rank. See the [rank rules and playtest results](docs/ascension-playtest.md).
 
+## Performance and play data
+
+The game plays offline. When it has a connection, release builds send anonymous performance and play data to [Glitchless](https://glitchless.gg):
+
+- frame times, stutters, errors and crashes, with basic device facts such as OS, graphics tier and screen size;
+- play events: vessel, Ascension rank, encounters and their outcomes, cards played and chosen, chart stops, events, salvage exchanges, and whether MCP access was enabled.
+
+There is no player ID, name, account, seed or saved game, and nothing you type is sent. Each launch gets a new random session ID that is not kept, though unsent data waits on disk until it can be sent. The SDK's [field list](addons/glitchless/PRIVACY.md) covers anonymous mode in full. To turn it off, clear **Share performance data** in Settings. Sending stops at once, unsent data is deleted, and the choice holds on later launches.
+
+Debug builds, which include editor runs and the test suite, send nothing unless started with `-- --glitchless`. Add `--glitchless-synthetic` to keep such a run out of player numbers. Headless runs are marked that way automatically.
+
 ## Install on macOS
 
 Requires macOS 11 or later. The universal app includes Apple Silicon and Intel binaries and its runtime; Godot does not need to be installed to play.
@@ -173,7 +184,7 @@ The Godot project launches `main.tscn`, whose root control uses `scripts/main.gd
 
 ### Global side effects
 
-- `scripts/save_store.gd:write` writes local primary, pending, and backup save files. Its directory precedence is an explicit argument, `ASTRAL_SAVE_DIR`, then Godot's user-data directory. Runtime scripts make no network calls.
+- `scripts/save_store.gd:write` writes local primary, pending, and backup save files. Its directory precedence is an explicit argument, `ASTRAL_SAVE_DIR`, then Godot's user-data directory. The only runtime network traffic from game scripts and addons is the telemetry described under [Performance and play data](#performance-and-play-data), besides the opt-in loopback MCP listener.
 - `scripts/main.gd:_apply_settings` changes window/audio state; runtime controls load resources, consume input, and schedule scene animations and playback.
 - `tools/bootstrap.sh:curl` downloads the pinned engine archives. Asset generators overwrite their named media outputs; capture tools write screenshots; export and packaging tools stage and sign release artifacts. See the tool contract before invoking these mutating commands.
 

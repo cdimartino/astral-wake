@@ -103,7 +103,15 @@ directory has no child components.
 - Drawing controls only update local animation/drawing state; `intent_badge.gd`
   creates/frees tooltip children. `intro_cinematic.gd` loads local video, plays
   audio on Music (or Master), consumes skip input, fades, emits, and frees itself.
-  No runtime network calls are made by these scripts.
+  `telemetry.gd` is the one script that feeds a network sender (below).
+- `telemetry.gd` hands play events to the `Glitchless` autoload
+  (`addons/glitchless`), which sends them to `api.glitchless.gg` from release
+  builds. It reads copies of run state after the rules accept an action and never
+  changes the game. It must not send `run.seed`, `run.id` (which contains the
+  seed) or typed text, and sends nothing from the Sound Desk sandbox.
+  The Settings switch "Share performance data" goes through `set_sharing`; at
+  launch the adapter only ever turns the SDK off. MCP clients cannot change it.
+  `tests/telemetry_test.gd` checks this with a recorder in place of the SDK.
 
 ## Verification
 

@@ -17,9 +17,14 @@ config/description="A living ship. A changing deck. A route through the impossib
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
+[autoload]
+
+Glitchless="*res://addons/glitchless/glitchless.gd"
+
 [debug]
 
 file_logging/enable_file_logging.pc=false
+settings/gdscript/always_track_call_stacks=true
 
 [display]
 

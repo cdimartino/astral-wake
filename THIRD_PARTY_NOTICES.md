@@ -2,7 +2,7 @@
 Astral Wake uses Godot Engine 4.7.2, distributed under the MIT license.
 https://godotengine.org/license/
 
-See GODOT_LICENSE.txt and GODOT_COPYRIGHT.txt for the engine license and its bundled third-party notices. Godot's bundled Noto Sans font is covered by the notices in GODOT_COPYRIGHT.txt. No additional gameplay libraries are used.
+See GODOT_LICENSE.txt and GODOT_COPYRIGHT.txt for the engine license and its bundled third-party notices. Godot's bundled Noto Sans font is covered by the notices in GODOT_COPYRIGHT.txt. No additional gameplay libraries are used. Performance and play telemetry uses the [Glitchless](https://glitchless.gg) Godot SDK 0.7.0 in addons/glitchless, distributed under the MIT license (addons/glitchless/LICENSE).
 
 The game's illustrations were created for this project with built-in image generation; prompts and provenance are in art/PROMPTS.md. The Living Hull arrangements, sound effects and instruments use recordings from the [Versilian Community Sample Library](https://github.com/sgossner/VCSL), dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). See the score pack for individual source files and mappings.
 
